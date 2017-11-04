@@ -60,9 +60,16 @@ describe('Tokenizer Tests', () => {
                 const testedValue = `"Omega \\u03a9"`;
                 testSimpleTokens(testedValue, "string", testedValue);
             });
+            it("Doesn't greedly parse two strings", () => {
+                testSimpleTokens(`"Hello" "World"`, "string", `"Hello"`);
+            });
+
         });
 
         describe("Parses numbers properly", () => {
+            //* These numbers have been tested in OpenSCAD
+            //   and all parsed in their compilier.
+            
             it("regular integers", () => {
                 const testedValue = `123`;
                 testSimpleTokens(testedValue, "number", testedValue);
@@ -116,6 +123,4 @@ describe('Tokenizer Tests', () => {
         });
             
     });
-
-
 });
