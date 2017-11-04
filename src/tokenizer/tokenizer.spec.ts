@@ -33,8 +33,14 @@ describe('Tokenizer Tests', () => {
         ) {
             const lexer = moo.compile(TokenizerModule.OPENSCAD_RULES);
             lexer.reset(testedValue);
-            const token = lexer.next();
+            const tokens:moo.Token[] = Array.from(<any> lexer);
 
+            const token = tokens[0];
+            if (tokens.length > 1) {
+                console.log("***** " + testedValue );
+                console.log(JSON.stringify(tokens, null, 2));
+            }
+//            
             if (!token) {
                 expect(token).not.toBeNull();
                 return;
@@ -69,7 +75,7 @@ describe('Tokenizer Tests', () => {
         describe("Parses numbers properly", () => {
             //* These numbers have been tested in OpenSCAD
             //   and all parsed in their compilier.
-            
+
             it("regular integers", () => {
                 const testedValue = `123`;
                 testSimpleTokens(testedValue, "number", testedValue);
@@ -119,8 +125,29 @@ describe('Tokenizer Tests', () => {
             it("Scientific notation: 37.e88", () => {
                 const testedValue = `37.e88`;
                 testSimpleTokens(testedValue, "number", testedValue);
-            });            
+            });
         });
-            
+
+        describe("Testing that operators parse correctly", () => {
+            it("Verifying that operators are found by the longest first", () => {
+                const lexer = moo.compile(TokenizerModule.OPENSCAD_RULES);
+                const ops = TokenizerModule.OPENSCAD_RULES.operators as string[];
+                const joiner = 'qq';
+
+                ops.forEach((op) => {
+                    const src = `1 ${op} 7`;
+                    lexer.reset(src);
+
+                    const tokens: moo.Token[] = Array.from(<any>lexer);
+                    const importantTokens = tokens.filter(p => p.type !== "WS");
+                    const compact = importantTokens.join(joiner);
+
+                    console.log(op, src, compact);
+                    expect(compact).toBe(`1${joiner}${op}${joiner}7`);
+                });
+
+            });
+        });
+
     });
 });
