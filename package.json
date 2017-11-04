@@ -13,7 +13,7 @@
     "build:prod": "cross-env NODE_ENV=production webpack --config ./webpack.config.js  --progress --profile --color --display-error-details --display-cached --bail",
     "clean": "npm cache clear && rimraf -- dist",
     "test": "karma start",
-    "testui": "karma start --single-run false"    
+    "testui": "karma start --single-run false"
   },
   "repository": {
     "type": "git",
@@ -61,6 +61,8 @@
     "webpack-dev-server": "2.5.1"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "@types/moo": "^0.3.0",
+    "lodash": "^4.17.4",
+    "moo": "^0.4.3"
   }
 }

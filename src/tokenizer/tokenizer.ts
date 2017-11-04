@@ -1,13 +1,21 @@
- export class Tokenizer {
-    private source: string;
-    private offset: number;
+import * as moo from 'moo'
 
-    constructor(str: string) {
-        this.source = str;
-        this.offset = 0;
-    }
+export module TokenizerModule {
 
-    isEOS() {
-        return this.offset === this.source.length;
+    export const OPENSCAD_RULES: moo.Rules = {
+        WS: /[ \t]+/,
+        comment: /\/\/.*?$/,
+        number: /[0-9]*\.{0,1}[0-9]*[e|E]{1}[+/-]?[0-9]*|[0-9]*\.[0-9]*|[0-9]+\.*|[1-9][0-9]*|\.[0-9]*/,
+        string: /"(?:[^"\\]|\\.)*"/,
+        lparen: '(',
+        rparen: ')',
+        keyword: ['module', 'function', 'include', 'use', 'echo', 'for', 'intersection_for', 'if', 'else', 'assign'],
+        NL: { match: /\n/, lineBreaks: true },
+    };
+
+    export class Tokenizer {
+        constructor(str: string) {
+
+        }
     }
 }
