@@ -5,7 +5,15 @@ const OPENSCAD_RULES = require('./tokenizer');
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
-import { flatten } from "../nearly-flat";
+// import { flatten } from "../nearly-flat";
+
+// function totalArraySize(a: any[]) {
+    
+
+//     const r: number = a.reduce((sum, elt) =>
+//         sum + ((elt && elt.length) ? totalArraySize(elt) : 1), 0);
+//     return r;
+// }
 
 describe('Tokenizer Tests', () => {
     it('The tests run', () => {
@@ -113,25 +121,60 @@ describe('Tokenizer Tests', () => {
             });
         });
 
-        describe("Testing that operators parse correctly", () => {
-            it("Verifying that operators are found by the longest first", () => {
-                const lexer = moo.compile(OPENSCAD_RULES);
-                const ops = OPENSCAD_RULES.operators as string[];
-                const joiner = 'qq';
+        // describe("Testing that operators parse correctly", () => {
+        //     it("Verifying that operators are found by the longest first", () => {
+        //         const lexer = moo.compile(OPENSCAD_RULES);
+        //         const ops = OPENSCAD_RULES.operators as string[];
+        //         const joiner = 'qq';
 
-                ops.forEach((op) => {
-                    const src = `1 ${op} 7`;
-                    lexer.reset(src);
+        //         ops.forEach((op) => {
+        //             const src = `1 ${op} 7`;
+        //             lexer.reset(src);
+
+        //             const tokens: moo.Token[] = Array.from(<any>lexer);
+        //             const importantTokens = tokens.filter(p => p.type !== "WS");
+        //             const compact = importantTokens.join(joiner);
+
+        //             expect(compact).toBe(`1${joiner}${op}${joiner}7`);
+        //         });
+        //     });
+        // });
+        describe("Testing that identifiers parse correctly", () => {
+            it("Verifying that identifiers parse", () => {
+                const lexer = moo.compile(OPENSCAD_RULES);
+                const identifiers = ["a", "bb", "abc", "_abc", "$abc", "$abc123", "ABc", "abC", "Ab_3c"];
+
+
+                identifiers.forEach((identifier) => {
+                    lexer.reset(identifier);
 
                     const tokens: moo.Token[] = Array.from(<any>lexer);
-                    const importantTokens = tokens.filter(p => p.type !== "WS");
-                    const compact = importantTokens.join(joiner);
-
-                    expect(compact).toBe(`1${joiner}${op}${joiner}7`);
+                    expect(tokens[0].value).toBe(identifier);
                 });
 
             });
+            it("Verifying that bad identifers errror", () => {
+                const lexer = moo.compile(OPENSCAD_RULES);
+                const identifiers = ["12a", "$"];
+
+
+                identifiers.forEach((identifier) => {
+                    lexer.reset(identifier);
+                    let errorHappened = false;
+                    try {
+                        const tokens: moo.Token[] = Array.from(<any>lexer);
+                        expect(tokens[0].value).not.toBe(identifier);
+                        errorHappened = true;
+                    } catch (err) {
+                        errorHappened = true;
+                    }
+                    expect(errorHappened).toBeTruthy();
+                });
+
+            });
+
         });
+
     });
 
     describe('Testing nearly', () => {
@@ -140,49 +183,26 @@ describe('Tokenizer Tests', () => {
             expect(grammar).not.toBeNull();
 
         });
-        it('Expect it to be able to parse numbers', () => {
 
-            function testOneToken(token: string) {
-                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-                parser.feed(token);
-                const res = parser.results;
-                expect(res[0].length).toBe(1);
-
-            }
-
-            testOneToken("100");
-            testOneToken("0.9");
-            testOneToken("8.8");
-            testOneToken("5.");
-        });
-        it('Expect it to be able to three-part expressions', () => {
+        it('parse simple assignments', () => {
             function testTokens(token: string) {
                 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
                 parser.feed(token);
                 const res = parser.results as [moo.Token[]];
-                const flatResults = flatten(res[0]);
 
-                expect(flatResults.length).toBe(5);
+                // console.log("===================================================");
+                // console.log(JSON.stringify(res));
+
+                expect(res.length).toBe(1);
+                // expect(totalArraySize(res)).toBe(12);
             }
-
-            testTokens("44+3");
-            testTokens(`"Hellow"+"World"`);
-            testTokens(`"144"+"a"`);
+            
+            testTokens("bbbc=1;");
+            testTokens("cccc=2-1 ; ");            
+            testTokens("bbba=bbba + 3; ");
+            testTokens(`a = "Hellow" +"World"  ;`);
+            testTokens(`a = "9"+ "a" ;`);
         });
 
-        it('Expect it to be able to three-part expressions with white space', () => {
-            function testTokens(token: string) {
-                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-                parser.feed(token);
-                const res = parser.results as [moo.Token[]];
-                const flatResults = flatten(res[0]);
-
-                expect(flatResults.length).toBe(5);
-            }
-
-            testTokens("1 + 3");
-            testTokens(`"Hellow" +"World"`);
-            testTokens(`"9"+ "a"`);
-        });
     });
 });

@@ -1,4 +1,4 @@
-import * as moo from 'moo'
+// import * as moo from 'moo'
 /*
 Why is parser.results an array? 
 Sometimes, a grammar can parse a particular string in multiple different ways.
@@ -16,18 +16,3 @@ You might like to check first that parser.results.length is exactly 1;
  if there is more than one result, then your grammar is ambiguous!
 */
 
-export function flatten(tokens: moo.Token[]) {
-    const ret = tokens.map(token => {
-        if (Array.isArray(token)) {
-            const a = token as moo.Token[];
-            if (a.length > 1) {
-                throw new Error("Grammar issue.  Ambiguous language error");
-            } else {
-                return a[0];
-            }
-        } else {
-            return token;
-        }
-    });
-    return ret;
-}

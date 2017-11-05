@@ -3,21 +3,43 @@ const moo = require("moo");
 const tokens = require('../tokenizer/tokenizer');
 const lexer = moo.compile(tokens);
 
-console.log("********************************");
-console.log(JSON.stringify(tokens));
-console.log("********************************");
+// console.log("********************************");
+// console.log(JSON.stringify(tokens));
+// console.log("********************************");
 %}
 
 @lexer lexer
 
-expression -> "1+2+3"
-           | constant
-           | constant _ %operators _ constant
+#expression -> 
+#             constant
+#           | constant _ %operators _ constant
+#           | statement
+
+#cluster -> _
+ #       | statement _
+
+statment -> _ %identifier _ "=" _ expr _ %eos _
+
+expr -> 
+		constant # //numbers
+	|	%identifier #  //variables
+#	|	"(" _ expr _ ")" #grouping with parentheses
+#	# |	('+' | '-') _ expr	# //unary plus/minus
+#	|	expr "/" expr		# //division
+#	|	expr "*" expr	# //explicit multiplication
+#	|	expr expr	# //implicit multiplication
+	|	expr _ "+" _ expr #//addition/subtraction
+    |	expr _ "-" _ expr #//addition/subtraction
+
+lvalue -> %identifier
+rvalue -> %identifier | constant
 
 
-operator -> %operators
+
 constant -> %string
          | %number
+
+
 
 
 
