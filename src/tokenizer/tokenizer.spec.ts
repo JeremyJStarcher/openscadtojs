@@ -5,15 +5,6 @@ const OPENSCAD_RULES = require('./tokenizer');
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
-// import { flatten } from "../nearly-flat";
-
-// function totalArraySize(a: any[]) {
-    
-
-//     const r: number = a.reduce((sum, elt) =>
-//         sum + ((elt && elt.length) ? totalArraySize(elt) : 1), 0);
-//     return r;
-// }
 
 describe('Tokenizer Tests', () => {
     it('The tests run', () => {
@@ -194,7 +185,6 @@ describe('Tokenizer Tests', () => {
                 // console.log(JSON.stringify(res));
 
                 expect(res.length).toBe(1);
-                // expect(totalArraySize(res)).toBe(12);
             }
             
             testTokens("bbbc=1;");
@@ -203,6 +193,5 @@ describe('Tokenizer Tests', () => {
             testTokens(`a = "Hellow" +"World"  ;`);
             testTokens(`a = "9"+ "a" ;`);
         });
-
     });
 });

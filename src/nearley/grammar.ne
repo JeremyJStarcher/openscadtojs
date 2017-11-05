@@ -9,14 +9,8 @@ const lexer = moo.compile(tokens);
 %}
 
 @lexer lexer
-
-#expression -> 
-#             constant
-#           | constant _ %operators _ constant
-#           | statement
-
 #cluster -> _
- #       | statement _
+#       | statement _
 
 statment -> _ %identifier _ "=" _ expr _ %eos _
 
@@ -35,12 +29,8 @@ lvalue -> %identifier
 rvalue -> %identifier | constant
 
 
-
 constant -> %string
          | %number
-
-
-
 
 
 # Optional white space
