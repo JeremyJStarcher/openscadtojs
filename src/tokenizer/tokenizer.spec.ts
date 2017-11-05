@@ -5,7 +5,7 @@ const OPENSCAD_RULES = require('./tokenizer');
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
-
+import { flatten } from "../nearly-flat";
 
 describe('Tokenizer Tests', () => {
     it('The tests run', () => {
@@ -150,24 +150,39 @@ describe('Tokenizer Tests', () => {
 
             }
 
-            testOneToken("1");
-            testOneToken("0.1");
-            testOneToken("1.1");
-            testOneToken("1.");
+            testOneToken("100");
+            testOneToken("0.9");
+            testOneToken("8.8");
+            testOneToken("5.");
         });
         it('Expect it to be able to three-part expressions', () => {
             function testTokens(token: string) {
                 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
                 parser.feed(token);
-                const res = parser.results;
-                expect(res[0].length).toBe(3);
+                const res = parser.results as [moo.Token[]];
+                const flatResults = flatten(res[0]);
+
+                expect(flatResults.length).toBe(5);
             }
 
-            testTokens("1+3");
+            testTokens("44+3");
             testTokens(`"Hellow"+"World"`);
-            testTokens(`"1"+"a"`);
+            testTokens(`"144"+"a"`);
         });
 
-    })
+        it('Expect it to be able to three-part expressions with white space', () => {
+            function testTokens(token: string) {
+                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+                parser.feed(token);
+                const res = parser.results as [moo.Token[]];
+                const flatResults = flatten(res[0]);
 
+                expect(flatResults.length).toBe(5);
+            }
+
+            testTokens("1 + 3");
+            testTokens(`"Hellow" +"World"`);
+            testTokens(`"9"+ "a"`);
+        });
+    });
 });

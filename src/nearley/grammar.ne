@@ -11,10 +11,17 @@ console.log("********************************");
 @lexer lexer
 
 expression -> "1+2+3"
-           | %number
-           | constant %operators constant
+           | constant
+           | constant _ %operators _ constant
 
 
 operator -> %operators
 constant -> %string
          | %number
+
+
+
+# Optional white space
+_ -> null | _ [\s] {% function() {} %}
+# Required white space
+__ -> [\s] | __ [\s] {% function() {} %}         
