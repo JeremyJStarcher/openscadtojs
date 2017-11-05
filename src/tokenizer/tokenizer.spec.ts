@@ -1,7 +1,11 @@
-import { TokenizerModule } from './tokenizer';
-import * as moo from 'moo'
+declare function require(path: string): any;
+const OPENSCAD_RULES = require('./tokenizer');
 
-// const Tokenizer = TokenizerModule.Tokenizer;
+
+import * as moo from 'moo'
+import * as grammar from "../nearley/grammar";
+import * as nearley from 'nearley';
+
 
 describe('Tokenizer Tests', () => {
     it('The tests run', () => {
@@ -10,37 +14,18 @@ describe('Tokenizer Tests', () => {
 
 
     describe("moo", () => {
-        // it("Basic moo test", () => {
-        //     const lexer = moo.compile(TokenizerModule.OPENSCAD_RULES);
-
-        //     lexer.reset('while (10) cows\nmoo')
-        //     const token = lexer.next();
-        //     if (token) {
-        //         expect(token.type).toBe('keyword');
-        //     }
-
-        //     lexer.next() // -> { type: 'keyword', value: 'while' }
-        //     lexer.next() // -> { type: 'WS', value: ' ' }
-        //     lexer.next() // -> { type: 'lparen', value: '(' }
-        //     lexer.next() // -> { type: 'number', value: '10' }
-
-        // });
 
         function testSimpleTokens(
             testedValue: string,
             expectedType: string,
             expectedValue: string
         ) {
-            const lexer = moo.compile(TokenizerModule.OPENSCAD_RULES);
+            const lexer = moo.compile(OPENSCAD_RULES);
             lexer.reset(testedValue);
-            const tokens:moo.Token[] = Array.from(<any> lexer);
+            const tokens: moo.Token[] = Array.from(<any>lexer);
 
             const token = tokens[0];
-            if (tokens.length > 1) {
-                console.log("***** " + testedValue );
-                console.log(JSON.stringify(tokens, null, 2));
-            }
-//            
+
             if (!token) {
                 expect(token).not.toBeNull();
                 return;
@@ -130,8 +115,8 @@ describe('Tokenizer Tests', () => {
 
         describe("Testing that operators parse correctly", () => {
             it("Verifying that operators are found by the longest first", () => {
-                const lexer = moo.compile(TokenizerModule.OPENSCAD_RULES);
-                const ops = TokenizerModule.OPENSCAD_RULES.operators as string[];
+                const lexer = moo.compile(OPENSCAD_RULES);
+                const ops = OPENSCAD_RULES.operators as string[];
                 const joiner = 'qq';
 
                 ops.forEach((op) => {
@@ -142,12 +127,34 @@ describe('Tokenizer Tests', () => {
                     const importantTokens = tokens.filter(p => p.type !== "WS");
                     const compact = importantTokens.join(joiner);
 
-                    console.log(op, src, compact);
                     expect(compact).toBe(`1${joiner}${op}${joiner}7`);
                 });
 
             });
         });
-
     });
+
+    describe('Testing nearly', () => {
+        it('Ensuring module loaded', () => {
+            expect(nearley).not.toBeNull();
+            expect(grammar).not.toBeNull();
+
+        });
+        it('Expect it to be able to parse numbers', () => {
+
+            function testOneToken(token: string) {
+                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+                parser.feed(token);
+                const res = parser.results;
+                expect(res[0].length).toBe(1);
+                    
+            }
+
+            testOneToken("1");
+            testOneToken("0.1");
+            testOneToken("1.1");
+            testOneToken("1.");
+        });
+    })
+
 });

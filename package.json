@@ -13,7 +13,8 @@
     "build:prod": "cross-env NODE_ENV=production webpack --config ./webpack.config.js  --progress --profile --color --display-error-details --display-cached --bail",
     "clean": "npm cache clear && rimraf -- dist",
     "test": "karma start",
-    "testui": "karma start --single-run false"
+    "testui": "karma start --single-run false",
+    "build:grammar": "nearleyc src/nearley/grammar.ne > src/nearley/grammar.js 2> src/nearley/grammar.err"
   },
   "repository": {
     "type": "git",
@@ -49,6 +50,7 @@
     "karma-spec-reporter": "0.0.31",
     "karma-webpack": "^2.0.4",
     "localtunnel": "^1.8.3",
+    "nearley": "^2.11.0",
     "rimraf": "^2.6.1",
     "source-map-loader": "^0.2.1",
     "style-loader": "^0.18.2",
@@ -62,7 +64,9 @@
   },
   "dependencies": {
     "@types/moo": "^0.3.0",
+    "@types/nearley": "^2.11.0",
     "lodash": "^4.17.4",
-    "moo": "^0.4.3"
+    "moo": "^0.4.3",
+    "nearly": "^1.8.1"
   }
 }
