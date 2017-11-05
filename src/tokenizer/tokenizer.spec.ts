@@ -147,7 +147,7 @@ describe('Tokenizer Tests', () => {
                 parser.feed(token);
                 const res = parser.results;
                 expect(res[0].length).toBe(1);
-                    
+
             }
 
             testOneToken("1");
@@ -155,6 +155,19 @@ describe('Tokenizer Tests', () => {
             testOneToken("1.1");
             testOneToken("1.");
         });
+        it('Expect it to be able to three-part expressions', () => {
+            function testTokens(token: string) {
+                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+                parser.feed(token);
+                const res = parser.results;
+                expect(res[0].length).toBe(3);
+            }
+
+            testTokens("1+3");
+            testTokens(`"Hellow"+"World"`);
+            testTokens(`"1"+"a"`);
+        });
+
     })
 
 });

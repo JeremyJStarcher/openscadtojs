@@ -2,6 +2,13 @@
 dist/
 typings/**/*
 
+npm-debug.log
+
+src/nearley/grammar.err
+src/nearley/grammar.js
+
+
+
 # Others
 ~$*
 *~
