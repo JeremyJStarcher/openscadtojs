@@ -10,8 +10,7 @@
     rparen: ')',
     eos: ';',
     keyword: ['module', 'function', 'include', 'use', 'echo', 'for', 'intersection_for', 'if', 'else', 'assign'],
-    assignmentOperator: ["="],
-    binary_operators: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
+    operators: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
     NL: { match: /\n/, lineBreaks: true },
 };
 

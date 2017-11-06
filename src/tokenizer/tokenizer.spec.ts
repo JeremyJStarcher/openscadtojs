@@ -186,12 +186,29 @@ describe('Tokenizer Tests', () => {
 
                 expect(res.length).toBe(1);
             }
-            
-            testTokens("bbbc=1;");
-            testTokens("cccc=2-1 ; ");            
-            testTokens("bbba=bbba + 3; ");
-            testTokens(`a = "Hellow" +"World"  ;`);
-            testTokens(`a = "9"+ "a" ;`);
+
+            testTokens("line1=1;");
+            testTokens("line2=2-1 ; ");
+            testTokens("line3=bbba + 3; ");
+            testTokens(`line4 = "Hellow" +"World"  ;`);
+            testTokens(`line5 = "9"+ "a" ;`);
         });
+
+        it('parse complex assignments', () => {
+            function testTokens(token: string) {
+                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+                parser.feed(token);
+                const res = parser.results as [moo.Token[]];
+
+                console.log("===================================================");
+                console.log(JSON.stringify(res));
+
+                expect(res.length).toBe(1);
+            }
+
+            testTokens("line1 = 1 + 2 * 3;");
+            testTokens("line2 = (1+3) * 4 * -5 / (2-1);");
+        });
+
     });
 });
