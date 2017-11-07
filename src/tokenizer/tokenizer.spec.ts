@@ -1,10 +1,42 @@
 declare function require(path: string): any;
 const OPENSCAD_RULES = require('./tokenizer');
 
-
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
+
+function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
+    let out: moo.Token[] = [];
+
+    if (!val) {
+        return val;
+    }
+
+    if (!Array.isArray(val)) {
+        if (typeof val === "object") {
+            const newObj: any = {};
+            Object.keys(val).forEach(key => {
+                newObj[key] = deNest(val[key]);
+            });
+            return newObj;
+        }
+        return val;
+    }
+
+    if (val.length === 1) {
+        return deNest(val[0]);
+    } else {
+
+        val.forEach(v => {
+            const v2: any = deNest(v);
+            out.push(v2);
+        });
+
+        const noNull = out.filter(p => p);
+        return noNull;
+    }
+}
+
 
 describe('Tokenizer Tests', () => {
     it('The tests run', () => {
@@ -200,12 +232,20 @@ describe('Tokenizer Tests', () => {
                 parser.feed(token);
                 const res = parser.results as [moo.Token[]];
 
-                console.log("===================================================");
-                console.log(JSON.stringify(res));
+                const cleaned = deNest(res[0]);
 
+                // console.log("res: ", JSON.stringify(res));
+                console.log("cleaned: ", JSON.stringify(cleaned));
+
+                expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
+
+                // If length is not 1 then we have ambiguous grammar and that is a
+                // "Bad Thing" in our case. 
                 expect(res.length).toBe(1);
             }
 
+            testTokens("line1 = 1 * 2;");
+            testTokens("line1 = 1;");
             testTokens("line1 = 1 + 2 * 3;");
             testTokens("line2 = (1+3) * 4 * -5 / (2-1);");
         });
