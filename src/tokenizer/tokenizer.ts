@@ -1,4 +1,4 @@
-export const OPENSCAD_RULES :any = {
+export const OPENSCAD_RULES: moo.Rules = {
     WS: /[ \t]+/,
     comment: /\/\/.*?$/,
     number: /[0-9]+\.{0,1}[0-9]*[e|E]{1}[+/-]?[0-9]+|[0-9]*\.[0-9]*|[0-9]+\.*|[1-9][0-9]|\.[0-9]*/,
@@ -12,4 +12,3 @@ export const OPENSCAD_RULES :any = {
     operators: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
     NL: { match: /\n/, lineBreaks: true },
 };
-

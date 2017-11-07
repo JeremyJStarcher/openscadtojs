@@ -1,8 +1,7 @@
-import {OPENSCAD_RULES} from './tokenizer';
+import * as rules from './tokenizer';
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
-
 
 
 function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
@@ -28,6 +27,10 @@ function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
     } else {
 
         val.forEach(v => {
+            // Sometimes we get greebly empty arrays, maybe of whitespace or something.
+            if (Array.isArray(v) && v.length === 0) {
+                return;
+            }
             const v2: any = deNest(v);
             out.push(v2);
         });
@@ -36,6 +39,32 @@ function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
         return noNull;
     }
 }
+
+function toCode(subtree: any): string {
+
+    if (Array.isArray(subtree)) {
+        const str = subtree.map(b => {
+            return toCode(b);
+        });
+        return str.join(" ");
+    } else {
+        if (subtree.type === "number" || subtree.type === "identifier" ) {
+            return subtree.value;
+        }
+
+        if (subtree.type === "operators") {
+
+
+            const op = subtree.func;
+            const v1 = toCode(subtree.lhand);
+            const v2 = toCode(subtree.rhand);
+
+            return `${op} (${v1}, ${v2})`
+        }
+    }
+    return "???" + JSON.stringify(subtree) + Array.isArray(subtree);
+}
+
 
 
 describe('Tokenizer Tests', () => {
@@ -51,7 +80,7 @@ describe('Tokenizer Tests', () => {
             expectedType: string,
             expectedValue: string
         ) {
-            const lexer = moo.compile(OPENSCAD_RULES);
+            const lexer = moo.compile(rules.OPENSCAD_RULES);
             lexer.reset(testedValue);
             const tokens: moo.Token[] = Array.from(<any>lexer);
 
@@ -164,7 +193,7 @@ describe('Tokenizer Tests', () => {
         // });
         describe("Testing that identifiers parse correctly", () => {
             it("Verifying that identifiers parse", () => {
-                const lexer = moo.compile(OPENSCAD_RULES);
+                const lexer = moo.compile(rules.OPENSCAD_RULES);
                 const identifiers = ["a", "bb", "abc", "_abc", "$abc", "$abc123", "ABc", "abC", "Ab_3c"];
 
 
@@ -177,7 +206,7 @@ describe('Tokenizer Tests', () => {
 
             });
             it("Verifying that bad identifers errror", () => {
-                const lexer = moo.compile(OPENSCAD_RULES);
+                const lexer = moo.compile(rules.OPENSCAD_RULES);
                 const identifiers = ["12a", "$"];
 
 
@@ -238,6 +267,10 @@ describe('Tokenizer Tests', () => {
                 // console.log("res: ", JSON.stringify(res));
                 // console.log("cleaned: ", JSON.stringify(cleaned));
 
+                const code = toCode(cleaned);
+                console.log("token: ", token);
+                console.log("code: ", code);
+
                 expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
 
                 // If length is not 1 then we have ambiguous grammar and that is a
@@ -245,10 +278,10 @@ describe('Tokenizer Tests', () => {
                 expect(res.length).toBe(1);
             }
 
-            testTokens("line1 = 1 * 2;");
+            testTokens("line1 = (1 * 2);");
             testTokens("line1 = 1;");
             testTokens("line1 = 1 + 2 * 3;");
-            testTokens("line2 = (1+3) * 4 * -5 / (2-1);");
+            testTokens("line2 = (1+3) * 4 * 5 / (2-1);");
         });
 
     });

@@ -5,25 +5,45 @@
 // "docs/referencs/ANSI C grammar (Yacc).html"
 // Original URL: https://www.lysator.liu.se/c/ANSI-C-grammar-y.html
 
-
 import * as moo from "moo";
+import * as rules from "../tokenizer/tokenizer";
 
-import {OPENSCAD_RULES} from "../tokenizer/tokenizer";
+// Silence TypeScript
+void(id);
 
-console.log("TOKENS", OPENSCAD_RULES);
-
-const lexer = moo.compile(OPENSCAD_RULES);
+/// <reference url= "../tokenizer/token-types" />
+const lexer = moo.compile(rules.OPENSCAD_RULES);
 
 function operator(data: any[]) {
      // multiplicative_expression _ "*" _ cast_expression
      // operator": "1, ,*, ,2",
      //             0 1 2 3 4
-    return {
-            operator: data[2],
-            leftOperand:  data[0],
-            rightOperand: data[4]
-        };
+
+    // No clue yet why this sometimes shows up wrapped in an array.
+    const expTokenFull = data[2];
+    const expToken = Array.isArray(expTokenFull) ? expTokenFull[0] : expTokenFull;
+
+    if (Array.isArray(expTokenFull)  && expTokenFull.length !== 1) {
+        throw new Error("Operator parser did not expect to find operatorArray this size.");
     }
+
+ 
+     const r: IScadOperator = expToken as IScadOperator;
+     r.lhand = data[0];
+     r.rhand = data[4];
+     r.func = expToken.value;
+     // console.log("DATA2:  ", JSON.stringify(expToken));
+        return r;
+    }
+
+    function unwrapParens(d:any[]):any  {
+        // console.log("unwrapParens: ", JSON.stringify(d[2]));
+         // "(" _ expression _ ")"
+         //  0  1     2      3  4
+         return d[2];
+    }
+         
+
 %}
 
 @lexer lexer
@@ -41,9 +61,9 @@ statement
 
 
 primary_expression 
-    -> %identifier {% function(d) {return id(d)} %}
-     | constant  {% function(d) {return id(d)} %}
-     | "(" _ expression _ ")"
+    -> %identifier
+     | constant  
+     | "(" _ expression _ ")" {% function(d) {return unwrapParens(d)} %}
 
 
 postfix_expression
