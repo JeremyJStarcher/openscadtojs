@@ -40,7 +40,7 @@ function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
     }
 }
 
-function toCode(subtree: any): string {
+export function toCode(subtree: any): string {
 
     if (Array.isArray(subtree)) {
         const str = subtree.map(b => {
@@ -53,13 +53,14 @@ function toCode(subtree: any): string {
         }
 
         if (subtree.type === "operators") {
-
-
             const op = subtree.func;
             const v1 = toCode(subtree.lhand);
             const v2 = toCode(subtree.rhand);
 
             return `${op} (${v1}, ${v2})`
+        }
+        if (subtree.type === "eos") {
+            return subtree.value;
         }
     }
     return "???" + JSON.stringify(subtree) + Array.isArray(subtree);
@@ -173,24 +174,25 @@ describe('Tokenizer Tests', () => {
             });
         });
 
-        // describe("Testing that operators parse correctly", () => {
-        //     it("Verifying that operators are found by the longest first", () => {
-        //         const lexer = moo.compile(OPENSCAD_RULES);
-        //         const ops = OPENSCAD_RULES.operators as string[];
-        //         const joiner = 'qq';
+        describe("Testing that operators parse correctly", () => {
+            it("Verifying that operators are found by the longest first", () => {
+                const lexer = moo.compile(rules.OPENSCAD_RULES);
+                const ops = rules.OPENSCAD_RULES.operators as string[];
+                const joiner = 'qq';
 
-        //         ops.forEach((op) => {
-        //             const src = `1 ${op} 7`;
-        //             lexer.reset(src);
+                ops.forEach((op) => {
+                    const src = `1 ${op} 7`;
+                    lexer.reset(src);
 
-        //             const tokens: moo.Token[] = Array.from(<any>lexer);
-        //             const importantTokens = tokens.filter(p => p.type !== "WS");
-        //             const compact = importantTokens.join(joiner);
+                    const tokens: moo.Token[] = Array.from(<any>lexer);
+                    const importantTokens = tokens.filter(p => p.type !== "WS");
+                    const compact = importantTokens.join(joiner);
 
-        //             expect(compact).toBe(`1${joiner}${op}${joiner}7`);
-        //         });
-        //     });
-        // });
+                    expect(compact).toBe(`1${joiner}${op}${joiner}7`);
+                });
+            });
+        });
+
         describe("Testing that identifiers parse correctly", () => {
             it("Verifying that identifiers parse", () => {
                 const lexer = moo.compile(rules.OPENSCAD_RULES);
@@ -267,9 +269,9 @@ describe('Tokenizer Tests', () => {
                 // console.log("res: ", JSON.stringify(res));
                 // console.log("cleaned: ", JSON.stringify(cleaned));
 
-                const code = toCode(cleaned);
-                console.log("token: ", token);
-                console.log("code: ", code);
+                // const code = toCode(cleaned);
+                // console.log("token: ", token);
+                // console.log("code: ", code);
 
                 expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
 
@@ -282,6 +284,37 @@ describe('Tokenizer Tests', () => {
             testTokens("line1 = 1;");
             testTokens("line1 = 1 + 2 * 3;");
             testTokens("line2 = (1+3) * 4 * 5 / (2-1);");
+        });
+
+        it('parse multiple statements', () => {
+            function testTokens(token: string) {
+                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+                parser.feed(token);
+                const res = parser.results as [moo.Token[]];
+
+                const cleaned = deNest(res[0]);
+                void (cleaned);
+
+                // console.log("res: ", JSON.stringify(res));
+                // console.log("cleaned: ", JSON.stringify(cleaned));
+
+                const code = toCode(cleaned);
+                console.log("token: ", token);
+                console.log("code: ", code);
+
+                expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
+
+                // If length is not 1 then we have ambiguous grammar and that is a
+                // "Bad Thing" in our case. 
+                expect(res.length).toBe(1);
+            }
+
+            testTokens("line1=1;    ");
+            testTokens("    line1=1;    ");            
+            testTokens("line1=1;line2=2;line3=3;");
+            testTokens("line1 = 1;  line2 = 2;line3 =3;");
+            testTokens("  line1 = 1;  line2 = 2;line3 =3;");
+            testTokens("  line1 = 1;  line2 = 2;line3 =3;   ");
         });
 
     });

@@ -11,7 +11,7 @@ import * as rules from "../tokenizer/tokenizer";
 // Silence TypeScript
 void(id);
 
-/// <reference url= "../tokenizer/token-types" />
+/// <reference url="../tokenizer/token-types" />
 const lexer = moo.compile(rules.OPENSCAD_RULES);
 
 function operator(data: any[]) {
@@ -43,14 +43,18 @@ function operator(data: any[]) {
          return d[2];
     }
          
-
+   function constToken(d:any[]) {
+       return d[0];
+   }
 %}
 
 @lexer lexer
-
+block -> 
+	_ statement _
+	| block statement _
 
 statement
-	-> assignment_expression _ ";" _
+	-> assignment_expression _ ";"
 #    | labeled_statement
 #	| compound_statement
 #	| 
@@ -165,8 +169,8 @@ expression
 	
 
 constant
-    -> %string
-    | %number
+    -> %string  {% d => constToken(d) %}
+     | %number  {% d => constToken(d) %}
 
 
 # Optional white space

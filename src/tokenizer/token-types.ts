@@ -1,6 +1,19 @@
+interface IScadToken {
+    scadType: "unknownToken" | "constant";
+    toString(): string;
+    type?: string;
+    value: string;
+    offset: number;
+    size: number;
+    lineBreaks: boolean;
+    line: number;
+    col: number;
+}
 
-interface IScadValue extends moo.Token {
 
+
+interface IScadConstant extends moo.Token {
+    scadType: "constant";    
 }
 
 interface IScadOperator extends moo.Token {
