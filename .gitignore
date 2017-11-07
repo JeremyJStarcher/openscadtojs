@@ -6,6 +6,7 @@ npm-debug.log
 
 src/nearley/grammar.err
 src/nearley/grammar.js
+src/nearley/grammar.ts
 
 
 

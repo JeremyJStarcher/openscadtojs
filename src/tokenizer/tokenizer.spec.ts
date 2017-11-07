@@ -233,9 +233,10 @@ describe('Tokenizer Tests', () => {
                 const res = parser.results as [moo.Token[]];
 
                 const cleaned = deNest(res[0]);
+                void (cleaned);
 
                 // console.log("res: ", JSON.stringify(res));
-                console.log("cleaned: ", JSON.stringify(cleaned));
+                // console.log("cleaned: ", JSON.stringify(cleaned));
 
                 expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
 

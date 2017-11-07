@@ -1,18 +1,23 @@
+@preprocessor typescript
 @{%
 
 // Large parts of this grammar were ripped from
 // "docs/referencs/ANSI C grammar (Yacc).html"
 // Original URL: https://www.lysator.liu.se/c/ANSI-C-grammar-y.html
 
-const moo = require("moo");
-const tokens = require("../tokenizer/tokenizer");
+
+import * as moo from "moo";
+
+import * as tokens from "../tokenizer/tokenizer";
+
+
 const lexer = moo.compile(tokens);
 
 // console.log("********************************");
 // console.log(JSON.stringify(tokens));
 // console.log("********************************");
 
- function binaryOperator(data) {
+ function binaryOperator(data: any[]) {
      // multiplicative_expression _ "*" _ cast_expression
      // operator": "1, ,*, ,2",
      //             0 1 2 3 4
@@ -39,8 +44,8 @@ statement
 
 
 primary_expression 
-    -> %identifier
-     | constant
+    -> %identifier {% function(d) {return id(d)} %}
+     | constant  {% function(d) {return id(d)} %}
      | "(" _ expression _ ")"
 
 
