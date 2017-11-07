@@ -1,9 +1,9 @@
-declare function require(path: string): any;
-const OPENSCAD_RULES = require('./tokenizer');
-
+import {OPENSCAD_RULES} from './tokenizer';
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
+
+
 
 function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
     let out: moo.Token[] = [];
