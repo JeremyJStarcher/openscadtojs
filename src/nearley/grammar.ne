@@ -157,7 +157,7 @@ conditional_expression
 
 assignment_expression
 	-> conditional_expression
-	| unary_expression _ assignment_operator _ assignment_expression {% function(d) {return operator(d)} %}
+	| %identifier _ assignment_operator _ assignment_expression {% function(d) {return operator(d)} %}
 	
 
 assignment_operator
@@ -171,6 +171,8 @@ expression
 constant
     -> %string  {% d => constToken(d) %}
      | %number  {% d => constToken(d) %}
+     | %predefined_constants {% d => constToken(d) %}
+
 
 
 # Optional white space
