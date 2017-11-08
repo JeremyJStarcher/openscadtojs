@@ -3,8 +3,7 @@ import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
 
-
-function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
+export function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
     let out: moo.Token[] = [];
 
     if (!val) {
@@ -41,14 +40,13 @@ function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
 }
 
 export function toCode(subtree: any): string {
-
     if (Array.isArray(subtree)) {
         const str = subtree.map(b => {
             return toCode(b);
         });
         return str.join(" ");
     } else {
-        if (subtree.type === "number" || subtree.type === "identifier" ) {
+        if (subtree.type === "number" || subtree.type === "identifier") {
             return subtree.value;
         }
 
@@ -66,16 +64,12 @@ export function toCode(subtree: any): string {
     return "???" + JSON.stringify(subtree) + Array.isArray(subtree);
 }
 
-
-
 describe('Tokenizer Tests', () => {
     it('The tests run', () => {
         expect(true).toBe(true);
     });
 
-
     describe("moo", () => {
-
         function testSimpleTokens(
             testedValue: string,
             expectedType: string,
@@ -115,7 +109,6 @@ describe('Tokenizer Tests', () => {
             it("Doesn't greedly parse two strings", () => {
                 testSimpleTokens(`"Hello" "World"`, "string", `"Hello"`);
             });
-
         });
 
         describe("Parses numbers properly", () => {
@@ -207,6 +200,7 @@ describe('Tokenizer Tests', () => {
                 });
 
             });
+
             it("Verifying that bad identifers errror", () => {
                 const lexer = moo.compile(rules.OPENSCAD_RULES);
                 const identifiers = ["12a", "$"];
@@ -224,7 +218,6 @@ describe('Tokenizer Tests', () => {
                     }
                     expect(errorHappened).toBeTruthy();
                 });
-
             });
 
         });
@@ -232,6 +225,33 @@ describe('Tokenizer Tests', () => {
     });
 
     describe('Testing nearly', () => {
+        function generateAst(source: string) {
+            const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+            parser.feed(source);
+            const res = parser.results as [moo.Token[]];
+
+            // console.log("===================================================");
+            // console.log(JSON.stringify(res));
+
+            // If the length == 0, there was no valid tree built.
+            // if the length > 1, there is ambiguous grammar that can be parsed
+            //   multiple ways.  Either condition is bad. 
+            expect(res.length).toBe(1);
+            return res;
+        }
+
+        function catchError(source: string, loc: any) {
+            try {
+                generateAst(source);
+                fail(`[${source}] parsed correctly. It shouldn't have.`);
+            } catch (err) {
+                const token: any = err.token;
+                if (token.line !== loc.line || token.col !== loc.col) {
+                    fail(`[${source}] failed at ${token.line}, ${token.col}.  Expected failure at: ${loc.line}, ${loc.col}`);
+                }
+            }
+        }
+
         it('Ensuring module loaded', () => {
             expect(nearley).not.toBeNull();
             expect(grammar).not.toBeNull();
@@ -239,83 +259,40 @@ describe('Tokenizer Tests', () => {
         });
 
         it('parse simple assignments', () => {
-            function testTokens(token: string) {
-                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-                parser.feed(token);
-                const res = parser.results as [moo.Token[]];
-
-                // console.log("===================================================");
-                // console.log(JSON.stringify(res));
-
-                expect(res.length).toBe(1);
-            }
-
-            testTokens("line1=1;");
-            testTokens("line2=2-1 ; ");
-            testTokens("line3=bbba + 3; ");
-            testTokens(`line4 = "Hellow" +"World"  ;`);
-            testTokens(`line5 = "9"+ "a" ;`);
+            generateAst("line1=1;");
+            generateAst("line2=2-1 ; ");
+            generateAst("line3=bbba + 3; ");
+            generateAst(`line4 = "Hellow" +"World"  ;`);
+            generateAst(`line5 = "9"+ "a" ;`);
         });
 
+        it('should fail assigning to a numeric constant', () => {
+            catchError("1=1;", { line: 1, col: 2 });
+        });
+
+        it('should fail assigning to a string constant', () => {
+            catchError(`"a"="b";`, { line: 1, col: 4 });
+        });
+
+        it('should fail assigning to a built-in constant', () => {
+            catchError(`undef=undef;`, { line: 1, col: 6 });
+        });
+
+
         it('parse complex assignments', () => {
-            function testTokens(token: string) {
-                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-                parser.feed(token);
-                const res = parser.results as [moo.Token[]];
-
-                const cleaned = deNest(res[0]);
-                void (cleaned);
-
-                // console.log("res: ", JSON.stringify(res));
-                // console.log("cleaned: ", JSON.stringify(cleaned));
-
-                // const code = toCode(cleaned);
-                // console.log("token: ", token);
-                // console.log("code: ", code);
-
-                expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
-
-                // If length is not 1 then we have ambiguous grammar and that is a
-                // "Bad Thing" in our case. 
-                expect(res.length).toBe(1);
-            }
-
-            testTokens("line1 = (1 * 2);");
-            testTokens("line1 = 1;");
-            testTokens("line1 = 1 + 2 * 3;");
-            testTokens("line2 = (1+3) * 4 * 5 / (2-1);");
+            generateAst("line1 = (1 * 2);");
+            generateAst("line1 = 1;");
+            generateAst("line1 = 1 + 2 * 3;");
+            generateAst("line2 = (1+3) * 4 * 5 / (2-1);");
         });
 
         it('parse multiple statements', () => {
-            function testTokens(token: string) {
-                const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-                parser.feed(token);
-                const res = parser.results as [moo.Token[]];
-
-                const cleaned = deNest(res[0]);
-                void (cleaned);
-
-                // console.log("res: ", JSON.stringify(res));
-                // console.log("cleaned: ", JSON.stringify(cleaned));
-
-                const code = toCode(cleaned);
-                console.log("token: ", token);
-                console.log("code: ", code);
-
-                expect(JSON.stringify(res)).not.toBe(JSON.stringify(toString));
-
-                // If length is not 1 then we have ambiguous grammar and that is a
-                // "Bad Thing" in our case. 
-                expect(res.length).toBe(1);
-            }
-
-            testTokens("line1=1;    ");
-            testTokens("    line1=1;    ");            
-            testTokens("line1=1;line2=2;line3=3;");
-            testTokens("line1 = 1;  line2 = 2;line3 =3;");
-            testTokens("  line1 = 1;  line2 = 2;line3 =3;");
-            testTokens("  line1 = 1;  line2 = 2;line3 =3;   ");
+            generateAst("line1=1;    ");
+            generateAst("    line1=1;    ");
+            generateAst("line1=1;line2=2;line3=3;");
+            generateAst("line1 = 1;  line2 = 2;line3 =3;");
+            generateAst("  line1 = 1;  line2 = 2;line3 =3;");
+            generateAst("  line1 = 1;  line2 = 2;line3 =3;   ");
         });
-
     });
 });
