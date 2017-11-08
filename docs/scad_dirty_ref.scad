@@ -30,3 +30,10 @@ if (true) {
     echo(a2);
     echo(b1);
 }
+
+module testNameCollision() {
+}
+
+echo("testNameCollision collides?");
+echo(testNameCollision);
+
