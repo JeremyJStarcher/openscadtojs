@@ -117,8 +117,8 @@ describe('Tokenizer Tests', () => {
                 expect(token).not.toBeNull();
                 return;
             }
-            expect(token.type).toBe(expectedType);
-            expect(token.value).toBe(expectedValue);
+            expect(token.type).toBe(expectedType, `Expected token of type ${expectedType}`);
+            expect(token.value).toBe(expectedValue, `Expected token value to be ${expectedValue}`);
         }
 
         describe("Testing that strings parse properly", () => {
