@@ -18,3 +18,15 @@ module a() {
 echo(PI*10000);
 echo(b);
 echo(undef);
+
+
+a1 = 100;
+b1 = 50;
+
+if (true) {
+    a2 = 100 + b1;
+    b1 = a2;
+    echo("innertrue test");
+    echo(a2);
+    echo(b1);
+}
