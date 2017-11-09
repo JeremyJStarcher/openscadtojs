@@ -12,7 +12,9 @@ import * as rules from "../tokenizer/tokenizer";
 void(id);
 
 /// <reference url="../tokenizer/token-types" />
+(<any>rules.OPENSCAD_RULES).myError = { match: /[\$?`]/, error: true };
 const lexer = moo.compile(rules.OPENSCAD_RULES);
+
 
 function operator(data: any[]) {
      // multiplicative_expression _ "*" _ cast_expression
@@ -54,7 +56,7 @@ block ->
 	| block statement _
 
 statement
-	-> assignment_expression _ ";"
+	-> assignment_expression _ %eos
 #    | labeled_statement
 #	| compound_statement
 #	| 
@@ -178,5 +180,6 @@ constant
 # Optional white space
 _ -> null | _ [\s] {% function() {} %}
 # Required white space
-__ -> [\s] | __ [\s] {% function() {} %}         
+__ -> [\s] | __ [\s] {% function() {} %}
+
 

@@ -1,7 +1,7 @@
 import { Context, ContextType } from "./context";
 import { Logger } from "../../logger/logger";
 
-fdescribe('Running compiler/context tests', () => {
+describe('Running compiler/context tests', () => {
     it('should have the test infrastructure in place', () => {
         expect(true).toBe(true, 'We are testing??');
     });

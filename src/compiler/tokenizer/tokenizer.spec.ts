@@ -3,49 +3,8 @@ import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
 
-
 // declare function require(path: string): any;
 // declare function since(text:string):void;
-
-// require('../../node_modules/jasmine2-custom-message/jasmine2-custom-message.js');
-
-// console.log("since", since);
-
-export function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
-    let out: moo.Token[] = [];
-
-    if (!val) {
-        return val;
-    }
-
-    if (!Array.isArray(val)) {
-        if (typeof val === "object") {
-            const newObj: any = {};
-            Object.keys(val).forEach(key => {
-                newObj[key] = deNest(val[key]);
-            });
-            return newObj;
-        }
-        return val;
-    }
-
-    if (val.length === 1) {
-        return deNest(val[0]);
-    } else {
-
-        val.forEach(v => {
-            // Sometimes we get greebly empty arrays, maybe of whitespace or something.
-            if (Array.isArray(v) && v.length === 0) {
-                return;
-            }
-            const v2: any = deNest(v);
-            out.push(v2);
-        });
-
-        const noNull = out.filter(p => p);
-        return noNull;
-    }
-}
 
 export function toCode(subtree: any): string {
     if (Array.isArray(subtree)) {
