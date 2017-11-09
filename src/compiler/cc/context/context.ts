@@ -1,3 +1,5 @@
+import {Logger} from "../../logger/logger";
+
 export type ContextType = number | string | undefined;
 
 export interface IContext {
@@ -9,10 +11,15 @@ export interface IContext {
 export class Context {
     private parent: Context | null;
     private container: Map<string, ContextType>;
+    private logger: Logger;
 
-    constructor(parent: Context | null) {
+    constructor(
+        parent: Context | null,
+        logger: Logger
+    ) {
         this.parent = parent;
         this.container = new Map();
+        this.logger = logger;
     }
 
     set(key: string, value: ContextType) {
@@ -24,6 +31,7 @@ export class Context {
             return this.container.get(key);
         }
         if (this.parent) {
+            this.logger.warn(`Ignoring unknown variable '${key}'.`);
             return this.parent.get(key);
         }
         return undefined;

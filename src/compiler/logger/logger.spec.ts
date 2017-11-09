@@ -1,6 +1,6 @@
 import { Logger } from "./logger";
 
-fdescribe('Running compiler/logger tests', () => {
+describe('Running compiler/logger tests', () => {
     it('Should have the test infrastructure in place', () => {
         expect(true).toBe(true, 'We are testing??');
     });
@@ -51,8 +51,8 @@ fdescribe('Running compiler/logger tests', () => {
         const logger = new Logger();
         const msg1 = "String 1";
         const msg2 = "String 2";
-        logger.warning(msg1);
-        logger.warning(msg2);
+        logger.warn(msg1);
+        logger.warn(msg2);
 
         const errs = logger.getErrors();
         const infos = logger.getInfos();
