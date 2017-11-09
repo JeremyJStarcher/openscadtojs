@@ -61,11 +61,7 @@ export async function compile(src: string): Promise<ScadTokens.Token[]> {
         throw new Error(errorToken.value);
     }
 
-    // const jjj = JSON.stringify(reformat(fullAst), null, 2);
-    // debugger;
     return fullAst;
-    // const filtered = filter(fullAst);
-    // return filtered;
 }
 
 export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
@@ -91,33 +87,3 @@ export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
         }
     }
 }
-
-// function reformat(ast: moo.Token[]): moo.Token[] {
-//     const tokenStream = tokenFeeder(ast);
-//     const content = Array.from(tokenStream);
-
-//     for (let i = 0; i < content.length; i++) {
-//         const token = ast[i];
-//         if (Array.isArray(token)) {
-//             reformat(token);
-//         } else {
-//             const keys = Object.keys(token);
-
-//             keys.forEach(key => {
-//                 const prop = token[key];
-
-//                 const isArray = Array.isArray(prop);
-//                 console.info(isArray, prop);
-//                 if (isArray) {
-//                     const cleaned = reformat(prop);
-//                     token[key] = cleaned;
-//                     debugger;
-
-//                 }
-//             });
-//             ast[i] = token;
-//         }
-//     }
-
-//     return content;
-// }
