@@ -173,7 +173,7 @@ expression
 constant
     -> %string  {% d => constToken(d) %}
      | %number  {% d => constToken(d) %}
-     | %predefined_constants {% d => constToken(d) %}
+     | %predefined_constant {% d => constToken(d) %}
 
 
 

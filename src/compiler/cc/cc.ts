@@ -4,8 +4,6 @@ import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
 import { Context } from './context/context';
 
-
-
 function generateAst(source: string): moo.Token[] {
 
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
@@ -62,46 +60,63 @@ export async function compile(src: string): Promise<moo.Token[]> {
         throw new Error(errorToken.value);
     }
 
-    const cleanedAst = deNest(fullAst);
-    return (<any>cleanedAst[0]);
+    // const jjj = JSON.stringify(reformat(fullAst), null, 2);
+    // debugger;
+    return fullAst;
+    // const filtered = filter(fullAst);
+    // return filtered;
 }
 
-
-
-export function deNest(val: moo.Token[] | moo.Token): moo.Token[] {
+export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
     const filteredTypes = ["eos", "null"];
 
-    let out: moo.Token[] = [];
-
-    if (!val) {
-        return val;
+    if (!Array.isArray(ast)) {
+        throw new Error(`tokenFeeder must be given an array`);
     }
 
-    if (!Array.isArray(val)) {
-        if (typeof val === "object") {
-            const newObj: any = {};
-            Object.keys(val).forEach(key => {
-                newObj[key] = deNest(val[key]);
-            });
-            return newObj;
-        }
-        return val;
-    }
-
-    if (val.length === 1) {
-        return deNest(val[0]);
-    } else {
-
-        val.forEach(v => {
-            // Sometimes we get greebly empty arrays, maybe of whitespace or something.
-            if (Array.isArray(v) && v.length === 0) {
-                return;
+    for (let i = 0; i < ast.length; i++) {
+        const token = ast[i];
+        if (Array.isArray(token)) {
+            const tokenAsArray = token as moo.Token[];
+            if (tokenAsArray.length === 0) {
+                continue;
             }
-            const v2: any = deNest(v);
-            out.push(v2);
-        });
-
-        const noNull = out.filter(p => p && filteredTypes.indexOf("" + p.type) === -1);
-        return noNull;
+            yield* tokenFeeder(tokenAsArray);
+        } else {
+            if (filteredTypes.indexOf("" + token.type) > -1) {
+                continue;
+            }
+            yield token;
+        }
     }
 }
+
+// function reformat(ast: moo.Token[]): moo.Token[] {
+//     const tokenStream = tokenFeeder(ast);
+//     const content = Array.from(tokenStream);
+
+//     for (let i = 0; i < content.length; i++) {
+//         const token = ast[i];
+//         if (Array.isArray(token)) {
+//             reformat(token);
+//         } else {
+//             const keys = Object.keys(token);
+
+//             keys.forEach(key => {
+//                 const prop = token[key];
+
+//                 const isArray = Array.isArray(prop);
+//                 console.info(isArray, prop);
+//                 if (isArray) {
+//                     const cleaned = reformat(prop);
+//                     token[key] = cleaned;
+//                     debugger;
+
+//                 }
+//             });
+//             ast[i] = token;
+//         }
+//     }
+
+//     return content;
+// }

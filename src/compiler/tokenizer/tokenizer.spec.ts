@@ -17,7 +17,7 @@ export function toCode(subtree: any): string {
             return subtree.value;
         }
 
-        if (subtree.type === "operators") {
+        if (subtree.type === "operator") {
             const op = subtree.func;
             const v1 = toCode(subtree.lhand);
             const v2 = toCode(subtree.rhand);
@@ -171,7 +171,7 @@ describe('Tokenizer Tests', () => {
 
         describe("Testing that operators parse correctly", () => {
             it("should not split the operators up oddly", () => {
-                const ops = rules.OPENSCAD_RULES.operators as string[];
+                const ops = rules.OPENSCAD_RULES.operator as string[];
                 const joiner = 'qq';
 
                 ops.forEach((op) => {

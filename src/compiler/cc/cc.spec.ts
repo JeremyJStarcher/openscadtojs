@@ -33,10 +33,55 @@ describe('Running compiler tests', () => {
         });
     });
 
+
+    function getAllTokens(ast: moo.Token | moo.Token[]): moo.Token[] {
+        if (!Array.isArray(ast)) {
+            return getAllTokens([ast]);
+        }
+
+        const tokenStream = cc.tokenFeeder(ast);
+        const content: any = Array.from(tokenStream);
+
+        if (!Array.isArray(content)) {
+            return (<any>[content]);
+        }
+        return content;
+    }
+
     it('should run compile a simple program', async () => {
-        const ast = await cc.compile('line1=1;');
-        expect(ast.length).toBe(1);
-        expect(ast[0].type).toBe("operators");
+
+        const ast = await cc.compile('line1=1;line2=2+1;');
+
+        const content = getAllTokens(ast);
+
+        const statement0 = content[0] as IScadOperator;
+        const statement1 = content[1] as IScadOperator;
+
+        const lhand0 = statement0.lhand as IScadOperator;
+        const lhand1 = statement1.lhand as IScadOperator;
+
+        const rhand0 = statement0.rhand as IScadOperator[];
+        const rhand1 = statement1.rhand as IScadOperator[];
+
+        const lhand0content = getAllTokens((<any>lhand0)).join();
+        const lhand1content = getAllTokens((<any>lhand1)).join();
+
+        const rhand0content = getAllTokens(rhand0).join();
+        const rhand1content = getAllTokens(rhand1).join();
+
+
+        expect(content.length).toBe(2);
+
+        expect(lhand0.value).toBe("line1");        
+        expect(content[0].type).toBe("operator");
+        expect(lhand0content).toBe("line1");
+        expect(rhand0content).toBe("1");
+        
+        
+        expect(lhand1.value).toBe("line2");
+        expect(content[1].type).toBe("operator");
+        expect(lhand1content).toBe("line2");
+        expect(rhand1content).toBe("+");        
     });
 
 });

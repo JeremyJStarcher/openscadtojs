@@ -13,7 +13,7 @@ interface IScadToken {
 
 
 interface IScadConstant extends moo.Token {
-    scadType: "constant";    
+    scadType: "constant";
 }
 
 interface IScadOperator extends moo.Token {
