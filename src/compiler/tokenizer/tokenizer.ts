@@ -13,3 +13,4 @@ export const OPENSCAD_RULES: moo.Rules = {
     operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
     NL: { match: /\n/, lineBreaks: true },
 };
+

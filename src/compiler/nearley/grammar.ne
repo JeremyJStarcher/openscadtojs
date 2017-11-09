@@ -7,6 +7,7 @@
 
 import * as moo from "moo";
 import * as rules from "../tokenizer/tokenizer";
+import * as ScadTokens from "../tokenizer/scad-types";
 
 // Silence TypeScript
 void(id);
@@ -17,37 +18,40 @@ const lexer = moo.compile(rules.OPENSCAD_RULES);
 
 
 function operator(data: any[]) {
-     // multiplicative_expression _ "*" _ cast_expression
-     // operator": "1, ,*, ,2",
-     //             0 1 2 3 4
+	// multiplicative_expression _ "*" _ cast_expression
+    // operator": "1, ,*, ,2",
+    //             0 1 2 3 4
 
     // No clue yet why this sometimes shows up wrapped in an array.
-    const expTokenFull = data[2];
-    const expToken = Array.isArray(expTokenFull) ? expTokenFull[0] : expTokenFull;
+	const expTokenFull = data[2] as moo.Token;
+	const expToken =  (expTokenFull instanceof Array) ? expTokenFull[0] : expTokenFull;
 
-    if (Array.isArray(expTokenFull)  && expTokenFull.length !== 1) {
-        throw new Error("Operator parser did not expect to find operatorArray this size.");
-    }
+     const lhand = data[0];
+	 const rhand = data[4];
 
- 
-     const r: IScadOperator = expToken as IScadOperator;
-     r.lhand = data[0];
-     r.rhand = data[4];
-     r.func = expToken.value;
-     // console.log("DATA2:  ", JSON.stringify(expToken));
-        return r;
-    }
+     return new ScadTokens.Operator(expToken, lhand, rhand);
+}
 
-    function unwrapParens(d:any[]):any  {
-        // console.log("unwrapParens: ", JSON.stringify(d[2]));
-         // "(" _ expression _ ")"
-         //  0  1     2      3  4
-         return d[2];
-    }
-         
-   function constToken(d:any[]) {
-       return d[0];
-   }
+function numberConstant(d:any[]) {
+	return new ScadTokens.NumberConstant(d[0]);
+}
+
+function stringConstant(d:any[]) {
+	return new ScadTokens.StringConstant(d[0]);
+}
+
+
+function builtInConstant(d:any[]) {
+	return new ScadTokens.BuiltInConstant(d[0]);
+}
+
+
+function unwrapParens(d:any[]):any  {
+	// console.log("unwrapParens: ", JSON.stringify(d[2]));
+	// "(" _ expression _ ")"
+	//  0  1     2      3  4
+	return d[2];
+}
 %}
 
 @lexer lexer
@@ -171,9 +175,9 @@ expression
 	
 
 constant
-    -> %string  {% d => constToken(d) %}
-     | %number  {% d => constToken(d) %}
-     | %predefined_constant {% d => constToken(d) %}
+    -> %string  {% d => stringConstant(d) %}
+     | %number  {% d => numberConstant(d) %}
+     | %predefined_constant {% d => builtInConstant(d) %}
 
 
 

@@ -4,10 +4,10 @@ typings/**/*
 
 npm-debug.log
 
-src/nearley/grammar.err
-src/nearley/grammar.js
-src/nearley/grammar.ts
-
+src/compiler/nearley/grammar.err
+src/compiler/nearley/grammar.js
+src/compiler/nearley/grammar.ts
+src/compiler/nearley/grammar.ts
 
 
 # Others

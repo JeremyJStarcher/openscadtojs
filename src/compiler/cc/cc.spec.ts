@@ -1,7 +1,7 @@
 
 // import { Logger } from '../logger/logger';
 // import { Context } from './context/context';
-
+import * as ScadTokens from "../tokenizer/scad-types";
 import * as cc from "./cc";
 
 describe('Running compiler tests', () => {
@@ -54,34 +54,34 @@ describe('Running compiler tests', () => {
 
         const content = getAllTokens(ast);
 
-        const statement0 = content[0] as IScadOperator;
-        const statement1 = content[1] as IScadOperator;
+        const statement0 = content[0];// as ScadTokens.Operator;
+        const statement1 = content[1];// as ScadTokens.Operator;
 
-        const lhand0 = statement0.lhand as IScadOperator;
-        const lhand1 = statement1.lhand as IScadOperator;
-
-        const rhand0 = statement0.rhand as IScadOperator[];
-        const rhand1 = statement1.rhand as IScadOperator[];
-
-        const lhand0content = getAllTokens((<any>lhand0)).join();
-        const lhand1content = getAllTokens((<any>lhand1)).join();
-
-        const rhand0content = getAllTokens(rhand0).join();
-        const rhand1content = getAllTokens(rhand1).join();
-
-
+        expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
+        expect(statement1).toEqual(jasmine.any(ScadTokens.Operator));
         expect(content.length).toBe(2);
+        
+        if (statement0 instanceof ScadTokens.Operator && statement1 instanceof ScadTokens.Operator) {
+            const lhand0 = statement0.lhand;
+            const lhand1 = statement1.lhand;
 
-        expect(lhand0.value).toBe("line1");        
-        expect(content[0].type).toBe("operator");
-        expect(lhand0content).toBe("line1");
-        expect(rhand0content).toBe("1");
-        
-        
-        expect(lhand1.value).toBe("line2");
-        expect(content[1].type).toBe("operator");
-        expect(lhand1content).toBe("line2");
-        expect(rhand1content).toBe("+");        
+            const rhand0 = statement0.rhand;
+            const rhand1 = statement1.rhand;
+
+            const lhand0content = getAllTokens(lhand0).join();
+            const lhand1content = getAllTokens(lhand1).join();
+
+            const rhand0content = getAllTokens(rhand0).join();
+            const rhand1content = getAllTokens(rhand1).join();
+
+            expect(content[0].type).toBe("operator");
+            expect(lhand0content).toBe("line1");
+            expect(rhand0content).toBe("1");
+
+            expect(content[1].type).toBe("operator");
+            expect(lhand1content).toBe("line2");
+            expect(rhand1content).toBe("+");
+        }
     });
 
 });
