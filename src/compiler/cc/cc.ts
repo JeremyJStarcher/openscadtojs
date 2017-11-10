@@ -46,10 +46,17 @@ export async function runOneToken(token: ScadTokens.Token, context: Context) {
 export function runAst(ast: ScadTokens.Token[], context: Context) {
     return new Promise((resolve, reject) => {
 
-        for (let i = 0; i < ast.length; i++) {
-            const token = ast[i];
-            runOneToken(token, context);
+        try {
+            for (let i = 0; i < ast.length; i++) {
+                const token = ast[i];
+                runOneToken(token, context);
+            }
+        } catch (err) {
+            debugger;
+            reject(err);
         }
+
+        resolve();
     });
 }
 

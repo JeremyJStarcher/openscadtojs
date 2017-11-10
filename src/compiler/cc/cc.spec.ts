@@ -33,7 +33,7 @@ describe('Running compiler tests', () => {
     });
 
 
-    function getAllTokens(ast: moo.Token | moo.Token[]): moo.Token[] {
+    function getAllTokens(ast: moo.Token | moo.Token[]): ScadTokens.Token[] {
         if (!Array.isArray(ast)) {
             return getAllTokens([ast]);
         }
@@ -84,7 +84,6 @@ describe('Running compiler tests', () => {
     });
 
     it('should run a simple assignment', async () => {
-
         const ast = await cc.compile('line1=1;');
 
         const content = getAllTokens(ast);
@@ -105,5 +104,35 @@ describe('Running compiler tests', () => {
         }
     });
 
+    it('should execute two statements', async () => {
+        const logger = new Logger();
+        const context = new Context(null, logger);
+
+        return new Promise((resolve, reject) => {
+            cc.compile('var1=1;var2="Hello";').then(ast => {
+                const content = getAllTokens(ast);
+                const statement0 = content[0] as ScadTokens.Operator;
+
+                expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
+                expect(content.length).toBe(2, `Content length error`);
+                return content
+            }).then(content => {
+                return cc.runAst(content, context);
+            }).then(() => {
+                const val1 = context.get('var1');
+                const val2 = context.get('var2');
+                expect(val1).toBe(1, 'Val1 has incorrect value');
+                expect(val2).toBe('Hello', 'Val2 has incorrect value');
+            }).catch(err => {
+                console.log('Error running program');
+                throw  err;
+            }).then(() => {
+                resolve();
+            });
+
+        });
+ 
+    });
 });
+    
 

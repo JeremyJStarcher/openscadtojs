@@ -66,13 +66,15 @@ export class NumberConstant extends Value {
 
         const valueToken = getAllTokens(this);
         valueToken[0].value = parseFloat(valueToken[0].value);
-        
     }
 }
 
 export class StringConstant extends Value {
     constructor(mooToken: moo.Token) {
         super(mooToken);
+
+        const valueToken = getAllTokens(this);
+        valueToken[0].value = valueToken[0].value.replace(/^"(.*)"$/, '$1');
     }
 }
 
