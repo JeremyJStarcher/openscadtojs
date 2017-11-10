@@ -38,7 +38,6 @@ export function runAst(ast: ScadTokens.Token[], context: Context) {
                 runOneToken(token, context);
             }
         } catch (err) {
-            debugger;
             reject(err);
         }
 

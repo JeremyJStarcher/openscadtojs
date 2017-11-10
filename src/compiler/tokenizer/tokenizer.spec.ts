@@ -258,7 +258,6 @@ describe('Tokenizer Tests', () => {
             catchAstError(`undef=undef;`, { line: 1, col: 6 });
         });
 
-
         it('parse complex assignments', () => {
             generateAst("line1 = (1 * 2);");
             generateAst("line1 = 1;");

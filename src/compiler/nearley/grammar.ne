@@ -51,10 +51,13 @@ function stringConstant(d:any[]) {
 	return new ScadTokens.StringConstant(d[0]);
 }
 
-
-function builtInConstant(d:any[]) {
-	return new ScadTokens.BuiltInConstant(d[0]);
+function undefinedConstant(d:any[]) {
+	return new ScadTokens.UndefinedConstant();
 }
+
+// function builtInConstant(d:any[]) {
+// 	// return new ScadTokens.BuiltInConstant(d[0]);
+// }
 
 
 function unwrapParens(d:any[]):any  {
@@ -187,8 +190,11 @@ expression
 
 constant
     -> %string  {% d => stringConstant(d) %}
-     | %number  {% d => numberConstant(d) %}
-     | %predefined_constant {% d => builtInConstant(d) %}
+	 | %number  {% d => numberConstant(d) %}
+	 | %constant_undefined {% d => undefinedConstant(d) %}
+#     | %predefined_constant {% d => builtInConstant(d) %}
+
+
 
 
 

@@ -1,8 +1,12 @@
 import { Context } from '../cc/context/context';
 import * as cc from "../cc/cc";
-import * as ScadTokens from "../tokenizer/scad-types";
 
-
+export enum VALUE_TYPE {
+    NOT_IMP,
+    NUMBER,
+    STRING,
+    UNDEFINED
+}
 
 export class Token {
     public toString: () => string;
@@ -46,7 +50,17 @@ export class Evalutable extends Token {
 
 }
 
-export class Operator extends Evalutable {
+export class Value2 extends Evalutable {
+    constructor(mooToken: moo.Token) {
+        super(mooToken);
+    }
+
+    getType(): VALUE_TYPE {
+        return VALUE_TYPE.NOT_IMP;
+    }
+}
+
+export class Operator extends Value2 {
     public lhand: Token[];
     public rhand: Token[];
 
@@ -65,7 +79,7 @@ export class Operator extends Evalutable {
     }
 }
 
-export class UnaryOperator extends Evalutable {
+export class UnaryOperator extends Value2 {
     public operand: Token[];
 
     constructor(
@@ -83,19 +97,18 @@ export class UnaryOperator extends Evalutable {
 }
 
 
-export class Value extends Token {
+
+export class Identifier extends Value2 {
     constructor(mooToken: moo.Token) {
         super(mooToken);
     }
-}
 
-export class Identifier extends Value {
-    constructor(mooToken: moo.Token) {
-        super(mooToken);
+    getType(): VALUE_TYPE {
+        return this.getType();
     }
 }
 
-export class NumberConstant extends Value {
+export class NumberConstant extends Value2 {
     constructor(value: moo.Token | number) {
         if (typeof value === "number") {
             const valueToken = makeMooToken(value);
@@ -106,20 +119,39 @@ export class NumberConstant extends Value {
             valueToken[0].value = parseFloat(valueToken[0].value);
         }
     }
-}
 
-export class StringConstant extends Value {
-    constructor(mooToken: moo.Token) {
-        super(mooToken);
-
-        const valueToken = getAllTokens(this);
-        valueToken[0].value = valueToken[0].value.replace(/^"(.*)"$/, '$1');
+    getType() {
+        return VALUE_TYPE.NUMBER;
     }
 }
 
-export class BuiltInConstant extends Value {
-    constructor(mooToken: moo.Token) {
-        super(mooToken);
+export class UndefinedConstant extends Value2 {
+    constructor() {
+        const valueToken = makeMooToken(undefined);
+        super(valueToken);
+    }
+
+    getType() {
+        return VALUE_TYPE.UNDEFINED;
+    }
+}
+
+
+export class StringConstant extends Value2 {
+    constructor(value: moo.Token | string) {
+        if (typeof value === "string") {
+            const valueToken = makeMooToken(value);
+            super(valueToken);
+        } else {
+            super(value);
+            const valueToken = getAllTokens(this);
+            valueToken[0].value = parseFloat(valueToken[0].value);
+        }
+    }
+
+
+    getType() {
+        return VALUE_TYPE.STRING;
     }
 }
 
@@ -134,31 +166,29 @@ function ensureArray(token: Token | Token[]) {
 
 function executeOperator(
     context: Context,
-    token: ScadTokens.Evalutable
-): ScadTokens.Token {
-
-    if (token instanceof ScadTokens.Operator) {
+    token: Evalutable
+): Token {
+    if (token instanceof Operator) {
         return executeBinaryOperator(context, token);
     }
 
-    if (token instanceof ScadTokens.UnaryOperator) {
+    if (token instanceof UnaryOperator) {
         return executeUnaryOperator(context, token);
     }
-
 
     return token;
 }
 
 function executeUnaryOperator(
     context: Context,
-    token: ScadTokens.UnaryOperator
-): ScadTokens.Token {
+    token: UnaryOperator
+): Token {
     const operand = getAllTokens(token.operand);
     assert(operand.length === 1, "UnaryOperand length === 1");
 
     let operandToken = operand[0];
 
-    if (operandToken instanceof ScadTokens.Evalutable) {
+    if (operandToken instanceof Evalutable) {
         operandToken = executeOperator(context, operandToken);
     }
 
@@ -168,10 +198,10 @@ function executeUnaryOperator(
     let result = operandToken;
     switch (operator) {
         case '+':
-            result = new ScadTokens.NumberConstant(+ oval);
+            result = new NumberConstant(+ oval);
             break;
         case '-':
-            result = new ScadTokens.NumberConstant(- oval);
+            result = new NumberConstant(- oval);
             break;
         default:
             throw new Error(`Unknown unary operator: ${operator}`)
@@ -182,8 +212,8 @@ function executeUnaryOperator(
 
 function executeBinaryOperator(
     context: Context,
-    token: ScadTokens.Operator
-): ScadTokens.Token {
+    token: Operator
+): Token {
 
 
     const lhand = getAllTokens(token.lhand);
@@ -195,11 +225,11 @@ function executeBinaryOperator(
     let lhandToken = lhand[0];
     let rhandToken = rhand[0];
 
-    if (lhandToken instanceof ScadTokens.Evalutable) {
+    if (lhandToken instanceof Evalutable) {
         lhandToken = executeOperator(context, lhandToken);
     }
 
-    if (rhandToken instanceof ScadTokens.Evalutable) {
+    if (rhandToken instanceof Evalutable) {
         rhandToken = executeOperator(context, rhandToken);
     }
 
@@ -216,16 +246,16 @@ function executeBinaryOperator(
             context.set(lval, rval);
             break;
         case '+':
-            result = new ScadTokens.NumberConstant(lval + rval);
+            result = new NumberConstant(lval + rval);
             break;
         case '-':
-            result = new ScadTokens.NumberConstant(lval - rval);
+            result = new NumberConstant(lval - rval);
             break;
         case '*':
-            result = new ScadTokens.NumberConstant(lval * rval);
+            result = new NumberConstant(lval * rval);
             break;
         case '/':
-            result = new ScadTokens.NumberConstant(lval / rval);
+            result = new NumberConstant(lval / rval);
             break;
         default:
             throw new Error(`Unknown operator: ${operator}`)
@@ -242,7 +272,7 @@ function assert(condition: boolean, message: string) {
     }
 }
 
-function getAllTokens(ast: ScadTokens.Token | ScadTokens.Token[]): ScadTokens.Token[] {
+function getAllTokens(ast: Token | Token[]): Token[] {
     if (!Array.isArray(ast)) {
         return getAllTokens([ast]);
     }

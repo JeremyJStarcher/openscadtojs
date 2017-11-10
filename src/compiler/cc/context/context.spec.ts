@@ -1,5 +1,7 @@
-import { Context, ContextType } from "./context";
+import { Context } from "./context";
 import { Logger } from "../../logger/logger";
+import * as ScadTokens from "../../tokenizer/scad-types";
+
 
 describe('Running compiler/context tests', () => {
     it('should have the test infrastructure in place', () => {
@@ -12,20 +14,20 @@ describe('Running compiler/context tests', () => {
 
     it('should set and get an integer', () => {
         const context = new Context(null, new Logger());
-        const value = 10 as ContextType;
-        context.set('a', value);
-        const retrievedValue = context.get('a');
+        const savedToken = new ScadTokens.NumberConstant(10);
+        context.set('a', savedToken);
+        const retrievedToken = context.get('a');
 
-        expect(value).toBe(retrievedValue);
+        expect(savedToken.value).toBe(retrievedToken.value);
     });
 
     it('should set and get a a string', () => {
         const context = new Context(null, new Logger());
-        const value = "Fizzbin" as ContextType;
-        context.set('a', value);
-        const retrievedValue = context.get('a');
+        const savedToken = new ScadTokens.StringConstant("Fizzban");
+        context.set('a', savedToken);
+        const retrievedToken = context.get('a');
 
-        expect(value).toBe(retrievedValue);
+        expect(savedToken.value).toBe(retrievedToken.value);
     });
 
     it('should Child context should cascade to parent', () => {
@@ -33,11 +35,11 @@ describe('Running compiler/context tests', () => {
         const parentContext = new Context(null, logger);
         const childContext = new Context(parentContext, logger);
 
-        const value = "Fizzbin" as ContextType;
-        parentContext.set('a', value);
-        const retrievedValue = childContext.get('a');
+        const savedToken = new ScadTokens.StringConstant("Fizzban");
+        parentContext.set('a', savedToken);
+        const retrievedToken = childContext.get('a');
 
-        expect(value).toBe(retrievedValue);
+        expect(savedToken.value).toBe(retrievedToken.value);
     });
 
     it('should cascade to parent context if child does not contain', () => {
@@ -45,11 +47,11 @@ describe('Running compiler/context tests', () => {
         const parentContext = new Context(null, logger);
         const childContext = new Context(parentContext, logger);
 
-        const value = "Fizzbin" as ContextType;
-        parentContext.set('a', value);
-        const retrievedValue = childContext.get('a');
+        const savedToken = new ScadTokens.StringConstant("Fizzban");
+        parentContext.set('a', savedToken);
+        const retrievedToken = childContext.get('a');
 
-        expect(value).toBe(retrievedValue);
+        expect(savedToken.value).toBe(retrievedToken.value);
     });
 
     it('should not cascade to parent context if child does contain', () => {
@@ -58,17 +60,17 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const variableName = 'varname';
-        const parentValue = 'Dragon Poker' as ContextType;
-        const childValue = 'Fizzbin' as ContextType;
+        const savedParentToken = new ScadTokens.StringConstant("Dragon Poker");
+        const savedChildToken = new ScadTokens.StringConstant("Fizzbin");
 
 
-        parentContext.set(variableName, parentValue);
-        childContext.set(variableName, childValue);
-        const retrievedChildValue = childContext.get(variableName);
-        const retrievedParentValue = parentContext.get(variableName);
+        parentContext.set(variableName, savedParentToken);
+        childContext.set(variableName, savedChildToken);
+        const retrievedChildToken = childContext.get(variableName);
+        const retrievedParentToken = parentContext.get(variableName);
 
-        expect(childValue).toBe(retrievedChildValue);
-        expect(retrievedParentValue).toBe(parentValue);
+        expect(savedChildToken).toBe(retrievedChildToken);
+        expect(retrievedParentToken.value).toBe(savedParentToken.value);
     });
 
     it('should generate a warning if variable not found', () => {
@@ -77,10 +79,12 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const variableName = 'longVariableName';
-        const retrievedValue = childContext.get(variableName);
+        const retrievedToken = childContext.get(variableName);
 
         const warnings = logger.getWarnings();
-        expect(retrievedValue).not.toBeDefined();
+
+        expect(retrievedToken).toEqual(jasmine.any(ScadTokens.UndefinedConstant));
+        // expect(retrievedToken.value).not.toBeDefined();
         expect(warnings.length).toBe(1);
         expect(warnings[0]).toContain(variableName);
     });

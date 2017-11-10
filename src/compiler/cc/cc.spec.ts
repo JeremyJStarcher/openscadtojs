@@ -165,10 +165,10 @@ describe('Running compiler tests', () => {
                         const content = getAllTokens(ast);
                         return cc.runAst(content, context);
                     }).then(() => {
-                        const val1 = context.get('var1') as number;
+                        const val1 = context.get('var1');
 
                         const digitsToRound = ("" + expectedValue + ".").split(".")[1].length;
-                        const roundedValue = val1.toFixed(digitsToRound);
+                        const roundedValue = val1.value.toFixed(digitsToRound);
 
                         expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
                     }).catch(err => {
