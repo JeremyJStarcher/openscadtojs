@@ -129,9 +129,6 @@ describe('Running compiler tests', () => {
 
     it('should evaluate a series of expressions', () => {
         return new Promise((resolve, reject) => {
-
-            const x: [[string, number]] = [["hi", 10]];
-            void (x);
             // Handle numbers as strings so we can do our own rounding and compare.
             const tests: [[string, string]] = [
                 ["1+2+3+4", "10"],
@@ -193,10 +190,6 @@ describe('Running compiler tests', () => {
 
     it('should evaluate the "undefined" value', () => {
         return new Promise((resolve, reject) => {
-
-            const x: [[string, number]] = [["hi", 10]];
-            void (x);
-
             const tests: [[string, undefined]] = [
                 ["undef", undefined]
             ];
