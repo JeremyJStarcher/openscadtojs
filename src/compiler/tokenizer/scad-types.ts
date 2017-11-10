@@ -42,7 +42,11 @@ function makeMooToken(value: any) {
     return ret;
 }
 
-export class Operator extends Token {
+export class Evalutable extends Token {
+
+}
+
+export class Operator extends Evalutable {
     public lhand: Token[];
     public rhand: Token[];
 
@@ -59,8 +63,25 @@ export class Operator extends Token {
     execute(context: Context) {
         executeOperator(context, this);
     }
-
 }
+
+export class UnaryOperator extends Evalutable {
+    public operand: Token[];
+
+    constructor(
+        mooToken: moo.Token,
+        operand: Token
+    ) {
+        super(mooToken);
+
+        this.operand = ensureArray(operand);
+    }
+
+    execute(context: Context) {
+        executeOperator(context, this);
+    }
+}
+
 
 export class Value extends Token {
     constructor(mooToken: moo.Token) {
@@ -111,8 +132,55 @@ function ensureArray(token: Token | Token[]) {
     }
 }
 
-
 function executeOperator(
+    context: Context,
+    token: ScadTokens.Evalutable
+): ScadTokens.Token {
+
+    if (token instanceof ScadTokens.Operator) {
+        return executeBinaryOperator(context, token);
+    }
+
+    if (token instanceof ScadTokens.UnaryOperator) {
+        return executeUnaryOperator(context, token);
+    }
+
+
+    return token;
+}
+
+function executeUnaryOperator(
+    context: Context,
+    token: ScadTokens.UnaryOperator
+): ScadTokens.Token {
+    const operand = getAllTokens(token.operand);
+    assert(operand.length === 1, "UnaryOperand length === 1");
+
+    let operandToken = operand[0];
+
+    if (operandToken instanceof ScadTokens.Evalutable) {
+        operandToken = executeOperator(context, operandToken);
+    }
+
+    const operator = token.value;
+    const oval = operandToken.value;
+
+    let result = operandToken;
+    switch (operator) {
+        case '+':
+            result = new ScadTokens.NumberConstant(+ oval);
+            break;
+        case '-':
+            result = new ScadTokens.NumberConstant(- oval);
+            break;
+        default:
+            throw new Error(`Unknown unary operator: ${operator}`)
+    }
+
+    return result;
+}
+
+function executeBinaryOperator(
     context: Context,
     token: ScadTokens.Operator
 ): ScadTokens.Token {
@@ -127,14 +195,11 @@ function executeOperator(
     let lhandToken = lhand[0];
     let rhandToken = rhand[0];
 
-//     console.log('Incoming', 'op', token.value, "l", lhandToken.value, "r", rhandToken.value);
-
-
-    if (lhandToken instanceof ScadTokens.Operator) {
+    if (lhandToken instanceof ScadTokens.Evalutable) {
         lhandToken = executeOperator(context, lhandToken);
     }
 
-    if (rhandToken instanceof ScadTokens.Operator) {
+    if (rhandToken instanceof ScadTokens.Evalutable) {
         rhandToken = executeOperator(context, rhandToken);
     }
 
@@ -142,7 +207,7 @@ function executeOperator(
     const rval = rhandToken.value;
     const lval = lhandToken.value;
 
-//    console.log('Step2', 'op', token.value, "l", lval, "r", rval);
+    //    console.log('Step2', 'op', token.value, "l", lval, "r", rval);
 
 
     let result = lhandToken;
@@ -163,6 +228,7 @@ function executeOperator(
             result = new ScadTokens.NumberConstant(lval / rval);
             break;
         default:
+            throw new Error(`Unknown operator: ${operator}`)
     }
 
     return result;

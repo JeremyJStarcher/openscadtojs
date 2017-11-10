@@ -216,7 +216,7 @@ describe('Tokenizer Tests', () => {
             // If the length == 0, there was no valid tree built.
             // if the length > 1, there is ambiguous grammar that can be parsed
             //   multiple ways.  Either condition is bad. 
-            expect(res.length).toBe(1);
+            expect(res.length).toBe(1, `AST length should === 1 for ${source}`);
             return res;
         }
 
@@ -274,5 +274,18 @@ describe('Tokenizer Tests', () => {
             generateAst("  line1 = 1;  line2 = 2;line3 =3;");
             generateAst("  line1 = 1;  line2 = 2;line3 =3;   ");
         });
+
+        it('should parse unary !', () => {
+            generateAst("line1=!1;    ");
+        });
+
+        it('should parse unary +', () => {
+            generateAst("line1=+1;    ");
+        });
+
+        it('should parse unary -', () => {
+            generateAst("line1=-1;    ");
+        });
+
     });
 });

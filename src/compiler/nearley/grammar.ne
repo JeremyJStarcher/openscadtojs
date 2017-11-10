@@ -17,6 +17,17 @@ void(id);
 const lexer = moo.compile(rules.OPENSCAD_RULES);
 
 
+function unaryOperator(data: any[]) {
+	// +, ,1
+	// 0 1 2
+	
+	const expTokenFull = data[2] as moo.Token;
+	const expToken =  (expTokenFull instanceof Array) ? expTokenFull[0] : expTokenFull;
+
+	const operand = data[2];
+	return new ScadTokens.UnaryOperator(expToken, operand);
+}
+
 function operator(data: any[]) {
 	// multiplicative_expression _ "*" _ cast_expression
     // operator": "1, ,*, ,2",
@@ -88,7 +99,7 @@ argument_expression_list
 
 unary_expression
 	-> postfix_expression
-	| unary_operator cast_expression
+	| unary_operator _ cast_expression {% unaryOperator %}
 
 unary_operator
     -> "!"

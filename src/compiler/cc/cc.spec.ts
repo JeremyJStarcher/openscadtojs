@@ -196,9 +196,14 @@ describe('Running compiler tests', () => {
                 ["5/(4+3)/2", "0.357143"],
                 ["1 + 2.5", "3.5"],
                 ["125", "125"],
-                // ["-1", -1],
-                // ["-1+(-2)", -3],
-                // ["-1+(-2.0)", -3]
+                ["-1", "-1"],
+                ["-1+(-2)", "-3"],
+                ["-1+(-2.0)", "-3"],
+                ["- 1", "-1"],
+                ["- 1 +( -2)", "-3"],
+                ["- 1 +(0- -2)", "-3"],
+                ["-1+(-2.0)", "-3"]
+
             ];
 
             function makeTest(code: string, expectedValue: string) {
@@ -211,10 +216,10 @@ describe('Running compiler tests', () => {
                         return cc.runAst(content, context);
                     }).then(() => {
                         const val1 = context.get('var1') as number;
-                        
+
                         const digitsToRound = ("" + expectedValue + ".").split(".")[1].length;
                         const roundedValue = val1.toFixed(digitsToRound);
-                        
+
                         expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
                     }).catch(err => {
                         reject(err);

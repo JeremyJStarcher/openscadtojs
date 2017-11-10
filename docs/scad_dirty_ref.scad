@@ -1,4 +1,7 @@
 
+// k+"Hello";
+
+// (1+1)
 
 
 a = 10;
@@ -40,3 +43,11 @@ module testNameCollision() {
 echo("testNameCollision collides?");
 echo(testNameCollision);
 
+// Unary operator spacing
+unaryTest1 = !! true;
+unaryTest2 = + true;
+unaryTest3 = - true;
+
+echo(str("unaryTest1 = ", unaryTest1));
+echo(str("unaryTest2 = ", unaryTest2));
+echo(str("unaryTest2 = ", unaryTest2));
