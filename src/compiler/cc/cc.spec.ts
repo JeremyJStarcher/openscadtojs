@@ -127,12 +127,12 @@ describe('Running compiler tests', () => {
         })();
     });
 
-    it('should execute a series of expressions', () => {
+    it('should evaluate a series of expressions', () => {
         return new Promise((resolve, reject) => {
 
             const x: [[string, number]] = [["hi", 10]];
             void (x);
-
+            // Handle numbers as strings so we can do our own rounding and compare.
             const tests: [[string, string]] = [
                 ["1+2+3+4", "10"],
                 ["1*2*3*4", "24"],
@@ -152,8 +152,8 @@ describe('Running compiler tests', () => {
                 ["- 1", "-1"],
                 ["- 1 +( -2)", "-3"],
                 ["- 1 +(0- -2)", "-3"],
-                ["-1+(-2.0)", "-3"]
-
+                ["-1+(-2.0)", "-3"],
+                ["undef", "undef"]
             ];
 
             function makeTest(code: string, expectedValue: string) {
@@ -165,10 +165,10 @@ describe('Running compiler tests', () => {
                         const content = getAllTokens(ast);
                         return cc.runAst(content, context);
                     }).then(() => {
-                        const val1 = context.get('var1');
+                        const valueToken = context.get('var1');
 
                         const digitsToRound = ("" + expectedValue + ".").split(".")[1].length;
-                        const roundedValue = val1.value.toFixed(digitsToRound);
+                        const roundedValue = valueToken.value.toFixed(digitsToRound);
 
                         expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
                     }).catch(err => {
@@ -188,8 +188,52 @@ describe('Running compiler tests', () => {
                 resolve();
             });
 
-        });
+        });        
     });
+
+    it('should evaluate the "undefined" value', () => {
+        return new Promise((resolve, reject) => {
+
+            const x: [[string, number]] = [["hi", 10]];
+            void (x);
+
+            const tests: [[string, undefined]] = [
+                ["undef", undefined]
+            ];
+
+            function makeTest(code: string, expectedValue: undefined) {
+                new Promise((resolve, reject) => {
+                    const logger = new Logger();
+                    const context = new Context(null, logger);
+
+                    cc.compile(`var1=   ${code};`).then(ast => {
+                        const content = getAllTokens(ast);
+                        return cc.runAst(content, context);
+                    }).then(() => {
+                        const valueToken = context.get('var1');
+                        expect(valueToken).toEqual(jasmine.any(ScadTokens.UndefinedConstant));
+                        
+                    }).catch(err => {
+                        reject(err);
+                    }).then(() => {
+                        resolve();
+                    });
+                });
+            }
+
+            const p1 = tests.map(test => {
+                return makeTest(test[0], test[1]);
+            })
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+
+        });
+
+        
+    });
+
 });
 
 
