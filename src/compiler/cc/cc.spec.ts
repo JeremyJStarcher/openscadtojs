@@ -1,6 +1,5 @@
-
-// import { Logger } from '../logger/logger';
-// import { Context } from './context/context';
+import { Logger } from '../logger/logger';
+import { Context } from './context/context';
 import * as ScadTokens from "../tokenizer/scad-types";
 import * as cc from "./cc";
 
@@ -60,7 +59,7 @@ describe('Running compiler tests', () => {
         expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
         expect(statement1).toEqual(jasmine.any(ScadTokens.Operator));
         expect(content.length).toBe(2);
-        
+
         if (statement0 instanceof ScadTokens.Operator && statement1 instanceof ScadTokens.Operator) {
             const lhand0 = statement0.lhand;
             const lhand1 = statement1.lhand;
@@ -81,6 +80,28 @@ describe('Running compiler tests', () => {
             expect(content[1].type).toBe("operator");
             expect(lhand1content).toBe("line2");
             expect(rhand1content).toBe("+");
+        }
+    });
+
+    it('should run a simple assignment', async () => {
+
+        const ast = await cc.compile('line1=1;');
+
+        const content = getAllTokens(ast);
+
+        const statement0 = content[0];// as ScadTokens.Operator;
+
+        expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
+        expect(content.length).toBe(1);
+
+        if (statement0 instanceof ScadTokens.Operator) {
+            const logger = new Logger();
+            const context = new Context(null, logger);
+
+            cc.runOneToken(statement0, context);
+            const savedValue = context.get('line1');
+
+            expect(savedValue).toBe(1);
         }
     });
 

@@ -39,10 +39,11 @@ function generateAst(source: string): moo.Token[] {
     return tokenList[0];
 }
 
-async function runOneToken(token: moo.Token, context: Context) {
+export async function runOneToken(token: ScadTokens.Token, context: Context) {
+    token.execute(context);
 }
 
-export function runAst(ast: moo.Token[], context: Context) {
+export function runAst(ast: ScadTokens.Token[], context: Context) {
     return new Promise((resolve, reject) => {
 
         for (let i = 0; i < ast.length; i++) {
@@ -54,7 +55,7 @@ export function runAst(ast: moo.Token[], context: Context) {
 
 export async function compile(src: string): Promise<ScadTokens.Token[]> {
 
-    const fullAst = generateAst(src);
+    const fullAst = generateAst(src) as ScadTokens.Token[];
 
     const errorToken = fullAst[0];
     if (errorToken.type === "error") {
