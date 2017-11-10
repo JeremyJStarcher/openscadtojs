@@ -83,27 +83,6 @@ describe('Running compiler tests', () => {
         }
     });
 
-    it('should run a simple assignment', async () => {
-        const ast = await cc.compile('line1=1;');
-
-        const content = getAllTokens(ast);
-
-        const statement0 = content[0];// as ScadTokens.Operator;
-
-        expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
-        expect(content.length).toBe(1);
-
-        if (statement0 instanceof ScadTokens.Operator) {
-            const logger = new Logger();
-            const context = new Context(null, logger);
-
-            cc.runOneToken(statement0, context);
-            const savedValue = context.get('line1');
-
-            expect(savedValue).toBe(1);
-        }
-    });
-
     it('should error on unexpected end of input', (done) => {
         (async () => {
             try {
@@ -147,35 +126,6 @@ describe('Running compiler tests', () => {
             done();
         })();
     });
-
-    it('should execute two statements', () => {
-        return new Promise((resolve, reject) => {
-            const logger = new Logger();
-            const context = new Context(null, logger);
-
-            cc.compile('var1=1;var2="Hello";').then(ast => {
-                const content = getAllTokens(ast);
-
-                const statement0 = content[0] as ScadTokens.Operator;
-
-                expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
-                expect(content.length).toBe(2, `Content length error`);
-                return cc.runAst(content, context);
-            }).then(() => {
-                const val1 = context.get('var1');
-                const val2 = context.get('var2');
-                expect(val1).toBe(1, 'Var1 has incorrect value');
-                expect(val2).toBe('Hello', 'Var2 has incorrect value');
-            }).catch(err => {
-                reject(err);
-            }).then(() => {
-                resolve();
-            });
-
-        });
-
-    });
-
 
     it('should execute a series of expressions', () => {
         return new Promise((resolve, reject) => {
