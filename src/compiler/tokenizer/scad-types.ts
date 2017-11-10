@@ -2,6 +2,8 @@ import { Context } from '../cc/context/context';
 import * as cc from "../cc/cc";
 import * as ScadTokens from "../tokenizer/scad-types";
 
+
+
 export class Token {
     public toString: () => string;
     public type?: string;
@@ -28,6 +30,18 @@ export class Token {
     }
 }
 
+function makeMooToken(value: any) {
+    const ret: moo.Token = {
+        value: value,
+        offset: 0,
+        size: 0,
+        lineBreaks: false,
+        line: 0,
+        col: 0
+    };
+    return ret;
+}
+
 export class Operator extends Token {
     public lhand: Token[];
     public rhand: Token[];
@@ -43,7 +57,7 @@ export class Operator extends Token {
     }
 
     execute(context: Context) {
-        executeOperator(context, this.value, this.lhand, this.rhand);
+        executeOperator(context, this);
     }
 
 }
@@ -61,11 +75,15 @@ export class Identifier extends Value {
 }
 
 export class NumberConstant extends Value {
-    constructor(mooToken: moo.Token) {
-        super(mooToken);
-
-        const valueToken = getAllTokens(this);
-        valueToken[0].value = parseFloat(valueToken[0].value);
+    constructor(value: moo.Token | number) {
+        if (typeof value === "number") {
+            const valueToken = makeMooToken(value);
+            super(valueToken);
+        } else {
+            super(value);
+            const valueToken = getAllTokens(this);
+            valueToken[0].value = parseFloat(valueToken[0].value);
+        }
     }
 }
 
@@ -93,37 +111,62 @@ function ensureArray(token: Token | Token[]) {
     }
 }
 
-// function ensureNotArray(token: Token | Token[]) {
-//     if (token instanceof Array) {
-//         throw new Error(`An array of tokens was totally unexpected at this point`);
-//     } else {
-//         return token;
-//     }
-// }
-
 
 function executeOperator(
     context: Context,
-    operator: string,
-    lhandArray: Token[],
-    rhandArray: Token[]
-) {
+    token: ScadTokens.Operator
+): ScadTokens.Token {
+
+
+    const lhand = getAllTokens(token.lhand);
+    const rhand = getAllTokens(token.rhand);
+
+    assert(lhand.length === 1, "executeOperator=: lhand.length === 1");
+    assert(rhand.length === 1, "executeOperator=: rhand.length === 1");
+
+    let lhandToken = lhand[0];
+    let rhandToken = rhand[0];
+
+//     console.log('Incoming', 'op', token.value, "l", lhandToken.value, "r", rhandToken.value);
+
+
+    if (lhandToken instanceof ScadTokens.Operator) {
+        lhandToken = executeOperator(context, lhandToken);
+    }
+
+    if (rhandToken instanceof ScadTokens.Operator) {
+        rhandToken = executeOperator(context, rhandToken);
+    }
+
+    const operator = token.value;
+    const rval = rhandToken.value;
+    const lval = lhandToken.value;
+
+//    console.log('Step2', 'op', token.value, "l", lval, "r", rval);
+
+
+    let result = lhandToken;
     switch (operator) {
         case '=':
-
-            const lhand = getAllTokens(lhandArray);
-            const rhand = getAllTokens(rhandArray);
-
-            assert(lhand.length === 1, "executeOperator=: lhand.length === 1");
-            assert(rhand.length === 1, "executeOperator=: rhand.length === 1");
-
-            const identifier = lhand[0].value;
-            const value = rhand[0].value;
-
-            context.set(identifier, value);
+            context.set(lval, rval);
+            break;
+        case '+':
+            result = new ScadTokens.NumberConstant(lval + rval);
+            break;
+        case '-':
+            result = new ScadTokens.NumberConstant(lval - rval);
+            break;
+        case '*':
+            result = new ScadTokens.NumberConstant(lval * rval);
+            break;
+        case '/':
+            result = new ScadTokens.NumberConstant(lval / rval);
             break;
         default:
     }
+
+    return result;
+
 }
 
 

@@ -118,7 +118,7 @@ describe('Running compiler tests', () => {
         })();
     });
 
-    it('should error on bad grammar', (done) => {
+    it('should error on bad grammar (assignment to a constant)', (done) => {
         (async () => {
             try {
                 const ast = await cc.compile('1=1;');
@@ -127,39 +127,113 @@ describe('Running compiler tests', () => {
             } catch (err) {
                 expect(err.token.value).toBe('=');
                 expect(err.token.col).toBe(2);
-                console.log("ERR:", JSON.stringify(err));
             }
 
             done();
         })();
     });
 
-    it('should execute two statements', (done) => {
-        const logger = new Logger();
-        const context = new Context(null, logger);
-
+    xit('should error on bad grammar (invalid expression)', (done) => {
         (async () => {
             try {
-                const ast = await cc.compile('var1=1;var2="Hello";');
-                const content = getAllTokens(ast);
-                const statement0 = content[0] as ScadTokens.Operator;
-
-                expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
-                expect(content.length).toBe(2, `Content length error`);
-
-
-                await cc.runAst(content, context);
-
-                const val1 = context.get('var1');
-                const val2 = context.get('var2');
-                expect(val1).toBe(1, 'Val1 has incorrect value');
-                expect(val2).toBe('Hello', 'Val2 has incorrect value');
+                const ast = await cc.compile('var2+"Hello";');
+                getAllTokens(ast);
+                expect(false).toBe(true, `End of input error did not happen`);
             } catch (err) {
-                expect(false).toBe(true, `Error when runnining code: ${err.message}`);
+                expect(err.token.value).toBe('+');
+                expect(err.token.col).toBe(5);
             }
 
             done();
         })();
+    });
+
+    it('should execute two statements', () => {
+        return new Promise((resolve, reject) => {
+            const logger = new Logger();
+            const context = new Context(null, logger);
+
+            cc.compile('var1=1;var2="Hello";').then(ast => {
+                const content = getAllTokens(ast);
+
+                const statement0 = content[0] as ScadTokens.Operator;
+
+                expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
+                expect(content.length).toBe(2, `Content length error`);
+                return cc.runAst(content, context);
+            }).then(() => {
+                const val1 = context.get('var1');
+                const val2 = context.get('var2');
+                expect(val1).toBe(1, 'Var1 has incorrect value');
+                expect(val2).toBe('Hello', 'Var2 has incorrect value');
+            }).catch(err => {
+                reject(err);
+            }).then(() => {
+                resolve();
+            });
+
+        });
+
+    });
+
+
+    it('should execute a series of expressions', () => {
+        return new Promise((resolve, reject) => {
+
+            const x: [[string, number]] = [["hi", 10]];
+            void (x);
+
+            const tests: [[string, string]] = [
+                ["1+2+3+4", "10"],
+                ["1*2*3*4", "24"],
+                ["1-2-3-4", "-8"],
+                ["1/2/3/4", "0.0416667"],
+                ["1*2+3*4", "14"],
+                ["1+2*3+4", "11"],
+                ["(1+2)*(3+4)", "21"],
+                ["1+(2*3)*(4+5)", "55"],
+                ["1+(2*3)/4+5", "7.5"],
+                ["5/(4+3)/2", "0.357143"],
+                ["1 + 2.5", "3.5"],
+                ["125", "125"],
+                // ["-1", -1],
+                // ["-1+(-2)", -3],
+                // ["-1+(-2.0)", -3]
+            ];
+
+            function makeTest(code: string, expectedValue: string) {
+                new Promise((resolve, reject) => {
+                    const logger = new Logger();
+                    const context = new Context(null, logger);
+
+                    cc.compile(`var1=   ${code};`).then(ast => {
+                        const content = getAllTokens(ast);
+                        return cc.runAst(content, context);
+                    }).then(() => {
+                        const val1 = context.get('var1') as number;
+                        
+                        const digitsToRound = ("" + expectedValue + ".").split(".")[1].length;
+                        const roundedValue = val1.toFixed(digitsToRound);
+                        
+                        expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
+                    }).catch(err => {
+                        reject(err);
+                    }).then(() => {
+                        resolve();
+                    });
+
+                });
+            }
+
+            const p1 = tests.map(test => {
+                return makeTest(test[0], test[1]);
+            })
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+
+        });
     });
 });
 

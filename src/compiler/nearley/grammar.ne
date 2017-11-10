@@ -26,8 +26,8 @@ function operator(data: any[]) {
 	const expTokenFull = data[2] as moo.Token;
 	const expToken =  (expTokenFull instanceof Array) ? expTokenFull[0] : expTokenFull;
 
-     const lhand = data[0];
-	 const rhand = data[4];
+	 const lhand = data[0];
+     const rhand = data[4];
 
      return new ScadTokens.Operator(expToken, lhand, rhand);
 }
@@ -71,13 +71,13 @@ statement
 
 
 primary_expression 
-    -> %identifier
+	-> %identifier
      | constant  
      | "(" _ expression _ ")" {% function(d) {return unwrapParens(d)} %}
 
 
 postfix_expression
-    ->  primary_expression
+     ->  primary_expression
 	 | postfix_expression "[" _ expression _ "]"
 	 | postfix_expression "(" _ ")"
 	 | postfix_expression "(" _ argument_expression_list _ ")"
