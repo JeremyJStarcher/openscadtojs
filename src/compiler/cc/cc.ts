@@ -13,27 +13,25 @@ function generateAst(source: string): moo.Token[] {
     const tokenList = parser.results as [moo.Token[]];
 
 
-    const errResult: moo.Token = {
-        type: "error",
-        value: "",
-        offset: 0,
-        size: 0,
-        lineBreaks: false,
-        line: 0,
-        col: 0
-    };
+    // const errResult: moo.Token = {
+    //     type: "error",
+    //     value: "",
+    //     offset: 0,
+    //     size: 0,
+    //     lineBreaks: false,
+    //     line: 0,
+    //     col: 0
+    // };
 
 
     // If the length == 0, there was no valid tree built.
     // if the length > 1, there is ambiguous grammar that can be parsed
     //   multiple ways.  Either condition is bad. 
     if (tokenList.length === 0) {
-        errResult.value = "Unexpected end of input";
-        return [errResult];
+        throw new Error('Unexpected end of input');
     }
     if (tokenList.length > 1) {
-        errResult.value = "Ambiguous grammar -- internal parsing error";
-        return [errResult];
+        throw new Error('Ambiguous grammar -- internal parsing error');
     }
 
     return tokenList[0];

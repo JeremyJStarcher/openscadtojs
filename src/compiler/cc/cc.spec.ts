@@ -104,35 +104,63 @@ describe('Running compiler tests', () => {
         }
     });
 
-    it('should execute two statements', async () => {
+    it('should error on unexpected end of input', (done) => {
+        (async () => {
+            try {
+                const ast = await cc.compile('var1=1');
+                getAllTokens(ast);
+                expect(false).toBe(true, `End of input error did not happen`);
+            } catch (err) {
+                expect(err.message).toContain('end of input');
+            }
+
+            done();
+        })();
+    });
+
+    it('should error on bad grammar', (done) => {
+        (async () => {
+            try {
+                const ast = await cc.compile('1=1;');
+                getAllTokens(ast);
+                expect(false).toBe(true, `End of input error did not happen`);
+            } catch (err) {
+                expect(err.token.value).toBe('=');
+                expect(err.token.col).toBe(2);
+                console.log("ERR:", JSON.stringify(err));
+            }
+
+            done();
+        })();
+    });
+
+    it('should execute two statements', (done) => {
         const logger = new Logger();
         const context = new Context(null, logger);
 
-        return new Promise((resolve, reject) => {
-            cc.compile('var1=1;var2="Hello";').then(ast => {
+        (async () => {
+            try {
+                const ast = await cc.compile('var1=1;var2="Hello";');
                 const content = getAllTokens(ast);
                 const statement0 = content[0] as ScadTokens.Operator;
 
                 expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
                 expect(content.length).toBe(2, `Content length error`);
-                return content
-            }).then(content => {
-                return cc.runAst(content, context);
-            }).then(() => {
+
+
+                await cc.runAst(content, context);
+
                 const val1 = context.get('var1');
                 const val2 = context.get('var2');
                 expect(val1).toBe(1, 'Val1 has incorrect value');
                 expect(val2).toBe('Hello', 'Val2 has incorrect value');
-            }).catch(err => {
-                console.log('Error running program');
-                throw  err;
-            }).then(() => {
-                resolve();
-            });
+            } catch (err) {
+                expect(false).toBe(true, `Error when runnining code: ${err.message}`);
+            }
 
-        });
- 
+            done();
+        })();
     });
 });
-    
+
 
