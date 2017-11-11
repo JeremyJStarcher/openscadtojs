@@ -207,45 +207,53 @@ describe('Running compiler tests', () => {
     it('should evaluate built-in constants', () => {
         return new Promise((resolve, reject) => {
             const tests: [[string, undefined | boolean]] = [
-                ["undef", undefined],
-                ["true", true],
-                ["false", false]
+                ["var1=undef;", undefined],
+                ["var1=true;", true],
+                ["var1=false;", false]
             ];
 
-            function makeTest(code: string, expectedValue: any) {
-                new Promise((resolve, reject) => {
-                    const logger = new Logger();
-                    const context = new Context(null, logger);
-
-                    cc.compile(`var1=   ${code};`).then(ast => {
-                        const content = getAllTokens(ast);
-                        return cc.runAst(content, context);
-                    }).then(() => {
-                        const valueToken = context.get('var1');
-                        expect(valueToken.value).toEqual(expectedValue);
-
-                    }).catch(err => {
-                        expect(true).toBe(false, err.message);
-                        reject(err);
-                    }).then(() => {
-                        resolve();
-                    });
-                });
+            const validate = (context: Context, expectedValue: any, code: string) => {
+                const valueToken = context.get('var1');
+                expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             }
 
             const p1 = tests.map(test => {
-                return makeTest(test[0], test[1]);
+                return compileAndRun(test[0], test[1], validate);
             })
 
             Promise.all(p1).then(() => {
                 resolve();
             });
-
         });
+    });
 
+    it('should allow variable names that contain keywords, etc.', () => {
+        return new Promise((resolve, reject) => {
+            const tests: [[string, undefined | boolean]] = [
+                ["undef1=true;", undefined],
+                ["true1=true;", true],
+                ["false1=true;", false],
+                ["false1=true;", false],
+                ["aundef1=true;", undefined],
+                ["atrue1=true;", true],
+                ["afalse1=true;", false],
+                ["aundef=true;", undefined],
+                ["atrue=true;", true],
+                ["afalse=true;", false]
+            ];
 
+            const validate = (context: Context, expectedValue: any, code: string) => {
+                // If we get this far, we are valid.
+            }
+
+            const p1 = tests.map(test => {
+                return compileAndRun(test[0], test[1], validate);
+            })
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+        });
     });
 
 });
-
-
