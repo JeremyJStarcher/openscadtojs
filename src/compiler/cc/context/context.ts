@@ -42,6 +42,6 @@ export class Context {
             return this.parent.get(key);
         }
         this.logger.warn(`Ignoring unknown variable '${key}'.`);
-        return new TokenType.UndefinedConstant();
+        return new TokenType.Undefined();
     }
 }

@@ -211,7 +211,7 @@ describe('Running compiler tests', () => {
                         return cc.runAst(content, context);
                     }).then(() => {
                         const valueToken = context.get('var1');
-                        expect(valueToken).toEqual(jasmine.any(TokenType.UndefinedConstant));
+                        expect(valueToken).toEqual(jasmine.any(TokenType.Undefined));
 
                     }).catch(err => {
                         expect(true).toBe(false, err.message);

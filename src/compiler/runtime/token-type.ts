@@ -104,7 +104,7 @@ export class Identifier extends Value2 {
     }
 }
 
-export class NumberConstant extends Value2 {
+export class Number extends Value2 {
     constructor(value: moo.Token | number) {
         if (typeof value === "number") {
             const valueToken = makeMooToken(value);
@@ -121,7 +121,7 @@ export class NumberConstant extends Value2 {
     }
 }
 
-export class UndefinedConstant extends Value2 {
+export class Undefined extends Value2 {
     constructor() {
         const valueToken = makeMooToken(undefined);
         super(valueToken);
@@ -132,7 +132,7 @@ export class UndefinedConstant extends Value2 {
     }
 }
 
-export class StringConstant extends Value2 {
+export class String extends Value2 {
     constructor(value: moo.Token | string) {
         if (typeof value === "string") {
             const valueToken = makeMooToken(value);
@@ -149,7 +149,6 @@ export class StringConstant extends Value2 {
     }
 }
 
-
 function ensureArray(token: Token | Token[]) {
     if (token instanceof Array) {
         return token;
@@ -158,5 +157,4 @@ function ensureArray(token: Token | Token[]) {
     }
 }
 
-
-export const VALUE_UNDEFINED = new UndefinedConstant();
+export const VALUE_UNDEFINED = new Undefined();

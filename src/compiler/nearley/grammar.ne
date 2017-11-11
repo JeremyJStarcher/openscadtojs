@@ -42,15 +42,15 @@ function operator(data: any[]) {
 }
 
 function numberConstant(d:any[]) {
-	return new TokenType.NumberConstant(d[0]);
+	return new TokenType.Number(d[0]);
 }
 
 function stringConstant(d:any[]) {
-	return new TokenType.StringConstant(d[0]);
+	return new TokenType.String(d[0]);
 }
 
 function undefinedConstant(d:any[]) {
-	return new TokenType.UndefinedConstant();
+	return new TokenType.Undefined();
 }
 
 // function builtInConstant(d:any[]) {
