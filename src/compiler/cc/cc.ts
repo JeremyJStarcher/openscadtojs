@@ -34,6 +34,7 @@ export function runAst(ast: TokenType.Token[], context: Context) {
                 runToken(context, token);
             }
         } catch (err) {
+            debugger;
             reject(err);
         }
 

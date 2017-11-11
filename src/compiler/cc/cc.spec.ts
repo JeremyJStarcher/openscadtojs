@@ -127,65 +127,74 @@ describe('Running compiler tests', () => {
         })();
     });
 
+    function compileAndRun(
+        code: string,
+        expectedValue: any,
+        validate: (context: Context, expectedValue: any, code: string) => void
+    ) {
+        new Promise((resolve, reject) => {
+            const logger = new Logger();
+            const context = new Context(null, logger);
+
+            cc.compile(`${code}`).then(ast => {
+                const content = getAllTokens(ast);
+                return cc.runAst(content, context);
+            }).catch(err => {
+                fail(err.message + ": " + code);
+            }).then(() => {
+                validate(context, expectedValue, code);
+            }).catch(err => {
+                expect(true).toBe(false, err.message + ": " + code);
+                reject(err);
+            }).then(() => {
+                resolve();
+            });
+        });
+    }
+
     it('should evaluate a series of expressions', () => {
         return new Promise((resolve, reject) => {
             // Handle numbers as strings so we can do our own rounding and compare.
             const tests: [[string, string]] = [
-                ["-1", "-1"],
-                ["1+2+3+4", "10"],
-                ["1*2*3*4", "24"],
-                ["1-2-3-4", "-8"],
-                ["1/2/3/4", "0.0416667"],
-                ["1*2+3*4", "14"],
-                ["1+2*3+4", "11"],
-                ["(1+2)*(3+4)", "21"],
-                ["1+(2*3)*(4+5)", "55"],
-                ["1+(2*3)/4+5", "7.5"],
-                ["5/(4+3)/2", "0.357143"],
-                ["1 + 2.5", "3.5"],
-                ["125", "125"],
-                ["-1+(-2)", "-3"],
-                ["-1+(-2.0)", "-3"],
-                ["- 1", "-1"],
-                ["- 1 +( -2)", "-3"],
-                ["- 1 +(0- -2)", "1"],
-                ["-1+(-2.0)", "-3"],
-                ["- 1 +(50- -2)", "51"],
-                // ["undef", "undef"]
+                ["var1=-1;", "-1"],
+                ["var1=1+2+3+4;", "10"],
+                ["var1=1*2*3*4;", "24"],
+                ["var1=1-2-3-4;", "-8"],
+                ["var1=1/2/3/4;", "0.0416667"],
+                ["var1=1*2+3*4;", "14"],
+                ["var1=1+2*3+4;", "11"],
+                ["var1=(1+2)*(3+4);", "21"],
+                ["var1=1+(2*3)*(4+5);", "55"],
+                ["var1=1+(2*3)/4+5;", "7.5"],
+                ["var1=5/(4+3)/2;", "0.357143"],
+                ["var1=1 + 2.5;", "3.5"],
+                ["var1=125;", "125"],
+                ["var1=-1+(-2);", "-3"],
+                ["var1=-1+(-2.0);", "-3"],
+                ["var1=- 1;", "-1"],
+                ["var1=- 1 +( -2);", "-3"],
+                ["var1=- 1 +(0- -2);", "1"],
+                ["var1=-1+(-2.0);", "-3"],
+                ["var1=- 1 +(50- -2);", "51"]
             ];
 
-            function makeTest(code: string, expectedValue: string) {
-                new Promise((resolve, reject) => {
-                    const logger = new Logger();
-                    const context = new Context(null, logger);
+            const validate = (context: Context, expectedValue: any, code: string) => {
+                debugger;
+                const value = context.get('var1').value;
 
-                    cc.compile(`var1=   ${code};`).then(ast => {
-                        const content = getAllTokens(ast);
-                        // console.log(JSON.stringify(ast));
-                        return cc.runAst(content, context);
-                    }).then(() => {
-                        const value = context.get('var1').value;
-                        const jsValue = eval(code);
+                const [, expression] = code.split('=');
+                const jsValue = eval(expression);
 
-                        const digitsToRound = (expectedValue + ".").split(".")[1].length;
-                        const roundedValue = value.toFixed(digitsToRound);
-                        const roundedJSValue = jsValue.toFixed(digitsToRound);
+                const digitsToRound = (expectedValue + ".").split(".")[1].length;
+                const roundedValue = value.toFixed(digitsToRound);
+                const roundedJSValue = jsValue.toFixed(digitsToRound);
 
-
-                        expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
-                        expect(roundedJSValue).toBe(expectedValue, `JS TEST: ${code} did not equal ${expectedValue}`);
-                    }).catch(err => {
-                        expect(true).toBe(false, err.message + ": " + code);
-                        reject(err);
-                    }).then(() => {
-                        resolve();
-                    });
-
-                });
+                expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
+                expect(roundedJSValue).toBe(expectedValue, `JS TEST: ${code} did not equal ${expectedValue}`);
             }
 
             const p1 = tests.map(test => {
-                return makeTest(test[0], test[1]);
+                return compileAndRun(test[0], test[1], validate);
             })
 
             Promise.all(p1).then(() => {
