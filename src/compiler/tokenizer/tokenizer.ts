@@ -11,7 +11,8 @@ export const OPENSCAD_RULES: moo.Rules = {
     rparen: ')',
     eos: ';',
     keyword: ['module', 'function', 'include', 'use', 'echo', 'for', 'intersection_for', 'if', 'else', 'assign'],
-    operator: ["!", "=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
+    unary_operator: ["!","+", "-"],
+    operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
     NL: { match: /\n/, lineBreaks: true },
 };
 

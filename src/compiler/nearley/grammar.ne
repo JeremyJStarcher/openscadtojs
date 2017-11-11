@@ -21,8 +21,7 @@ function unaryOperator(data: any[]) {
 	// +, ,1
 	// 0 1 2
 	
-	const expToken = data[2] as moo.Token;
-	
+	const expToken = data[2];	
 	const operatorToken = data[0];
 	return new ScadTokens.UnaryOperator(operatorToken,expToken);
 }

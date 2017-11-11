@@ -169,23 +169,6 @@ describe('Tokenizer Tests', () => {
 
         });
 
-        describe("Testing that operators parse correctly", () => {
-            it("should not split the operators up oddly", () => {
-                const ops = rules.OPENSCAD_RULES.operator as string[];
-                const joiner = 'qq';
-
-                ops.forEach((op) => {
-                    const src = `1 ${op} 7`;
-
-                    const tokens = generateParseTree(src);
-                    const importantTokens = tokens.filter(p => p.type !== "WS");
-                    const compact = importantTokens.join(joiner);
-
-                    expect(compact).toBe(`1${joiner}${op}${joiner}7`);
-                });
-            });
-        });
-
         describe("Testing that parsing works correctly", () => {
             it("Verifying that good identifiers parse", () => {
                 const identifiers = ["a", "bb", "abc", "_abc", "$abc", "$abc123", "ABc", "abC", "Ab_3c"];

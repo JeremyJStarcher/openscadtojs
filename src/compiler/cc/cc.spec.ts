@@ -127,29 +127,30 @@ describe('Running compiler tests', () => {
         })();
     });
 
-    fit('should evaluate a series of expressions', () => {
+    it('should evaluate a series of expressions', () => {
         return new Promise((resolve, reject) => {
             // Handle numbers as strings so we can do our own rounding and compare.
             const tests: [[string, string]] = [
-                //["-1", "-1"],
-                // ["1+2+3+4", "10"],
-                // ["1*2*3*4", "24"],
-                // ["1-2-3-4", "-8"],
-                // ["1/2/3/4", "0.0416667"],
-                // ["1*2+3*4", "14"],
-                // ["1+2*3+4", "11"],
-                // ["(1+2)*(3+4)", "21"],
-                // ["1+(2*3)*(4+5)", "55"],
-                // ["1+(2*3)/4+5", "7.5"],
-                // ["5/(4+3)/2", "0.357143"],
-                // ["1 + 2.5", "3.5"],
-                // ["125", "125"],
-                //["-1+(-2)", "-3"],
-                //["-1+(-2.0)", "-3"],
-                //["- 1", "-1"],
-                //["- 1 +( -2)", "-3"],
-                ["- 1 +(0- -2)", "3"],
-                //["-1+(-2.0)", "-3"],
+                ["-1", "-1"],
+                ["1+2+3+4", "10"],
+                ["1*2*3*4", "24"],
+                ["1-2-3-4", "-8"],
+                ["1/2/3/4", "0.0416667"],
+                ["1*2+3*4", "14"],
+                ["1+2*3+4", "11"],
+                ["(1+2)*(3+4)", "21"],
+                ["1+(2*3)*(4+5)", "55"],
+                ["1+(2*3)/4+5", "7.5"],
+                ["5/(4+3)/2", "0.357143"],
+                ["1 + 2.5", "3.5"],
+                ["125", "125"],
+                ["-1+(-2)", "-3"],
+                ["-1+(-2.0)", "-3"],
+                ["- 1", "-1"],
+                ["- 1 +( -2)", "-3"],
+                ["- 1 +(0- -2)", "1"],
+                ["-1+(-2.0)", "-3"],
+                ["- 1 +(50- -2)", "51"],
                 // ["undef", "undef"]
             ];
 
@@ -160,15 +161,19 @@ describe('Running compiler tests', () => {
 
                     cc.compile(`var1=   ${code};`).then(ast => {
                         const content = getAllTokens(ast);
-                        console.log(JSON.stringify(ast));
+                        // console.log(JSON.stringify(ast));
                         return cc.runAst(content, context);
                     }).then(() => {
-                        const valueToken = context.get('var1');
-                        const digitsToRound = (expectedValue + ".").split(".")[1].length;
-                        const roundedValue = valueToken.value.toFixed(digitsToRound);
+                        const value = context.get('var1').value;
+                        const jsValue = eval(code);
 
-                        debugger;
+                        const digitsToRound = (expectedValue + ".").split(".")[1].length;
+                        const roundedValue = value.toFixed(digitsToRound);
+                        const roundedJSValue = jsValue.toFixed(digitsToRound);
+
+
                         expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
+                        expect(roundedJSValue).toBe(expectedValue, `JS TEST: ${code} did not equal ${expectedValue}`);
                     }).catch(err => {
                         expect(true).toBe(false, err.message + ": " + code);
                         reject(err);
@@ -187,7 +192,7 @@ describe('Running compiler tests', () => {
                 resolve();
             });
 
-        });        
+        });
     });
 
     it('should evaluate the "undefined" value', () => {
@@ -207,7 +212,7 @@ describe('Running compiler tests', () => {
                     }).then(() => {
                         const valueToken = context.get('var1');
                         expect(valueToken).toEqual(jasmine.any(ScadTokens.UndefinedConstant));
-                        
+
                     }).catch(err => {
                         expect(true).toBe(false, err.message);
                         reject(err);
@@ -227,7 +232,7 @@ describe('Running compiler tests', () => {
 
         });
 
-        
+
     });
 
 });
