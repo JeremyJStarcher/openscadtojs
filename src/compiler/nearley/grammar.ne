@@ -7,7 +7,7 @@
 
 import * as moo from "moo";
 import * as rules from "../tokenizer/tokenizer";
-import * as ScadTokens from "../tokenizer/scad-types";
+import * as ScadTokens from "../runtime/tokens";
 
 // Silence TypeScript
 void(id);

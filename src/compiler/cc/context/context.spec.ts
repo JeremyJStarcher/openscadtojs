@@ -1,7 +1,6 @@
 import { Context } from "./context";
 import { Logger } from "../../logger/logger";
-import * as ScadTokens from "../../tokenizer/scad-types";
-
+import * as ScadTokens from "../../runtime/tokens";
 
 describe('Running compiler/context tests', () => {
     it('should have the test infrastructure in place', () => {

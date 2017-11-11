@@ -1,6 +1,6 @@
 import { Logger } from '../logger/logger';
 import { Context } from './context/context';
-import * as ScadTokens from "../tokenizer/scad-types";
+import * as ScadTokens from "../runtime/tokens";
 import * as cc from "./cc";
 
 describe('Running compiler tests', () => {

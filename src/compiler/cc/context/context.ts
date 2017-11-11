@@ -1,5 +1,5 @@
 import { Logger } from "../../logger/logger";
-import * as ScadTokens from "../../tokenizer/scad-types";
+import * as ScadTokens from "../../runtime/tokens";
 
 
 export interface IContext {

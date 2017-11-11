@@ -3,7 +3,7 @@ import {
     NumberConstant,
     Value2,
     VALUE_UNDEFINED
-} from "./scad-types";
+} from "./tokens";
 
 export enum VALUE_TYPE {
     NOT_IMP,
