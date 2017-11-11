@@ -12,13 +12,7 @@
  * If there is a valid function registered, evaluate the operator.
  * If not, return the default.
  */
-
-import {
-    Token,
-    NumberConstant,
-    Value2,
-    VALUE_UNDEFINED
-} from "./tokens";
+import * as TokenType from "./token-type";
 
 export enum VALUE_TYPE {
     NOT_IMP,
@@ -28,23 +22,23 @@ export enum VALUE_TYPE {
 }
 
 type hashLookupType = (
-    l: Token,
-    r: Token
-) => Token;
+    l: TokenType.Token,
+    r: TokenType.Token
+) => TokenType.Token;
 
 const operatorLookup: Map<string, hashLookupType> = new Map();
 
 type hashUnaryLookupType = (
-    o: Token,
-) => Token;
+    o: TokenType.Token,
+) => TokenType.Token;
 
 const unaryOperatorLookup: Map<string,hashUnaryLookupType> = new Map();
 
 export function runUnaryOp(
     operator: string,
-    operand: Token
+    operand: TokenType.Token
 ){
-    const op = operand as Value2;
+    const op = operand as TokenType.Value2;
     const hash = hashUnaryOp(operator, op.getType());
     const func = unaryOperatorLookup.get(hash) || errorFallbackUnary
     return func(operand);    
@@ -52,11 +46,11 @@ export function runUnaryOp(
     
 export function runOp(
     operator: string,
-    lhand: Token,
-    rhand: Token
+    lhand: TokenType.Token,
+    rhand: TokenType.Token
 ) {
-    const l = lhand as Value2;
-    const r = rhand as Value2;
+    const l = lhand as TokenType.Value2;
+    const r = rhand as TokenType.Value2;
 
     const hash = hashOp(operator, l.getType(), r.getType());
     const func = operatorLookup.get(hash) || errorFallback
@@ -81,19 +75,19 @@ function hashUnaryOp(operator: string,
  */
 
 operatorLookup.set(hashOp("+", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
-    (lval: Token, rval: Token) => { return new NumberConstant(lval.value + rval.value); }
+    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.NumberConstant(lval.value + rval.value); }
 );
 
 operatorLookup.set(hashOp("-", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
-    (lval: Token, rval: Token) => { return new NumberConstant(lval.value - rval.value); }
+    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.NumberConstant(lval.value - rval.value); }
 );
 
 operatorLookup.set(hashOp("*", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
-    (lval: Token, rval: Token) => { return new NumberConstant(lval.value * rval.value); }
+    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.NumberConstant(lval.value * rval.value); }
 );
 
 operatorLookup.set(hashOp("/", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
-    (lval: Token, rval: Token) => { return new NumberConstant(lval.value / rval.value); }
+    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.NumberConstant(lval.value / rval.value); }
 );
 
 /*
@@ -101,16 +95,16 @@ operatorLookup.set(hashOp("/", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
  */
 
 unaryOperatorLookup.set(hashUnaryOp("+", VALUE_TYPE.NUMBER),
-    (operand: Token) => { return new NumberConstant(+ operand.value); }
+    (operand: TokenType.Token) => { return new TokenType.NumberConstant(+ operand.value); }
 );
 
 unaryOperatorLookup.set(hashUnaryOp("-", VALUE_TYPE.NUMBER),
-    (operand: Token) => { return new NumberConstant(- operand.value); }
+    (operand: TokenType.Token) => { return new TokenType.NumberConstant(- operand.value); }
 );
 
 /*
  * FALLBACKS, just in case.
  */
 
-const errorFallback = (lval: Token, rval: Token) => VALUE_UNDEFINED;
-const errorFallbackUnary = (o: Token) => VALUE_UNDEFINED;
+const errorFallback = (lval: TokenType.Token, rval: TokenType.Token) => TokenType.VALUE_UNDEFINED;
+const errorFallbackUnary = (o: TokenType.Token) => TokenType.VALUE_UNDEFINED;

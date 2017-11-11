@@ -1,6 +1,6 @@
 import { Context } from "./context";
 import { Logger } from "../../logger/logger";
-import * as ScadTokens from "../../runtime/tokens";
+import * as TokenType from "../../runtime/token-type";
 
 describe('Running compiler/context tests', () => {
     it('should have the test infrastructure in place', () => {
@@ -13,7 +13,7 @@ describe('Running compiler/context tests', () => {
 
     it('should set and get an integer', () => {
         const context = new Context(null, new Logger());
-        const savedToken = new ScadTokens.NumberConstant(10);
+        const savedToken = new TokenType.NumberConstant(10);
         context.set('a', savedToken);
         const retrievedToken = context.get('a');
 
@@ -22,7 +22,7 @@ describe('Running compiler/context tests', () => {
 
     it('should set and get a a string', () => {
         const context = new Context(null, new Logger());
-        const savedToken = new ScadTokens.StringConstant("Fizzban");
+        const savedToken = new TokenType.StringConstant("Fizzban");
         context.set('a', savedToken);
         const retrievedToken = context.get('a');
 
@@ -34,7 +34,7 @@ describe('Running compiler/context tests', () => {
         const parentContext = new Context(null, logger);
         const childContext = new Context(parentContext, logger);
 
-        const savedToken = new ScadTokens.StringConstant("Fizzban");
+        const savedToken = new TokenType.StringConstant("Fizzban");
         parentContext.set('a', savedToken);
         const retrievedToken = childContext.get('a');
 
@@ -46,7 +46,7 @@ describe('Running compiler/context tests', () => {
         const parentContext = new Context(null, logger);
         const childContext = new Context(parentContext, logger);
 
-        const savedToken = new ScadTokens.StringConstant("Fizzban");
+        const savedToken = new TokenType.StringConstant("Fizzban");
         parentContext.set('a', savedToken);
         const retrievedToken = childContext.get('a');
 
@@ -59,8 +59,8 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const variableName = 'varname';
-        const savedParentToken = new ScadTokens.StringConstant("Dragon Poker");
-        const savedChildToken = new ScadTokens.StringConstant("Fizzbin");
+        const savedParentToken = new TokenType.StringConstant("Dragon Poker");
+        const savedChildToken = new TokenType.StringConstant("Fizzbin");
 
 
         parentContext.set(variableName, savedParentToken);
@@ -82,7 +82,7 @@ describe('Running compiler/context tests', () => {
 
         const warnings = logger.getWarnings();
 
-        expect(retrievedToken).toEqual(jasmine.any(ScadTokens.UndefinedConstant));
+        expect(retrievedToken).toEqual(jasmine.any(TokenType.UndefinedConstant));
         // expect(retrievedToken.value).not.toBeDefined();
         expect(warnings.length).toBe(1);
         expect(warnings[0]).toContain(variableName);

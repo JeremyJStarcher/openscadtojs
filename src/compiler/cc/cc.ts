@@ -3,7 +3,8 @@ import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
 import { Context } from './context/context';
-import * as ScadTokens from "../runtime/tokens";
+import * as TokenType from "../runtime/token-type";
+import runToken from "../runtime/run";
 
 function generateAst(source: string): moo.Token[] {
 
@@ -25,11 +26,11 @@ function generateAst(source: string): moo.Token[] {
     return tokenList[0];
 }
 
-export async function runOneToken(token: ScadTokens.Token, context: Context) {
-    token.execute(context);
+export async function runOneToken(token: TokenType.Token, context: Context) {
+    runToken(context, token);
 }
 
-export function runAst(ast: ScadTokens.Token[], context: Context) {
+export function runAst(ast: TokenType.Token[], context: Context) {
     return new Promise((resolve, reject) => {
 
         try {
@@ -45,9 +46,9 @@ export function runAst(ast: ScadTokens.Token[], context: Context) {
     });
 }
 
-export async function compile(src: string): Promise<ScadTokens.Token[]> {
+export async function compile(src: string): Promise<TokenType.Token[]> {
 
-    const fullAst = generateAst(src) as ScadTokens.Token[];
+    const fullAst = generateAst(src) as TokenType.Token[];
 
     const errorToken = fullAst[0];
     if (errorToken.type === "error") {

@@ -1,16 +1,16 @@
 import { Logger } from "../../logger/logger";
-import * as ScadTokens from "../../runtime/tokens";
+import * as TokenType from "../../runtime/token-type";
 
 
 export interface IContext {
     parent: IContext;
-    set: (key: string, value: ScadTokens.Value2) => void;
-    get: (key: string) => ScadTokens.Value2;
+    set: (key: string, value: TokenType.Value2) => void;
+    get: (key: string) => TokenType.Value2;
 }
 
 export class Context {
     private parent: Context | null;
-    private container: Map<string, ScadTokens.Value2>;
+    private container: Map<string, TokenType.Value2>;
     private logger: Logger;
 
     constructor(
@@ -22,8 +22,8 @@ export class Context {
         this.logger = logger;
     }
 
-    set(key: string, value: ScadTokens.Value2) {
-        if (!(value instanceof ScadTokens.Value2)) {
+    set(key: string, value: TokenType.Value2) {
+        if (!(value instanceof TokenType.Value2)) {
             debugger;
             const msg = `Context Set: Attempted to set non ScadToken value type`;
             console.error(msg);
@@ -33,15 +33,15 @@ export class Context {
         this.container.set(key, value);
     }
 
-    get(key: string): ScadTokens.Value2 {
+    get(key: string): TokenType.Value2 {
         if (this.container.has(key)) {
-            const val = this.container.get(key) as ScadTokens.Value2;
+            const val = this.container.get(key) as TokenType.Value2;
             return val;
         }
         if (this.parent) {
             return this.parent.get(key);
         }
         this.logger.warn(`Ignoring unknown variable '${key}'.`);
-        return new ScadTokens.UndefinedConstant();
+        return new TokenType.UndefinedConstant();
     }
 }

@@ -1,6 +1,6 @@
 import { Logger } from '../logger/logger';
 import { Context } from './context/context';
-import * as ScadTokens from "../runtime/tokens";
+import * as TokenType from "../runtime/token-type";
 import * as cc from "./cc";
 
 describe('Running compiler tests', () => {
@@ -33,7 +33,7 @@ describe('Running compiler tests', () => {
     });
 
 
-    function getAllTokens(ast: moo.Token | moo.Token[]): ScadTokens.Token[] {
+    function getAllTokens(ast: moo.Token | moo.Token[]): TokenType.Token[] {
         if (!Array.isArray(ast)) {
             return getAllTokens([ast]);
         }
@@ -56,11 +56,11 @@ describe('Running compiler tests', () => {
         const statement0 = content[0];// as ScadTokens.Operator;
         const statement1 = content[1];// as ScadTokens.Operator;
 
-        expect(statement0).toEqual(jasmine.any(ScadTokens.Operator));
-        expect(statement1).toEqual(jasmine.any(ScadTokens.Operator));
+        expect(statement0).toEqual(jasmine.any(TokenType.Operator));
+        expect(statement1).toEqual(jasmine.any(TokenType.Operator));
         expect(content.length).toBe(2);
 
-        if (statement0 instanceof ScadTokens.Operator && statement1 instanceof ScadTokens.Operator) {
+        if (statement0 instanceof TokenType.Operator && statement1 instanceof TokenType.Operator) {
             const lhand0 = statement0.lhand;
             const lhand1 = statement1.lhand;
 
@@ -211,7 +211,7 @@ describe('Running compiler tests', () => {
                         return cc.runAst(content, context);
                     }).then(() => {
                         const valueToken = context.get('var1');
-                        expect(valueToken).toEqual(jasmine.any(ScadTokens.UndefinedConstant));
+                        expect(valueToken).toEqual(jasmine.any(TokenType.UndefinedConstant));
 
                     }).catch(err => {
                         expect(true).toBe(false, err.message);

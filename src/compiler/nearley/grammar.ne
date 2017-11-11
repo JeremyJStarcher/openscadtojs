@@ -7,7 +7,7 @@
 
 import * as moo from "moo";
 import * as rules from "../tokenizer/tokenizer";
-import * as ScadTokens from "../runtime/tokens";
+import * as TokenType from "../runtime/token-type";
 
 // Silence TypeScript
 void(id);
@@ -23,7 +23,7 @@ function unaryOperator(data: any[]) {
 	
 	const expToken = data[2];	
 	const operatorToken = data[0];
-	return new ScadTokens.UnaryOperator(operatorToken,expToken);
+	return new TokenType.UnaryOperator(operatorToken,expToken);
 }
 
 function operator(data: any[]) {
@@ -38,19 +38,19 @@ function operator(data: any[]) {
 	 const lhand = data[0];
      const rhand = data[4];
 
-     return new ScadTokens.Operator(expToken, lhand, rhand);
+     return new TokenType.Operator(expToken, lhand, rhand);
 }
 
 function numberConstant(d:any[]) {
-	return new ScadTokens.NumberConstant(d[0]);
+	return new TokenType.NumberConstant(d[0]);
 }
 
 function stringConstant(d:any[]) {
-	return new ScadTokens.StringConstant(d[0]);
+	return new TokenType.StringConstant(d[0]);
 }
 
 function undefinedConstant(d:any[]) {
-	return new ScadTokens.UndefinedConstant();
+	return new TokenType.UndefinedConstant();
 }
 
 // function builtInConstant(d:any[]) {

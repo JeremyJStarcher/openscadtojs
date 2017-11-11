@@ -1,6 +1,6 @@
 import { Context } from '../cc/context/context';
-import * as cc from "../cc/cc";
-import { VALUE_TYPE, runOp, runUnaryOp } from "./operators";
+import { VALUE_TYPE } from "./operators";
+import getAllTokens from "./getAllTokens";
 
 export class Token {
     public toString: () => string;
@@ -67,10 +67,6 @@ export class Operator extends Value2 {
         this.lhand = ensureArray(lhand);
         this.rhand = ensureArray(rhand);
     }
-
-    execute(context: Context) {
-        executeOperator(context, this);
-    }
 }
 
 export class UnaryOperator extends Value2 {
@@ -92,15 +88,10 @@ export class UnaryOperator extends Value2 {
             }
         }
 
-
         super(getInnerValue(mooToken));
         this.operand = ensureArray(operand);
     }
 
-
-    execute(context: Context) {
-        executeOperator(context, this);
-    }
 }
 
 export class Identifier extends Value2 {
@@ -165,95 +156,6 @@ function ensureArray(token: Token | Token[]) {
     } else {
         return [token];
     }
-}
-
-function executeOperator(
-    context: Context,
-    token: Evalutable
-): Token {
-
-    if (token instanceof UnaryOperator) {
-        const ret = executeUnaryOperator(context, token);
-        return ret;
-    }
-
-    if (token instanceof Operator) {
-        return executeBinaryOperator(context, token);
-    }
-
-    return token;
-}
-
-function executeUnaryOperator(
-    context: Context,
-    token: UnaryOperator
-): Token {
-    const operator = token;
-    const operand = getAllTokens(token.operand);
-
-    assert(operand.length === 1, "UnaryOperand length === 1");
-
-    let operandToken = operand[0];
-
-    if (operandToken instanceof Evalutable) {
-        operandToken = executeOperator(context, operandToken);
-    }
-
-    return runUnaryOp(operator.value, operandToken);
-}
-
-function executeBinaryOperator(
-    context: Context,
-    token: Operator
-): Token {
-    const lhand = getAllTokens(token.lhand);
-    const rhand = getAllTokens(token.rhand);
-
-    assert(lhand.length === 1, "executeOperator=: lhand.length === 1");
-    assert(rhand.length === 1, "executeOperator=: rhand.length === 1");
-
-    let lhandToken = lhand[0];
-    let rhandToken = rhand[0];
-
-    if (lhandToken instanceof Evalutable) {
-        lhandToken = executeOperator(context, lhandToken);
-    }
-
-    if (rhandToken instanceof Evalutable) {
-        rhandToken = executeOperator(context, rhandToken);
-    }
-
-    const operator = token.value;
-
-    if (operator === "=") {
-        context.set(lhandToken.value, rhandToken as Value2);
-
-    } else {
-        return runOp(operator, lhandToken, rhandToken);
-    }
-
-    return VALUE_UNDEFINED;
-}
-
-
-function assert(condition: boolean, message: string) {
-    if (!condition) {
-        throw new Error(`Assert error: ${message} FAILED!`);
-    }
-}
-
-function getAllTokens(ast: Token | Token[]): Token[] {
-    if (!Array.isArray(ast)) {
-        return getAllTokens([ast]);
-    }
-
-    const tokenStream = cc.tokenFeeder(ast);
-    const content: any = Array.from(tokenStream);
-
-    if (!Array.isArray(content)) {
-        return (<any>[content]);
-    }
-    return content;
 }
 
 
