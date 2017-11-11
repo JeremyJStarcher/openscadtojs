@@ -24,7 +24,11 @@ export class Context {
 
     set(key: string, value: ScadTokens.Value2) {
         if (!(value instanceof ScadTokens.Value2)) {
-            throw new Error(`Context Set: Attempted to set non ScadToken value type`);
+            debugger;
+            const msg = `Context Set: Attempted to set non ScadToken value type`;
+            console.error(msg);
+            throw new Error(msg);
+
         }
         this.container.set(key, value);
     }

@@ -21,11 +21,10 @@ function unaryOperator(data: any[]) {
 	// +, ,1
 	// 0 1 2
 	
-	const expTokenFull = data[2] as moo.Token;
-	const expToken =  (expTokenFull instanceof Array) ? expTokenFull[0] : expTokenFull;
-
-	const operand = data[2];
-	return new ScadTokens.UnaryOperator(expToken, operand);
+	const expToken = data[2] as moo.Token;
+	
+	const operatorToken = data[0];
+	return new ScadTokens.UnaryOperator(operatorToken,expToken);
 }
 
 function operator(data: any[]) {

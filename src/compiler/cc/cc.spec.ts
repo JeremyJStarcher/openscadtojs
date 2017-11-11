@@ -127,30 +127,30 @@ describe('Running compiler tests', () => {
         })();
     });
 
-    it('should evaluate a series of expressions', () => {
+    fit('should evaluate a series of expressions', () => {
         return new Promise((resolve, reject) => {
             // Handle numbers as strings so we can do our own rounding and compare.
             const tests: [[string, string]] = [
-                ["1+2+3+4", "10"],
-                ["1*2*3*4", "24"],
-                ["1-2-3-4", "-8"],
-                ["1/2/3/4", "0.0416667"],
-                ["1*2+3*4", "14"],
-                ["1+2*3+4", "11"],
-                ["(1+2)*(3+4)", "21"],
-                ["1+(2*3)*(4+5)", "55"],
-                ["1+(2*3)/4+5", "7.5"],
-                ["5/(4+3)/2", "0.357143"],
-                ["1 + 2.5", "3.5"],
-                ["125", "125"],
-                ["-1", "-1"],
-                ["-1+(-2)", "-3"],
-                ["-1+(-2.0)", "-3"],
-                ["- 1", "-1"],
-                ["- 1 +( -2)", "-3"],
-                ["- 1 +(0- -2)", "-3"],
-                ["-1+(-2.0)", "-3"],
-                ["undef", "undef"]
+                //["-1", "-1"],
+                // ["1+2+3+4", "10"],
+                // ["1*2*3*4", "24"],
+                // ["1-2-3-4", "-8"],
+                // ["1/2/3/4", "0.0416667"],
+                // ["1*2+3*4", "14"],
+                // ["1+2*3+4", "11"],
+                // ["(1+2)*(3+4)", "21"],
+                // ["1+(2*3)*(4+5)", "55"],
+                // ["1+(2*3)/4+5", "7.5"],
+                // ["5/(4+3)/2", "0.357143"],
+                // ["1 + 2.5", "3.5"],
+                // ["125", "125"],
+                //["-1+(-2)", "-3"],
+                //["-1+(-2.0)", "-3"],
+                //["- 1", "-1"],
+                //["- 1 +( -2)", "-3"],
+                ["- 1 +(0- -2)", "3"],
+                //["-1+(-2.0)", "-3"],
+                // ["undef", "undef"]
             ];
 
             function makeTest(code: string, expectedValue: string) {
@@ -160,15 +160,17 @@ describe('Running compiler tests', () => {
 
                     cc.compile(`var1=   ${code};`).then(ast => {
                         const content = getAllTokens(ast);
+                        console.log(JSON.stringify(ast));
                         return cc.runAst(content, context);
                     }).then(() => {
                         const valueToken = context.get('var1');
-
-                        const digitsToRound = ("" + expectedValue + ".").split(".")[1].length;
+                        const digitsToRound = (expectedValue + ".").split(".")[1].length;
                         const roundedValue = valueToken.value.toFixed(digitsToRound);
 
+                        debugger;
                         expect(roundedValue).toBe(expectedValue, `${code} did not equal ${expectedValue}`);
                     }).catch(err => {
+                        expect(true).toBe(false, err.message + ": " + code);
                         reject(err);
                     }).then(() => {
                         resolve();
@@ -207,6 +209,7 @@ describe('Running compiler tests', () => {
                         expect(valueToken).toEqual(jasmine.any(ScadTokens.UndefinedConstant));
                         
                     }).catch(err => {
+                        expect(true).toBe(false, err.message);
                         reject(err);
                     }).then(() => {
                         resolve();

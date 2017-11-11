@@ -83,13 +83,26 @@ export class UnaryOperator extends Value2 {
     public operand: Token[];
 
     constructor(
-        mooToken: moo.Token,
+        mooToken: moo.Token | moo.Token[],
         operand: Token
     ) {
-        super(mooToken);
 
+        function getInnerValue(item: any | any[]): moo.Token {
+            if (Array.isArray(item)) {
+                if (item.length !== 1) {
+                    console.error("Gack, getInnerValue");
+                }
+                return getInnerValue(item[0]);
+            } else {
+                return item;
+            }
+        }
+
+
+        super(getInnerValue(mooToken));
         this.operand = ensureArray(operand);
     }
+
 
     execute(context: Context) {
         executeOperator(context, this);
@@ -168,13 +181,16 @@ function executeOperator(
     context: Context,
     token: Evalutable
 ): Token {
+
+    if (token instanceof UnaryOperator) {
+        const ret = executeUnaryOperator(context, token);
+        return ret;
+    }
+
     if (token instanceof Operator) {
         return executeBinaryOperator(context, token);
     }
 
-    if (token instanceof UnaryOperator) {
-        return executeUnaryOperator(context, token);
-    }
 
     return token;
 }
@@ -183,7 +199,10 @@ function executeUnaryOperator(
     context: Context,
     token: UnaryOperator
 ): Token {
+    const operator = token;
     const operand = getAllTokens(token.operand);
+
+
     assert(operand.length === 1, "UnaryOperand length === 1");
 
     let operandToken = operand[0];
@@ -192,11 +211,10 @@ function executeUnaryOperator(
         operandToken = executeOperator(context, operandToken);
     }
 
-    const operator = token.value;
     const oval = operandToken.value;
-
     let result = operandToken;
-    switch (operator) {
+
+    switch (operator.value) {
         case '+':
             result = new NumberConstant(+ oval);
             break;
@@ -236,14 +254,13 @@ function executeBinaryOperator(
     const operator = token.value;
     const rval = rhandToken.value;
     const lval = lhandToken.value;
-
     //    console.log('Step2', 'op', token.value, "l", lval, "r", rval);
 
 
     let result = lhandToken;
     switch (operator) {
         case '=':
-            context.set(lval, rval);
+            context.set(lval, rhandToken as Value2);
             break;
         case '+':
             result = new NumberConstant(lval + rval);
