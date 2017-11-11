@@ -108,7 +108,9 @@ unaryOperatorLookup.set(hashUnaryOp("-", VALUE_TYPE.NUMBER),
     (operand: Token) => { return new NumberConstant(- operand.value); }
 );
 
+/*
+ * FALLBACKS, just in case.
+ */
 
-
-export const errorFallback = (lval: Token, rval: Token) => VALUE_UNDEFINED;
-export const errorFallbackUnary = (o: Token) => VALUE_UNDEFINED;
+const errorFallback = (lval: Token, rval: Token) => VALUE_UNDEFINED;
+const errorFallbackUnary = (o: Token) => VALUE_UNDEFINED;
