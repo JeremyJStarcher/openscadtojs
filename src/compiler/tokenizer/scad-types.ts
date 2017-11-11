@@ -1,7 +1,6 @@
 import { Context } from '../cc/context/context';
 import * as cc from "../cc/cc";
-import { VALUE_TYPE, runOp } from "./operators";
-
+import { VALUE_TYPE, runOp, runUnaryOp } from "./operators";
 
 export class Token {
     public toString: () => string;
@@ -104,8 +103,6 @@ export class UnaryOperator extends Value2 {
     }
 }
 
-
-
 export class Identifier extends Value2 {
     constructor(mooToken: moo.Token) {
         super(mooToken);
@@ -144,7 +141,6 @@ export class UndefinedConstant extends Value2 {
     }
 }
 
-
 export class StringConstant extends Value2 {
     constructor(value: moo.Token | string) {
         if (typeof value === "string") {
@@ -156,7 +152,6 @@ export class StringConstant extends Value2 {
             valueToken[0].value = parseFloat(valueToken[0].value);
         }
     }
-
 
     getType() {
         return VALUE_TYPE.STRING;
@@ -186,7 +181,6 @@ function executeOperator(
         return executeBinaryOperator(context, token);
     }
 
-
     return token;
 }
 
@@ -197,7 +191,6 @@ function executeUnaryOperator(
     const operator = token;
     const operand = getAllTokens(token.operand);
 
-
     assert(operand.length === 1, "UnaryOperand length === 1");
 
     let operandToken = operand[0];
@@ -206,21 +199,7 @@ function executeUnaryOperator(
         operandToken = executeOperator(context, operandToken);
     }
 
-    const oval = operandToken.value;
-    let result = operandToken;
-
-    switch (operator.value) {
-        case '+':
-            result = new NumberConstant(+ oval);
-            break;
-        case '-':
-            result = new NumberConstant(- oval);
-            break;
-        default:
-            throw new Error(`Unknown unary operator: ${operator}`)
-    }
-
-    return result;
+    return runUnaryOp(operator.value, operandToken);
 }
 
 function executeBinaryOperator(
@@ -245,9 +224,6 @@ function executeBinaryOperator(
     }
 
     const operator = token.value;
-    //const lval = lhandToken.value;
-    // const rval = rhandToken.value;
-    //    console.log('Step2', 'op', token.value, "l", lval, "r", rval);
 
     if (operator === "=") {
         context.set(lhandToken.value, rhandToken as Value2);
@@ -256,10 +232,7 @@ function executeBinaryOperator(
         return runOp(operator, lhandToken, rhandToken);
     }
 
-
     return VALUE_UNDEFINED;
-    // return result;
-
 }
 
 
