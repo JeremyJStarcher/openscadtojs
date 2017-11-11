@@ -1,5 +1,5 @@
 import { Context } from '../cc/context/context';
-import { VALUE_TYPE } from "./operators";
+import {VALUE_TYPE} from "./value-type";
 import getAllTokens from "./getAllTokens";
 
 export class Token {
@@ -148,6 +148,24 @@ export class String extends Value2 {
         return VALUE_TYPE.STRING;
     }
 }
+
+export class Boolean extends Value2 {
+    constructor(value: moo.Token | boolean) {
+        if (typeof value === "boolean") {
+            const valueToken = makeMooToken(value);
+            super(valueToken);
+        } else {
+            super(value);
+            const valueToken = getAllTokens(this);
+            valueToken[0].value = valueToken[0].value === "true";
+        }
+    }
+
+    getType() {
+        return VALUE_TYPE.BOOLEAN;
+    }
+}
+
 
 function ensureArray(token: Token | Token[]) {
     if (token instanceof Array) {

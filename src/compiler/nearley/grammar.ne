@@ -49,6 +49,10 @@ function stringConstant(d:any[]) {
 	return new TokenType.String(d[0]);
 }
 
+function booleanConstant(d:any[]) {
+	return new TokenType.Boolean(d[0]);
+}
+
 function undefinedConstant(d:any[]) {
 	return new TokenType.Undefined();
 }
@@ -190,8 +194,8 @@ constant
     -> %string  {% d => stringConstant(d) %}
 	 | %number  {% d => numberConstant(d) %}
 	 | %constant_undefined {% d => undefinedConstant(d) %}
+	 | %constant_boolean {% d => booleanConstant(d) %}
 #     | %predefined_constant {% d => builtInConstant(d) %}
-
 
 
 

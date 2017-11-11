@@ -13,13 +13,7 @@
  * If not, return the default.
  */
 import * as TokenType from "./token-type";
-
-export enum VALUE_TYPE {
-    NOT_IMP,
-    NUMBER,
-    STRING,
-    UNDEFINED
-}
+import {VALUE_TYPE} from "./value-type";
 
 type hashLookupType = (
     l: TokenType.Token,

@@ -195,13 +195,15 @@ describe('Running compiler tests', () => {
         });
     });
 
-    it('should evaluate the "undefined" value', () => {
+    it('should evaluate built-in constants', () => {
         return new Promise((resolve, reject) => {
-            const tests: [[string, undefined]] = [
-                ["undef", undefined]
+            const tests: [[string, undefined | boolean]] = [
+                ["undef", undefined],
+                ["true", true],
+                ["false", false]
             ];
 
-            function makeTest(code: string, expectedValue: undefined) {
+            function makeTest(code: string, expectedValue: any) {
                 new Promise((resolve, reject) => {
                     const logger = new Logger();
                     const context = new Context(null, logger);
@@ -211,7 +213,7 @@ describe('Running compiler tests', () => {
                         return cc.runAst(content, context);
                     }).then(() => {
                         const valueToken = context.get('var1');
-                        expect(valueToken).toEqual(jasmine.any(TokenType.Undefined));
+                        expect(valueToken.value).toEqual(expectedValue);
 
                     }).catch(err => {
                         expect(true).toBe(false, err.message);
