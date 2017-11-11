@@ -40,8 +40,6 @@ type hashUnaryLookupType = (
 
 const unaryOperatorLookup: Map<string,hashUnaryLookupType> = new Map();
 
-
-
 export function runUnaryOp(
     operator: string,
     operand: Token
@@ -52,7 +50,6 @@ export function runUnaryOp(
     return func(operand);    
 }
     
-
 export function runOp(
     operator: string,
     lhand: Token,
