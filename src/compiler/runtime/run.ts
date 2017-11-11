@@ -62,7 +62,7 @@ function executeBinaryOperator(
     const operator = token.value;
 
     if (operator === "=") {
-        context.set(lhandToken.value, rhandToken as TokenType.Value2);
+        context.setIdentifier(lhandToken.value, rhandToken as TokenType.Value2);
 
     } else {
         return runOp(context, operator, lhandToken, rhandToken);

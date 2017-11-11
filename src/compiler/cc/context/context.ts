@@ -1,6 +1,9 @@
 import { Logger } from "../../logger/logger";
 import * as TokenType from "../../runtime/token-type";
 
+enum NAME_SPACE {
+    IDENTIFIER = "IDENTIFIER",
+}
 
 export interface IContext {
     parent: IContext;
@@ -22,7 +25,22 @@ export class Context {
         this.logger = logger;
     }
 
-    set(key: string, value: TokenType.Value2) {
+    setIdentifier(key: string, value: TokenType.Value2) {
+        const hash = this.getHash(key, NAME_SPACE.IDENTIFIER);
+        this.set(hash, value);
+    }
+
+    getIdentifier(key: string): TokenType.Value2 {
+        const hash = this.getHash(key, NAME_SPACE.IDENTIFIER);
+        return this.get(hash);
+    }
+
+    private getHash(key: string, ns: NAME_SPACE) {
+        const hash = ns + "_" + key;
+        return hash
+    }
+
+    private set(key: string, value: TokenType.Value2) {
         if (!(value instanceof TokenType.Value2)) {
             debugger;
             const msg = `Context Set: Attempted to set non ScadToken value type`;
@@ -30,17 +48,16 @@ export class Context {
             throw new Error(msg);
         }
 
-        debugger;
         if (!typeof value.getType) {
             debugger;
             const msg = `Context Set: attempted to set a value with no 'getType`;
             console.error(msg);
-            throw new Error(msg);            
+            throw new Error(msg);
         }
         this.container.set(key, value);
     }
 
-    get(key: string): TokenType.Value2 {
+    private get(key: string): TokenType.Value2 {
         if (this.container.has(key)) {
             const val = this.container.get(key) as TokenType.Value2;
             return val;

@@ -14,8 +14,8 @@ describe('Running compiler/context tests', () => {
     it('should set and get an integer', () => {
         const context = new Context(null, new Logger());
         const savedToken = new TokenType.Number(10);
-        context.set('a', savedToken);
-        const retrievedToken = context.get('a');
+        context.setIdentifier('a', savedToken);
+        const retrievedToken = context.getIdentifier('a');
 
         expect(savedToken.value).toBe(retrievedToken.value);
     });
@@ -23,8 +23,8 @@ describe('Running compiler/context tests', () => {
     it('should set and get a a string', () => {
         const context = new Context(null, new Logger());
         const savedToken = new TokenType.String("Fizzban");
-        context.set('a', savedToken);
-        const retrievedToken = context.get('a');
+        context.setIdentifier('a', savedToken);
+        const retrievedToken = context.getIdentifier('a');
 
         expect(savedToken.value).toBe(retrievedToken.value);
     });
@@ -35,8 +35,8 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const savedToken = new TokenType.String("Fizzban");
-        parentContext.set('a', savedToken);
-        const retrievedToken = childContext.get('a');
+        parentContext.setIdentifier('a', savedToken);
+        const retrievedToken = childContext.getIdentifier('a');
 
         expect(savedToken.value).toBe(retrievedToken.value);
     });
@@ -47,8 +47,8 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const savedToken = new TokenType.String("Fizzban");
-        parentContext.set('a', savedToken);
-        const retrievedToken = childContext.get('a');
+        parentContext.setIdentifier('a', savedToken);
+        const retrievedToken = childContext.getIdentifier('a');
 
         expect(savedToken.value).toBe(retrievedToken.value);
     });
@@ -63,10 +63,10 @@ describe('Running compiler/context tests', () => {
         const savedChildToken = new TokenType.String("Fizzbin");
 
 
-        parentContext.set(variableName, savedParentToken);
-        childContext.set(variableName, savedChildToken);
-        const retrievedChildToken = childContext.get(variableName);
-        const retrievedParentToken = parentContext.get(variableName);
+        parentContext.setIdentifier(variableName, savedParentToken);
+        childContext.setIdentifier(variableName, savedChildToken);
+        const retrievedChildToken = childContext.getIdentifier(variableName);
+        const retrievedParentToken = parentContext.getIdentifier(variableName);
 
         expect(savedChildToken).toBe(retrievedChildToken);
         expect(retrievedParentToken.value).toBe(savedParentToken.value);
@@ -78,7 +78,7 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const variableName = 'longVariableName';
-        const retrievedToken = childContext.get(variableName);
+        const retrievedToken = childContext.getIdentifier(variableName);
 
         const warnings = logger.getWarnings();
 

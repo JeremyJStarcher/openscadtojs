@@ -179,7 +179,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (context: Context, expectedValue: any, code: string) => {
-                const value = context.get('var1').value;
+                const value = context.getIdentifier('var1').value;
 
                 const [, expression] = code.split('=');
                 const jsValue = eval(expression);
@@ -212,7 +212,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (context: Context, expectedValue: any, code: string) => {
-                const valueToken = context.get('var1');
+                const valueToken = context.getIdentifier('var1');
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             }
 
@@ -262,7 +262,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (context: Context, expectedValue: any, code: string) => {
-                const valueToken = context.get('result');
+                const valueToken = context.getIdentifier('result');
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             }
 

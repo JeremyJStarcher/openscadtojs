@@ -50,11 +50,11 @@ export function runOp(
     let r = rhand as TokenType.Value2;
 
     if (l.type === "identifier") {
-        l = context.get(l.value);
+        l = context.getIdentifier(l.value);
     }
 
     if (r.type === "identifier") {
-        r = context.get(r.value);
+        r = context.getIdentifier(r.value);
     }
 
     const hash = hashOp(operator, l.getType(), r.getType());
