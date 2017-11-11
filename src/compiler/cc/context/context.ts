@@ -28,7 +28,14 @@ export class Context {
             const msg = `Context Set: Attempted to set non ScadToken value type`;
             console.error(msg);
             throw new Error(msg);
+        }
 
+        debugger;
+        if (!typeof value.getType) {
+            debugger;
+            const msg = `Context Set: attempted to set a value with no 'getType`;
+            console.error(msg);
+            throw new Error(msg);            
         }
         this.container.set(key, value);
     }

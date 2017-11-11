@@ -1,5 +1,5 @@
 import { Context } from '../cc/context/context';
-import {VALUE_TYPE} from "./value-type";
+import { VALUE_TYPE } from "./value-type";
 import getAllTokens from "./getAllTokens";
 
 export class Token {
@@ -50,6 +50,19 @@ export class Value2 extends Evalutable {
     }
 
     getType(): VALUE_TYPE {
+        const type = typeof this.value;
+
+        switch (type) {
+            case "number":
+                return VALUE_TYPE.NUMBER;
+            case "undefined":
+                return VALUE_TYPE.UNDEFINED;
+            case "string":
+                return VALUE_TYPE.STRING;
+            case "boolean":
+                return VALUE_TYPE.BOOLEAN;
+        }
+
         return VALUE_TYPE.NOT_IMP;
     }
 }
@@ -98,10 +111,6 @@ export class Identifier extends Value2 {
     constructor(mooToken: moo.Token) {
         super(mooToken);
     }
-
-    getType(): VALUE_TYPE {
-        return this.getType();
-    }
 }
 
 export class Number extends Value2 {
@@ -115,20 +124,12 @@ export class Number extends Value2 {
             valueToken[0].value = parseFloat(valueToken[0].value);
         }
     }
-
-    getType() {
-        return VALUE_TYPE.NUMBER;
-    }
 }
 
 export class Undefined extends Value2 {
     constructor() {
         const valueToken = makeMooToken(undefined);
         super(valueToken);
-    }
-
-    getType() {
-        return VALUE_TYPE.UNDEFINED;
     }
 }
 
@@ -143,10 +144,6 @@ export class String extends Value2 {
             valueToken[0].value = parseFloat(valueToken[0].value);
         }
     }
-
-    getType() {
-        return VALUE_TYPE.STRING;
-    }
 }
 
 export class Boolean extends Value2 {
@@ -159,10 +156,6 @@ export class Boolean extends Value2 {
             const valueToken = getAllTokens(this);
             valueToken[0].value = valueToken[0].value === "true";
         }
-    }
-
-    getType() {
-        return VALUE_TYPE.BOOLEAN;
     }
 }
 

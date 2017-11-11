@@ -13,7 +13,8 @@
  * If not, return the default.
  */
 import * as TokenType from "./token-type";
-import {VALUE_TYPE} from "./value-type";
+import { VALUE_TYPE } from "./value-type";
+import {Context} from "../cc/context/context"
 
 type hashLookupType = (
     l: TokenType.Token,
@@ -26,29 +27,39 @@ type hashUnaryLookupType = (
     o: TokenType.Token,
 ) => TokenType.Token;
 
-const unaryOperatorLookup: Map<string,hashUnaryLookupType> = new Map();
+const unaryOperatorLookup: Map<string, hashUnaryLookupType> = new Map();
 
 export function runUnaryOp(
+    context: Context,
     operator: string,
     operand: TokenType.Token
-){
+) {
     const op = operand as TokenType.Value2;
     const hash = hashUnaryOp(operator, op.getType());
     const func = unaryOperatorLookup.get(hash) || errorFallbackUnary
-    return func(operand);    
+    return func(operand);
 }
-    
+
 export function runOp(
+    context: Context,
     operator: string,
     lhand: TokenType.Token,
     rhand: TokenType.Token
-) {
-    const l = lhand as TokenType.Value2;
-    const r = rhand as TokenType.Value2;
+) {    
+    let l = lhand as TokenType.Value2;
+    let r = rhand as TokenType.Value2;
+
+    if (l.type === "identifier") {
+        l = context.get(l.value);
+    }
+
+    if (r.type === "identifier") {
+        r = context.get(r.value);
+    }
 
     const hash = hashOp(operator, l.getType(), r.getType());
     const func = operatorLookup.get(hash) || errorFallback
-    return func(lhand, rhand);
+    return func(l, r);
 }
 
 function hashOp(operator: string,

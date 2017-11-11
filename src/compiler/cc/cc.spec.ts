@@ -179,7 +179,6 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (context: Context, expectedValue: any, code: string) => {
-                debugger;
                 const value = context.get('var1').value;
 
                 const [, expression] = code.split('=');
@@ -256,4 +255,24 @@ describe('Running compiler tests', () => {
         });
     });
 
+    it('should evaluate expressions with variables', () => {
+        return new Promise((resolve, reject) => {
+            const tests: [[string,any]] = [
+                ["var1=1;var2=2;result=var1+var2;", 3],
+            ];
+
+            const validate = (context: Context, expectedValue: any, code: string) => {
+                const valueToken = context.get('result');
+                expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
+            }
+
+            const p1 = tests.map(test => {
+                return compileAndRun(test[0], test[1], validate);
+            })
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+        });
+    });
 });

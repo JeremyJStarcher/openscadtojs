@@ -35,7 +35,7 @@ function executeUnaryOperator(
         operandToken = runToken(context, operandToken);
     }
 
-    return runUnaryOp(operator.value, operandToken);
+    return runUnaryOp(context, operator.value, operandToken);
 }
 
 function executeBinaryOperator(
@@ -65,7 +65,7 @@ function executeBinaryOperator(
         context.set(lhandToken.value, rhandToken as TokenType.Value2);
 
     } else {
-        return runOp(operator, lhandToken, rhandToken);
+        return runOp(context, operator, lhandToken, rhandToken);
     }
 
     return TokenType.VALUE_UNDEFINED;
