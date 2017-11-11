@@ -1,13 +1,15 @@
-a1=[0,1,2];
-b1=[3,4,5];
-c1=a1*b1;
+cube(1);
+
+maxValue = max([1, 6]);
+max([1,6]);
+
+module echo() {
+}
+
+echo("maxValue = ");
+echo(maxValue);
 
 
-echo(c1);
-
-
-echo(!1);
-echo("Hi" - "World");
 echo("Hi" / "World");
 echo("Hi" * "World");
 
