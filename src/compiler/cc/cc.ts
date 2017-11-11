@@ -1,4 +1,3 @@
-// import * as rules from '../tokenizer/tokenizer';
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
