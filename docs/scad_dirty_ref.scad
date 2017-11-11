@@ -1,5 +1,19 @@
+echo("Hi" + "World");
+echo("Hi" - "World");
+echo("Hi" / "World");
+echo("Hi" * "World");
+
+
+
+echo(1 + 1);
+echo("Hi" + "World");
+
+echo("1" + 4);
+
+
 
 // k+"Hello";
+
 
 // (1+1)
 

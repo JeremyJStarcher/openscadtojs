@@ -1,12 +1,7 @@
 import { Context } from '../cc/context/context';
 import * as cc from "../cc/cc";
+import { VALUE_TYPE, runOp } from "./operators";
 
-export enum VALUE_TYPE {
-    NOT_IMP,
-    NUMBER,
-    STRING,
-    UNDEFINED
-}
 
 export class Token {
     public toString: () => string;
@@ -232,8 +227,6 @@ function executeBinaryOperator(
     context: Context,
     token: Operator
 ): Token {
-
-
     const lhand = getAllTokens(token.lhand);
     const rhand = getAllTokens(token.rhand);
 
@@ -252,33 +245,20 @@ function executeBinaryOperator(
     }
 
     const operator = token.value;
-    const rval = rhandToken.value;
-    const lval = lhandToken.value;
+    //const lval = lhandToken.value;
+    // const rval = rhandToken.value;
     //    console.log('Step2', 'op', token.value, "l", lval, "r", rval);
 
+    if (operator === "=") {
+        context.set(lhandToken.value, rhandToken as Value2);
 
-    let result = lhandToken;
-    switch (operator) {
-        case '=':
-            context.set(lval, rhandToken as Value2);
-            break;
-        case '+':
-            result = new NumberConstant(lval + rval);
-            break;
-        case '-':
-            result = new NumberConstant(lval - rval);
-            break;
-        case '*':
-            result = new NumberConstant(lval * rval);
-            break;
-        case '/':
-            result = new NumberConstant(lval / rval);
-            break;
-        default:
-            throw new Error(`Unknown operator: ${operator}`)
+    } else {
+        return runOp(operator, lhandToken, rhandToken);
     }
 
-    return result;
+
+    return VALUE_UNDEFINED;
+    // return result;
 
 }
 
@@ -302,3 +282,6 @@ function getAllTokens(ast: Token | Token[]): Token[] {
     }
     return content;
 }
+
+
+export const VALUE_UNDEFINED = new UndefinedConstant();
