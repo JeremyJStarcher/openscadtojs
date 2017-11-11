@@ -25,17 +25,13 @@ function generateAst(source: string): moo.Token[] {
     return tokenList[0];
 }
 
-export async function runOneToken(token: TokenType.Token, context: Context) {
-    runToken(context, token);
-}
-
 export function runAst(ast: TokenType.Token[], context: Context) {
     return new Promise((resolve, reject) => {
 
         try {
             for (let i = 0; i < ast.length; i++) {
                 const token = ast[i];
-                runOneToken(token, context);
+                runToken(context, token);
             }
         } catch (err) {
             reject(err);
@@ -58,7 +54,11 @@ export async function compile(src: string): Promise<TokenType.Token[]> {
 }
 
 export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
-    const filteredTypes = ["eos", "null"];
+    // Get the next token, filtering out token types that are valid, but we are not
+    // interested in seeing.
+   
+
+    const filteredTypes = ["eos"];
 
     if (!Array.isArray(ast)) {
         throw new Error(`tokenFeeder must be given an array`);
@@ -68,9 +68,6 @@ export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
         const token = ast[i];
         if (Array.isArray(token)) {
             const tokenAsArray = token as moo.Token[];
-            if (tokenAsArray.length === 0) {
-                continue;
-            }
             yield* tokenFeeder(tokenAsArray);
         } else {
             if (filteredTypes.indexOf("" + token.type) > -1) {
