@@ -1,3 +1,18 @@
+/*
+ * Rational
+ *
+ * OpenSCAD's grammar will allow applying any operator to any token
+ * type, but very few of those combinations actually make sense
+ * at run-time.  Those that do not make sense return `undef`.
+ *
+ * So we allow registering operators, either in the form of
+ * <operator> <lhand.type> <rhand.type>
+ * <operator> <operand.type>
+ *
+ * If there is a valid function registered, evaluate the operator.
+ * If not, return the default.
+ */
+
 import {
     Token,
     NumberConstant,
@@ -65,7 +80,7 @@ function hashUnaryOp(operator: string,
 }
 
 /*
- * BINARY MATH OPERATORS
+ *  NUMBERS
  */
 
 operatorLookup.set(hashOp("+", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
@@ -85,7 +100,7 @@ operatorLookup.set(hashOp("/", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
 );
 
 /*
- * UNARY OPERATORS
+ * UNARY NUMBERS
  */
 
 unaryOperatorLookup.set(hashUnaryOp("+", VALUE_TYPE.NUMBER),
