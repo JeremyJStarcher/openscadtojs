@@ -160,6 +160,39 @@ export class Boolean extends Value2 {
 }
 
 
+export class Module extends Value2 {
+
+    public arguments: Token[];
+
+
+    constructor(value: moo.Token, args: Token[]) {
+        super(value);
+
+        const argsContainer = getAllTokens(args);
+
+        const realArgsIndent = argsContainer.filter(t => {
+
+            const argumentToken = getAllTokens(t)[0];
+
+            if (typeof argumentToken !== "object") {
+                return false;
+            }
+
+            if (argumentToken.type === "argument_separator") {
+                return false;
+            }
+
+            return true;
+        });
+
+        const cleanArgs = realArgsIndent.map(ra => getAllTokens(ra)[0]);
+        this.arguments = cleanArgs;
+
+        debugger;
+    }
+}
+
+
 function ensureArray(token: Token | Token[]) {
     if (token instanceof Array) {
         return token;

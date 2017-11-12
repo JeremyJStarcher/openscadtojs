@@ -62,12 +62,58 @@ function undefinedConstant(d:any[]) {
 // }
 
 
-function unwrapParens(d:any[]):any  {
-	// console.log("unwrapParens: ", JSON.stringify(d[2]));
+function unwrapParens(d:any[]):any {
+	 // console.log("unwrapParens: ");
 	// "(" _ expression _ ")"
 	//  0  1     2      3  4
 	return d[2];
 }
+
+function moduleCall(d:any[]):any {
+	if (d[0].value !== "echo") {
+		throw new Error("ACK. moduleCall should be ECHO");
+	}
+
+	let inParens = false;
+	let args:any[] = [];
+	
+	d.forEach(item => {
+		 if (Array.isArray(item) && item.length === 0) {
+			 return;
+		}
+
+		if (item.type === "lparen") {
+			inParens = true;
+			return;
+		}
+
+		if (item.type === "rparen") {
+			inParens = false;
+			return;
+		}
+
+		if (!inParens) {
+			return;
+		}
+
+		args = item;
+
+	});
+
+	return new TokenType.Module(d[0], args);
+
+	// //	console.log("MODULE CALL");
+	// console.log(JSON.stringify(d));
+	//  // debugger;
+	// return d;
+}
+
+
+// function debug(d:any[]):any {
+// 	// debugger;
+// 	return d;
+// }
+
 %}
 
 @lexer lexer
@@ -76,8 +122,9 @@ block ->
 	| block statement _
 
 statement
-	-> assignment_expression _ %eos
-#    | labeled_statement
+	-> module_call _ %eos
+#	| assignment_expression _ %eos {% function(d) {return debug(d)} %}
+#	| labeled_statement
 #	| compound_statement
 #	| 
 #	| selection_statement
@@ -85,37 +132,36 @@ statement
 #	| jump_statement
 
 
-
 primary_expression 
 	-> %identifier
-     | constant  
-     | "(" _ expression _ ")" {% function(d) {return unwrapParens(d)} %}
+	| constant  
+	| "(" _ expression _ ")" {% function(d) {return unwrapParens(d)} %}
 
 
 postfix_expression
-     ->  primary_expression
-	 | postfix_expression "[" _ expression _ "]"
-	 | postfix_expression "(" _ ")"
-	 | postfix_expression "(" _ argument_expression_list _ ")"
+	->  primary_expression
+	| postfix_expression "[" _ expression _ "]"
+#	| postfix_expression "(" _ ")"
+#	| postfix_expression "(" _ argument_expression_list _ ")"
 	
 argument_expression_list
-    -> assignment_expression
-     | argument_expression_list _ "," _ assignment_expression
+	-> module_call
+	| argument_expression_list _ "," _ assignment_expression
 
 unary_expression
 	-> postfix_expression
 	| unary_operator _ cast_expression {% unaryOperator %}
 
 unary_operator
-    -> "!"
-     | "+"
-     | "-"
+	-> "!"
+	| "+"
+	| "-"
 	
 cast_expression
 	-> unary_expression
 
 multiplicative_expression
-    -> cast_expression
+	-> cast_expression
 	| multiplicative_expression _ "*" _ cast_expression {% function(d) {return operator(d)} %}
 	| multiplicative_expression _ "/" _ cast_expression {% function(d) {return operator(d)} %}
 	| multiplicative_expression _ "%" _ cast_expression {% function(d) {return operator(d)} %}
@@ -191,14 +237,21 @@ expression
 	
 
 constant
-    -> %string  {% d => stringConstant(d) %}
-	 | %number  {% d => numberConstant(d) %}
-	 | %constant_undefined {% d => undefinedConstant(d) %}
-	 | %constant_boolean {% d => booleanConstant(d) %}
-#     | %predefined_constant {% d => builtInConstant(d) %}
+	-> %string  {% d => stringConstant(d) %}
+	| %number  {% d => numberConstant(d) %}
+	| %constant_undefined {% d => undefinedConstant(d) %}
+	| %constant_boolean {% d => booleanConstant(d) %}
+#	| %predefined_constant {% d => builtInConstant(d) %}
 
 
+module_call
+	-> assignment_expression
+	| %identifier _ "(" _ module_arguments  _ ")" {% moduleCall %}
 
+
+module_arguments
+	-> argument_expression_list
+	| _
 
 # Optional white space
 _ -> null | _ [\s] {% function() {} %}

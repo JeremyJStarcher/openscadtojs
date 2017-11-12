@@ -18,6 +18,7 @@ export const OPENSCAD_RULES: /* moo.Rules */ any = {
     eos: ';',
     keyword: ['true', 'false', 'module', 'function', 'include', 'use', 'echo', 'for', 'intersection_for', 'if', 'else', 'assign'],
     unary_operator: ["!", "+", "-"],
+    argument_separator: ",",
     operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
     NL: { match: /\n/, lineBreaks: true },
 };

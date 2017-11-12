@@ -194,6 +194,7 @@ describe('Tokenizer Tests', () => {
             const res = parser.results as [moo.Token[]];
 
             // console.log("===================================================");
+            // console.log(source);
             // console.log(JSON.stringify(res));
 
             // If the length == 0, there was no valid tree built.
@@ -268,6 +269,15 @@ describe('Tokenizer Tests', () => {
         it('should parse unary -', () => {
             generateAst("line1=-1;    ");
         });
+
+        it('should parse a module call', () => {
+            generateAst("echo();");
+            generateAst("echo(11);");
+            generateAst("echo(22,299);");
+            generateAst("echo(33,399,testVar);");
+            generateAst("echo(v1=1,v2=true);");
+        });
+
 
     });
 });
