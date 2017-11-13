@@ -1,7 +1,6 @@
 import { runOp, runUnaryOp } from "./operators";
 import * as TokenType from "./token-type";
-import getAllTokens from "./getAllTokens";
-import {RunTime} from "../cc/run-time";
+import { RunTime } from "../cc/run-time";
 
 
 export default function runToken(
@@ -26,11 +25,11 @@ function executeUnaryOperator(
     token: TokenType.UnaryOperator
 ): TokenType.Token {
     const operator = token;
-    const operand = getAllTokens(token.operand);
+    const operand = token.operand;
 
-    assert(operand.length === 1, "UnaryOperand length === 1");
+    debugger;
 
-    let operandToken = operand[0];
+    let operandToken = operand;
 
     if (operandToken instanceof TokenType.Evalutable) {
         operandToken = runToken(runtime, operandToken);
@@ -43,14 +42,12 @@ function executeBinaryOperator(
     runtime: RunTime,
     token: TokenType.Operator
 ): TokenType.Token {
-    const lhand = getAllTokens(token.lhand);
-    const rhand = getAllTokens(token.rhand);
 
-    assert(lhand.length === 1, "executeOperator=: lhand.length === 1");
-    assert(rhand.length === 1, "executeOperator=: rhand.length === 1");
+    debugger;
 
-    let lhandToken = lhand[0];
-    let rhandToken = rhand[0];
+    let lhandToken = token.lhand;
+    let rhandToken = token.rhand;
+
 
     if (lhandToken instanceof TokenType.Evalutable) {
         lhandToken = runToken(runtime, lhandToken);
@@ -73,9 +70,9 @@ function executeBinaryOperator(
 }
 
 
-function assert(condition: boolean, message: string) {
-    if (!condition) {
-        throw new Error(`Assert error: ${message} FAILED!`);
-    }
-}
+// function assert(condition: boolean, message: string) {
+//     if (!condition) {
+//         throw new Error(`Assert error: ${message} FAILED!`);
+//     }
+// }
 

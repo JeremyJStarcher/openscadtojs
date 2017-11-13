@@ -84,9 +84,9 @@ function compoundStatement(d:any[]):any {
 	// "{" _ (statement_list) _ "}"
 	//  0  1        2         3  4
 
-	var global: any = Function('return this')() || (42, eval)('this');
-	console.log("code = ", global.HACK_CODE);
-	console.log('length = ', d.length);
+	// const global: any = Function('return this')() || (42, eval)('this');
+	// console.log("code = ", global.HACK_CODE);
+	// console.log('length = ', d.length);
 
 	if (d.length === 3) {
 		return new TokenType.CompoundStatement(d[0], []);

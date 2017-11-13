@@ -37,19 +37,17 @@ export class Context {
 
     private getHash(key: string, ns: NAME_SPACE) {
         const hash = ns + "_" + key;
-        return hash
+        return hash;
     }
 
     private set(key: string, value: TokenType.Value2) {
         if (!(value instanceof TokenType.Value2)) {
-            debugger;
             const msg = `Context Set: Attempted to set non ScadToken value type`;
             console.error(msg);
             throw new Error(msg);
         }
 
         if (!typeof value.getType) {
-            debugger;
             const msg = `Context Set: attempted to set a value with no 'getType`;
             console.error(msg);
             throw new Error(msg);

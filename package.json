@@ -14,7 +14,9 @@
     "clean": "npm cache clear && rimraf -- dist",
     "test": "karma start",
     "testui": "karma start --single-run false",
-    "build:grammar": "nearleyc src/compiler/nearley/grammar.ne > src/compiler/nearley/grammar.ts 2> src/compiler/nearley/grammar.err"
+    "build:grammar": "nearleyc src/compiler/nearley/grammar.ne > src/compiler/nearley/grammar.ts 2> src/compiler/nearley/grammar.err",
+    "g": "npm run build:grammar && npm run testui",
+    "t": "npm run build:grammar && npm run test"
   },
   "repository": {
     "type": "git",

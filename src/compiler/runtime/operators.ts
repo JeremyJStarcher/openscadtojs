@@ -36,7 +36,7 @@ export function runUnaryOp(
 ) {
     const op = operand as TokenType.Value2;
     const hash = hashUnaryOp(operator, op.getType());
-    const func = unaryOperatorLookup.get(hash) || errorFallbackUnary
+    const func = unaryOperatorLookup.get(hash) || errorFallbackUnary;
     return func(operand);
 }
 
@@ -58,7 +58,7 @@ export function runOp(
     }
 
     const hash = hashOp(operator, l.getType(), r.getType());
-    const func = operatorLookup.get(hash) || errorFallback
+    const func = operatorLookup.get(hash) || errorFallback;
     return func(l, r);
 }
 

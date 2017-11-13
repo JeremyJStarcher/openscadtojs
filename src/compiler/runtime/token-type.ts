@@ -1,6 +1,5 @@
 import { Context } from '../cc/context/context';
 import { VALUE_TYPE } from "./value-type";
-import getAllTokens from "./getAllTokens";
 
 
 export enum TokenTypes {
@@ -13,14 +12,12 @@ export enum TokenTypes {
     identifier = "identifier",
     compound_statement = "compound_statement",
     "undefined" = "undefined"
-};
-
-
+}
 
 
 export class Token {
     public toString: () => string;
-    public type = "operator"
+    public type = "operator";
     public value: any;
     public offset: number;
     public size: number;
@@ -37,7 +34,7 @@ export class Token {
         //     console.log(JSON.stringify(mooToken));
         // }
         // console.log("tokenType: ", tokenType, " <-- ", mooToken.type);
-        this.type = tokenType
+        this.type = tokenType;
 
 
         // this.type = mooToken.type;
@@ -105,8 +102,8 @@ export class Value2 extends Evalutable {
 }
 
 export class Operator extends Value2 {
-    public lhand: Token[];
-    public rhand: Token[];
+    public lhand: Token;
+    public rhand: Token;
 
     constructor(
         mooToken: moo.Token,
@@ -114,13 +111,13 @@ export class Operator extends Value2 {
         rhand: Token) {
         super(mooToken);
 
-        this.lhand = ensureArray(lhand);
-        this.rhand = ensureArray(rhand);
+        this.lhand = lhand;
+        this.rhand = rhand;
     }
 }
 
 export class UnaryOperator extends Value2 {
-    public operand: Token[];
+    public operand: Token;
 
     constructor(
         mooToken: moo.Token | moo.Token[],
@@ -139,7 +136,7 @@ export class UnaryOperator extends Value2 {
         }
 
         super(getInnerValue(mooToken));
-        this.operand = ensureArray(operand);
+        this.operand = operand;
     }
 
 }
@@ -157,8 +154,8 @@ export class Number extends Value2 {
             super(valueToken);
         } else {
             super(value);
-            const valueToken = getAllTokens(this);
-            valueToken[0].value = parseFloat(valueToken[0].value);
+
+            this.value = parseFloat(value.value);
         }
     }
 }
@@ -177,8 +174,7 @@ export class String extends Value2 {
             super(valueToken);
         } else {
             super(value);
-            const valueToken = getAllTokens(this);
-            valueToken[0].value = parseFloat(valueToken[0].value);
+            this.value = "" + this.value;
         }
     }
 }
@@ -190,8 +186,8 @@ export class Boolean extends Value2 {
             super(valueToken);
         } else {
             super(value);
-            const valueToken = getAllTokens(this);
-            valueToken[0].value = valueToken[0].value === "true";
+
+            this.value = this.value === "true";
         }
     }
 }
@@ -205,11 +201,11 @@ export class Module extends Value2 {
     constructor(value: moo.Token, args: Token[]) {
         super(value);
 
-        const argsContainer = getAllTokens(args);
+        const argsContainer = args;
 
         const realArgsIndent = argsContainer.filter(t => {
 
-            const argumentToken = getAllTokens(t)[0];
+            const argumentToken = t;
 
             if (typeof argumentToken !== "object") {
                 return false;
