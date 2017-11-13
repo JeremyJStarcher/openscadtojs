@@ -218,18 +218,9 @@ export class Module extends Value2 {
             return true;
         });
 
-        const cleanArgs = realArgsIndent.map(ra => getAllTokens(ra)[0]);
+        const cleanArgs = realArgsIndent.map(ra => ra);
         this.arguments = cleanArgs;
-        debugger;
-    }
-}
 
-
-function ensureArray(token: Token | Token[]) {
-    if (token instanceof Array) {
-        return token;
-    } else {
-        return [token];
     }
 }
 

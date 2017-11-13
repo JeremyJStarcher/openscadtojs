@@ -27,8 +27,6 @@ function executeUnaryOperator(
     const operator = token;
     const operand = token.operand;
 
-    debugger;
-
     let operandToken = operand;
 
     if (operandToken instanceof TokenType.Evalutable) {
@@ -42,8 +40,6 @@ function executeBinaryOperator(
     runtime: RunTime,
     token: TokenType.Operator
 ): TokenType.Token {
-
-    debugger;
 
     let lhandToken = token.lhand;
     let rhandToken = token.rhand;
@@ -68,11 +64,3 @@ function executeBinaryOperator(
 
     return TokenType.VALUE_UNDEFINED;
 }
-
-
-// function assert(condition: boolean, message: string) {
-//     if (!condition) {
-//         throw new Error(`Assert error: ${message} FAILED!`);
-//     }
-// }
-

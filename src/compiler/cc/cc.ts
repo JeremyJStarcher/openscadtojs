@@ -56,7 +56,6 @@ function generateAst(source: string): moo.Token[] {
 }
 
 export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableIterator<boolean> {
-  debugger;
 
   for (let i = 0; i < ast.length; i++) {
     const token = ast[i];
@@ -70,8 +69,6 @@ export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableItera
       yield* runAst(runtime, token);
       return;
     }
-
-    debugger;
 
     runToken(runtime, token);
     yield true;

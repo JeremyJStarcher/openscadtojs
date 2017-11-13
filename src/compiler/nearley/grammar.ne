@@ -1,5 +1,7 @@
 @preprocessor typescript
 @{%
+/* tslint:disable:whitespace indent no-trailing-whitespace semicolon no-var-keyword */
+
 
 // Large parts of this grammar were ripped from
 // "docs/referencs/ANSI C grammar (Yacc).html"
