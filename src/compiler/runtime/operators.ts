@@ -49,13 +49,6 @@ export function runOp(
     let l = lhand as TokenType.Value2;
     let r = rhand as TokenType.Value2;
 
-    if (l.type === "identifier") {
-        l = runtime.context.getIdentifier(l.value);
-    }
-
-    if (r.type === "identifier") {
-        r = runtime.context.getIdentifier(r.value);
-    }
 
     const hash = hashOp(operator, l.getType(), r.getType());
     const func = operatorLookup.get(hash) || errorFallback;

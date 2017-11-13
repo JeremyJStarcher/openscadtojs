@@ -50,26 +50,36 @@ function generateAst(source: string): moo.Token[] {
     }
 
     const newList = deNestify(tokenList[0]);
+
+    console.log("AST: ", JSON.stringify(newList));
+
     return newList;
 }
 
 export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableIterator<boolean> {
+    
+    try {
+        for (let i = 0; i < ast.length; i++) {
+            const token = ast[i];
 
-    for (let i = 0; i < ast.length; i++) {
-        const token = ast[i];
+            if (token instanceof TokenType.CompoundStatement) {
+                yield* runAst(runtime, token.statements);
+            } else if (Array.isArray(token)) {
+                if (token.length === 0) {
+                    continue;
+                }
 
-        if (token instanceof TokenType.CompoundStatement) {
-            yield* runAst(runtime, token.statements);
-            return;
+                yield* runAst(runtime, token);
+            } else {
+
+                runToken(runtime, token);
+                yield true;
+            }
         }
-
-        if (Array.isArray(token)) {
-            yield* runAst(runtime, token);
-            return;
-        }
-
-        runToken(runtime, token);
-        yield true;
+    } catch (err) {
+        debugger;
+        console.error(`Something bad happened in runAst`, err.message);
+        throw (err);
     }
 }
 

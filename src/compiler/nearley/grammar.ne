@@ -247,9 +247,11 @@ compound_statement
 	-> "{" _ "}" {% compoundStatement %}
 	| "{" _ (statement_list) _ "}" {% compoundStatement %}
 
+
 statement_list
 	-> statement
-	| statement_list statement
+	| statement_list statement {% function(d) {return d[0].concat([d[1]])} %}
+
 
 
 # Optional white space

@@ -53,12 +53,26 @@ function executeBinaryOperator(
         rhandToken = runToken(runtime, rhandToken);
     }
 
+
     const operator = token.value;
 
     if (operator === "=") {
-        runtime.context.setIdentifier(lhandToken.value, rhandToken as TokenType.Value2);
+        if (rhandToken.type === "identifier") {
+            rhandToken = runtime.context.getIdentifier(rhandToken.value);
+        }
 
+
+        runtime.context.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
     } else {
+
+        if (lhandToken.type === "identifier") {
+            lhandToken = runtime.context.getIdentifier(lhandToken.value);
+        }
+
+        if (rhandToken.type === "identifier") {
+            rhandToken = runtime.context.getIdentifier(rhandToken.value);
+        }
+
         return runOp(runtime, operator, lhandToken, rhandToken);
     }
 
