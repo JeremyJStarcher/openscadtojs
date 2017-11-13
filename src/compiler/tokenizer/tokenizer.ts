@@ -17,6 +17,8 @@ export const OPENSCAD_RULES: /* moo.Rules */ any = {
     rparen: ')',
     eos: ';',
     keyword: ['true', 'false', 'module', 'function', 'include', 'use', 'echo', 'for', 'intersection_for', 'if', 'else', 'assign'],
+    lbrace: '{',
+    rbrace: '}',
     unary_operator: ["!", "+", "-"],
     argument_separator: ",",
     operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],

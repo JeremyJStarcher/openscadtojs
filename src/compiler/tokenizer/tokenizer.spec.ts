@@ -188,19 +188,24 @@ describe('Tokenizer Tests', () => {
     });
 
     describe('Testing nearly', () => {
-        function generateAst(source: string) {
+        function generateAst(code: string) {
+
+            var global: any = Function('return this')() || (42, eval)('this');
+            global.HACK_CODE = code;
+    
+
             const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-            parser.feed(source);
+            parser.feed(code);
             const res = parser.results as [moo.Token[]];
 
             // console.log("===================================================");
-            // console.log(source);
+            // console.log(code);
             // console.log(JSON.stringify(res));
 
             // If the length == 0, there was no valid tree built.
             // if the length > 1, there is ambiguous grammar that can be parsed
             //   multiple ways.  Either condition is bad. 
-            expect(res.length).toBe(1, `AST length should === 1 for ${source}`);
+            expect(res.length).toBe(1, `AST length should === 1 for ${code}`);
             return res;
         }
 
@@ -276,6 +281,13 @@ describe('Tokenizer Tests', () => {
             generateAst("echo(22,299);");
             generateAst("echo(33,399,testVar);");
             generateAst("echo(v1=1,v2=true);");
+        });
+
+
+        it('should parse a compound statement', () => {
+            generateAst("{}");
+            generateAst("{var1=1;}");
+            generateAst("{var2=2;var22=22;}");
         });
 
 

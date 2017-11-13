@@ -14,7 +14,7 @@
  */
 import * as TokenType from "./token-type";
 import { VALUE_TYPE } from "./value-type";
-import {Context} from "../cc/context/context"
+import { RunTime } from "../cc/run-time";
 
 type hashLookupType = (
     l: TokenType.Token,
@@ -30,7 +30,7 @@ type hashUnaryLookupType = (
 const unaryOperatorLookup: Map<string, hashUnaryLookupType> = new Map();
 
 export function runUnaryOp(
-    context: Context,
+    runtime: RunTime,
     operator: string,
     operand: TokenType.Token
 ) {
@@ -41,20 +41,20 @@ export function runUnaryOp(
 }
 
 export function runOp(
-    context: Context,
+    runtime: RunTime,
     operator: string,
     lhand: TokenType.Token,
     rhand: TokenType.Token
-) {    
+) {
     let l = lhand as TokenType.Value2;
     let r = rhand as TokenType.Value2;
 
     if (l.type === "identifier") {
-        l = context.getIdentifier(l.value);
+        l = runtime.context.getIdentifier(l.value);
     }
 
     if (r.type === "identifier") {
-        r = context.getIdentifier(r.value);
+        r = runtime.context.getIdentifier(r.value);
     }
 
     const hash = hashOp(operator, l.getType(), r.getType());

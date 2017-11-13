@@ -71,49 +71,37 @@ function unwrapParens(d:any[]):any {
 
 function moduleCall(d:any[]):any {
 	if (d[0].value !== "echo") {
-		throw new Error("ACK. moduleCall should be ECHO");
+		throw new Error("ACK. moduleCall should be 'echo'");
 	}
 
-	let inParens = false;
-	let args:any[] = [];
-	
-	d.forEach(item => {
-		 if (Array.isArray(item) && item.length === 0) {
-			 return;
-		}
+	// <name> _ "(" _ expression _ ")"
+	//  0     1  2  3     4      5  6
 
-		if (item.type === "lparen") {
-			inParens = true;
-			return;
-		}
+	return new TokenType.Module(d[0], d[4]);
+}
 
-		if (item.type === "rparen") {
-			inParens = false;
-			return;
-		}
+function compoundStatement(d:any[]):any {
+	// "{" _ (statement_list) _ "}"
+	//  0  1        2         3  4
 
-		if (!inParens) {
-			return;
-		}
+	var global: any = Function('return this')() || (42, eval)('this');
+	console.log("code = ", global.HACK_CODE);
+	console.log('length = ', d.length);
 
-		args = item;
-
-	});
-
-	return new TokenType.Module(d[0], args);
-
-	// //	console.log("MODULE CALL");
-	// console.log(JSON.stringify(d));
-	//  // debugger;
-	// return d;
+	if (d.length === 3) {
+		return new TokenType.CompoundStatement(d[0], []);
+	} 
+	if (d.length === 5) {
+		return new TokenType.CompoundStatement(d[0], d[2]);
+	}
 }
 
 
-// function debug(d:any[]):any {
-// 	// debugger;
-// 	return d;
-// }
-
+ function debug(d:any[]):any {
+ 	debugger;
+ 	return d;
+ }
+void(debug);
 %}
 
 @lexer lexer
@@ -125,7 +113,7 @@ statement
 	-> module_call _ %eos
 #	| assignment_expression _ %eos {% function(d) {return debug(d)} %}
 #	| labeled_statement
-#	| compound_statement
+	| compound_statement
 #	| 
 #	| selection_statement
 #	| iteration_statement
@@ -246,12 +234,21 @@ constant
 
 module_call
 	-> assignment_expression
-	| %identifier _ "(" _ module_arguments  _ ")" {% moduleCall %}
+	| %identifier _ "(" _ ( module_arguments ) _ ")" {% moduleCall %}
 
 
 module_arguments
 	-> argument_expression_list
 	| _
+
+compound_statement
+	-> "{" _ "}" {% compoundStatement %}
+	| "{" _ (statement_list) _ "}" {% compoundStatement %}
+
+statement_list
+	-> statement
+	| statement_list statement
+
 
 # Optional white space
 _ -> null | _ [\s] {% function() {} %}

@@ -1,27 +1,28 @@
-import { Context } from '../cc/context/context';
 import { runOp, runUnaryOp } from "./operators";
 import * as TokenType from "./token-type";
 import getAllTokens from "./getAllTokens";
+import {RunTime} from "../cc/run-time";
+
 
 export default function runToken(
-    context: Context,
+    runtime: RunTime,
     token: TokenType.Evalutable
 ): TokenType.Token {
 
     if (token instanceof TokenType.UnaryOperator) {
-        const ret = executeUnaryOperator(context, token);
+        const ret = executeUnaryOperator(runtime, token);
         return ret;
     }
 
     if (token instanceof TokenType.Operator) {
-        return executeBinaryOperator(context, token);
+        return executeBinaryOperator(runtime, token);
     }
 
     return token;
 }
 
 function executeUnaryOperator(
-    context: Context,
+    runtime: RunTime,
     token: TokenType.UnaryOperator
 ): TokenType.Token {
     const operator = token;
@@ -32,14 +33,14 @@ function executeUnaryOperator(
     let operandToken = operand[0];
 
     if (operandToken instanceof TokenType.Evalutable) {
-        operandToken = runToken(context, operandToken);
+        operandToken = runToken(runtime, operandToken);
     }
 
-    return runUnaryOp(context, operator.value, operandToken);
+    return runUnaryOp(runtime, operator.value, operandToken);
 }
 
 function executeBinaryOperator(
-    context: Context,
+    runtime: RunTime,
     token: TokenType.Operator
 ): TokenType.Token {
     const lhand = getAllTokens(token.lhand);
@@ -52,20 +53,20 @@ function executeBinaryOperator(
     let rhandToken = rhand[0];
 
     if (lhandToken instanceof TokenType.Evalutable) {
-        lhandToken = runToken(context, lhandToken);
+        lhandToken = runToken(runtime, lhandToken);
     }
 
     if (rhandToken instanceof TokenType.Evalutable) {
-        rhandToken = runToken(context, rhandToken);
+        rhandToken = runToken(runtime, rhandToken);
     }
 
     const operator = token.value;
 
     if (operator === "=") {
-        context.setIdentifier(lhandToken.value, rhandToken as TokenType.Value2);
+        runtime.context.setIdentifier(lhandToken.value, rhandToken as TokenType.Value2);
 
     } else {
-        return runOp(context, operator, lhandToken, rhandToken);
+        return runOp(runtime, operator, lhandToken, rhandToken);
     }
 
     return TokenType.VALUE_UNDEFINED;

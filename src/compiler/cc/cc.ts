@@ -1,9 +1,10 @@
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
-import { Context } from './context/context';
 import * as TokenType from "../runtime/token-type";
 import runToken from "../runtime/run";
+import {RunTime} from "./run-time";
+
 
 function generateAst(source: string): moo.Token[] {
 
@@ -25,13 +26,21 @@ function generateAst(source: string): moo.Token[] {
     return tokenList[0];
 }
 
-export function runAst(ast: TokenType.Token[], context: Context) {
+export function runAst(runtime: RunTime, ast: TokenType.Token[]) {
     return new Promise((resolve, reject) => {
 
         try {
             for (let i = 0; i < ast.length; i++) {
                 const token = ast[i];
-                runToken(context, token);
+
+                if (token instanceof TokenType.CompoundStatement) {
+
+                    console.log("Entering compound statement");
+                    runAst(runtime, token.statements);
+                    console.log("Leaving compound statement");
+                } else {
+                    runToken(runtime, token);
+                }
             }
         } catch (err) {
             debugger;
@@ -57,7 +66,7 @@ export async function compile(src: string): Promise<TokenType.Token[]> {
 export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
     // Get the next token, filtering out token types that are valid, but we are not
     // interested in seeing.
-   
+
 
     const filteredTypes = ["eos"];
 

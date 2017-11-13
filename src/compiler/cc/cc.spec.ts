@@ -1,5 +1,6 @@
 import { Logger } from '../logger/logger';
 import { Context } from './context/context';
+import { RunTime } from "../cc/run-time";
 import * as TokenType from "../runtime/token-type";
 import * as cc from "./cc";
 
@@ -130,19 +131,29 @@ describe('Running compiler tests', () => {
     function compileAndRun(
         code: string,
         expectedValue: any,
-        validate: (context: Context, expectedValue: any, code: string) => void
+        validate: (runtime: RunTime, expectedValue: any, code: string) => void
     ) {
+
+        var global: any = Function('return this')() || (42, eval)('this');
+        global.HACK_CODE = code;
+
         new Promise((resolve, reject) => {
             const logger = new Logger();
             const context = new Context(null, logger);
 
+            const runtime = new RunTime();
+            runtime.context = context;
+            runtime.logger = logger;
+            runtime.source = code;
+
+
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
-                return cc.runAst(content, context);
+                return cc.runAst(runtime, content);
             }).catch(err => {
                 fail(err.message + ": " + code);
             }).then(() => {
-                validate(context, expectedValue, code);
+                validate(runtime, expectedValue, code);
             }).catch(err => {
                 expect(true).toBe(false, err.message + ": " + code);
                 reject(err);
@@ -178,8 +189,8 @@ describe('Running compiler tests', () => {
                 ["var1=- 1 +(50- -2);", "51"]
             ];
 
-            const validate = (context: Context, expectedValue: any, code: string) => {
-                const value = context.getIdentifier('var1').value;
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                const value = runtime.context.getIdentifier('var1').value;
 
                 const [, expression] = code.split('=');
                 const jsValue = eval(expression);
@@ -211,8 +222,8 @@ describe('Running compiler tests', () => {
                 ["var1=false;", false]
             ];
 
-            const validate = (context: Context, expectedValue: any, code: string) => {
-                const valueToken = context.getIdentifier('var1');
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                const valueToken = runtime.context.getIdentifier('var1');
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             }
 
@@ -241,7 +252,7 @@ describe('Running compiler tests', () => {
                 ["afalse=true;", false]
             ];
 
-            const validate = (context: Context, expectedValue: any, code: string) => {
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
                 // If we get this far, we are valid.
             }
 
@@ -257,12 +268,12 @@ describe('Running compiler tests', () => {
 
     it('should evaluate expressions with variables', () => {
         return new Promise((resolve, reject) => {
-            const tests: [[string,any]] = [
+            const tests: [[string, any]] = [
                 ["var1=1;var2=2;result=var1+var2;", 3],
             ];
 
-            const validate = (context: Context, expectedValue: any, code: string) => {
-                const valueToken = context.getIdentifier('result');
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                const valueToken = runtime.context.getIdentifier('result');
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             }
 
@@ -275,4 +286,31 @@ describe('Running compiler tests', () => {
             });
         });
     });
+
+    fit('should evaluate a compound_statement', () => {
+
+        // Compound statements, by themselves, do not create a new scope.
+        // only when used with an 'if' or something like that.
+
+        return new Promise((resolve, reject) => {
+            const tests: [[string, any]] = [
+                ["{ }", 3],
+                ["{ var1=1;var2=2;result=var1+var2; }", 3],
+            ];
+
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                const valueToken = runtime.context.getIdentifier('result');
+                expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
+            }
+
+            const p1 = tests.map(test => {
+                return compileAndRun(test[0], test[1], validate);
+            })
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+        });
+    });
+
 });

@@ -2,9 +2,25 @@ import { Context } from '../cc/context/context';
 import { VALUE_TYPE } from "./value-type";
 import getAllTokens from "./getAllTokens";
 
+
+export enum TokenTypes {
+    /* SCad name */  /* Moo Name */
+    operator = "operator",
+    number = "number",
+    unary_operator = "unary_operator",
+    constant_boolean = "constant_boolean",
+    string = "string",
+    identifier = "identifier",
+    compound_statement = "compound_statement",
+    "undefined" = "undefined"
+};
+
+
+
+
 export class Token {
     public toString: () => string;
-    public type?: string;
+    public type = "operator"
     public value: any;
     public offset: number;
     public size: number;
@@ -14,7 +30,18 @@ export class Token {
 
     constructor(mooToken: moo.Token) {
         this.toString = mooToken.toString;
-        this.type = mooToken.type;
+
+        const tokenType = TokenTypes[mooToken.type || "none"];
+        // if (tokenType === undefined) {
+        //     console.error(`TokenConstructor. known tokentype from Moo [${mooToken.type}]`);
+        //     console.log(JSON.stringify(mooToken));
+        // }
+        // console.log("tokenType: ", tokenType, " <-- ", mooToken.type);
+        this.type = tokenType
+
+
+        // this.type = mooToken.type;
+
         this.value = mooToken.value;
         this.offset = mooToken.offset;
         this.size = mooToken.size;
@@ -42,6 +69,16 @@ function makeMooToken(value: any) {
 
 export class Evalutable extends Token {
 
+}
+
+export class CompoundStatement extends Token {
+    public statements: Token[];
+
+    constructor(mooToken: moo.Token, statements: Token[]) {
+        super(mooToken);
+
+        this.statements = statements;
+    }
 }
 
 export class Value2 extends Evalutable {
@@ -187,7 +224,6 @@ export class Module extends Value2 {
 
         const cleanArgs = realArgsIndent.map(ra => getAllTokens(ra)[0]);
         this.arguments = cleanArgs;
-
         debugger;
     }
 }
