@@ -7,7 +7,8 @@ OpenSCAD works quite differently than most other languages and, as a result, req
 
 The following code will explain the difference:
 
-```// Assign some geometry so the thing will run.
+```
+// Assign some geometry so the thing will run.
 cube(1);
 
 
