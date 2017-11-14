@@ -107,155 +107,155 @@ void(debug);
 
 @lexer lexer
 block -> 
-	_ statement _							
-	| block statement _						
+	_ statement _
+	| block statement _
 
 statement
-	-> module_call _ %eos					{% id %}
-#	| assignment_expression _ %eos			{% function(d) {return debug(d)} %}
-#	| labeled_statement						{% id %}
-	| compound_statement					{% id %}
+	-> module_call _ %eos				{% id %}
+#	| assignment_expression _ %eos		{% function(d) {return debug(d)} %}
+#	| labeled_statement					{% id %}
+	| compound_statement				{% id %}
 #	| 
-#	| selection_statement					{% id %}
-#	| iteration_statement					{% id %}
-#	| jump_statement						{% id %}
+#	| selection_statement				{% id %}
+#	| iteration_statement				{% id %}
+#	| jump_statement					{% id %}
 
 
 primary_expression
-	-> %identifier							{% id %}
-	| constant								{% id %}
-	| "(" _ expression _ ")"				{% function(d) {return unwrapParens(d)} %}
+	-> %identifier						{% id %}
+	| constant							{% id %}
+	| "(" _ expression _ ")"			{% unwrapParens %}
 
 
 postfix_expression
-	->  primary_expression					{% id %}
+	->  primary_expression				{% id %}
 	| postfix_expression "[" _ expression _ "]"	{% id %}
 #	| postfix_expression "(" _ ")"
 #	| postfix_expression "(" _ argument_expression_list _ ")"
 	
 argument_expression_list
-	-> module_call							{% id %}
-	| argument_expression_list _ "," _ assignment_expression 	{% id %}
+	-> module_call						{% id %}
+	| argument_expression_list _ "," _ assignment_expression {% id %}
 
 unary_expression
-	-> postfix_expression			{% id %}
-	| unary_operator _ cast_expression {% unaryOperator %}
+	-> postfix_expression				{% id %}
+	| unary_operator _ cast_expression	{% unaryOperator %}
 
 unary_operator
-	-> "!"		{% id %}
-	| "+"	{% id %}
-	| "-"	{% id %}
+	-> "!"								{% id %}
+	| "+"								{% id %}
+	| "-"								{% id %}
 	
 cast_expression
-	-> unary_expression	{% id %}
+	-> unary_expression					{% id %}
 
 multiplicative_expression
-	-> cast_expression 	{% id %}
-	| multiplicative_expression _ "*" _ cast_expression {% function(d) {return operator(d)} %}
-	| multiplicative_expression _ "/" _ cast_expression {% function(d) {return operator(d)} %}
-	| multiplicative_expression _ "%" _ cast_expression {% function(d) {return operator(d)} %}
+	-> cast_expression {% id %}
+	| multiplicative_expression _ "*" _ cast_expression {% operator %}
+	| multiplicative_expression _ "/" _ cast_expression {% operator %}
+	| multiplicative_expression _ "%" _ cast_expression {% operator %}
 	
 
 additive_expression
 	-> multiplicative_expression {% id %}
-	| additive_expression _ "+" _ multiplicative_expression {% function(d) {return operator(d)} %}
-	| additive_expression _ "-" _ multiplicative_expression {% function(d) {return operator(d)} %}
+	| additive_expression _ "+" _ multiplicative_expression {% operator %}
+	| additive_expression _ "-" _ multiplicative_expression {% operator %}
 	
 
 shift_expression
 	-> additive_expression {% id %}
-	| shift_expression _ "<<" _ additive_expression {% function(d) {return operator(d)} %}
-	| shift_expression _ ">>" _ additive_expression {% function(d) {return operator(d)} %}
+	| shift_expression _ "<<" _ additive_expression {% operator %}
+	| shift_expression _ ">>" _ additive_expression {% operator %}
 	
 
 relational_expression
-	-> shift_expression	{% id %}
-	| relational_expression _ "<" _ shift_expression {% function(d) {return operator(d)} %}
-	| relational_expression _ ">" _ shift_expression {% function(d) {return operator(d)} %}
-	| relational_expression _ "<=" _ shift_expression {% function(d) {return operator(d)} %}
-	| relational_expression  _ ">=" _ shift_expression {% function(d) {return operator(d)} %}
+	-> shift_expression{% id %}
+	| relational_expression _ "<" _ shift_expression {% operator %}
+	| relational_expression _ ">" _ shift_expression {% operator %}
+	| relational_expression _ "<=" _ shift_expression {% operator %}
+	| relational_expression  _ ">=" _ shift_expression {% operator %}
 	
 
 equality_expression
-	-> relational_expression	{% id %}
-	| equality_expression _ "==" _ relational_expression {% function(d) {return operator(d)} %}
-	| equality_expression _ "!=" _ relational_expression {% function(d) {return operator(d)} %}
+	-> relational_expression{% id %}
+	| equality_expression _ "==" _ relational_expression {% operator %}
+	| equality_expression _ "!=" _ relational_expression {% operator %}
 	
 
 and_expression
-	-> equality_expression	{% id %}
-	| and_expression _ "&" _ equality_expression {% function(d) {return operator(d)} %}
+	-> equality_expression							{% id %}
+	| and_expression _ "&" _ equality_expression	{% operator %}
 	
 
 exclusive_or_expression
-	-> and_expression	{% id %}
-	| exclusive_or_expression _ "^" _ and_expression {% function(d) {return operator(d)} %}
+	-> and_expression									{% id %}
+	| exclusive_or_expression _ "^" _ and_expression	{% operator %}
 	
 
 inclusive_or_expression
-	-> exclusive_or_expression	{% id %}
-	| inclusive_or_expression _ "|" _ exclusive_or_expression {% function(d) {return operator(d)} %}
+	-> exclusive_or_expression									{% id %}
+	| inclusive_or_expression _ "|" _ exclusive_or_expression	{% operator %}
 	
 
 logical_and_expression
-	-> inclusive_or_expression	{% id %}
-	| logical_and_expression _ "&&" _ inclusive_or_expression {% function(d) {return operator(d)} %}
+	-> inclusive_or_expression									{% id %}
+	| logical_and_expression _ "&&" _ inclusive_or_expression	{% operator %}
 	
 
 logical_or_expression
-	-> logical_and_expression	{% id %}
-	| logical_or_expression _ "||" _ logical_and_expression {% function(d) {return operator(d)} %}
+	-> logical_and_expression									{% id %}
+	| logical_or_expression _ "||" _ logical_and_expression		{% operator %}
 	
 
 conditional_expression
-	-> logical_or_expression	{% id %}
+	-> logical_or_expression									{% id %}
 	| logical_or_expression _ "?" _ expression _ ":" _ conditional_expression
 	
 
 assignment_expression
-	-> conditional_expression	{% id %}
-	| %identifier _ assignment_operator _ assignment_expression {% function(d) {return operator(d)} %}
+	-> conditional_expression									{% id %}
+	| %identifier _ assignment_operator _ assignment_expression	{% operator %}
 	
 
 assignment_operator
 	-> "="	{% id %}
 
 expression
-	-> assignment_expression	{% id %}
+	-> assignment_expression					{% id %}
 	| expression _ "," _ assignment_expression	{% id %}
 	
 
 constant
-	-> %string  {% d => stringConstant(d) %}
-	| %number  {% d => numberConstant(d) %}
-	| %constant_undefined {% d => undefinedConstant(d) %}
-	| %constant_boolean {% d => booleanConstant(d) %}
-#	| %predefined_constant {% d => builtInConstant(d) %}
+	-> %string									{% stringConstant %}
+	| %number									{% numberConstant %}
+	| %constant_undefined						{% undefinedConstant %}
+	| %constant_boolean							{% booleanConstant %}
+#	| %predefined_constant						{% builtInConstant %}
 
 
 module_call
-	-> assignment_expression	{% id %}
-	| %identifier _ "(" _ ( module_arguments ) _ ")" {% moduleCall %}
+	-> assignment_expression							{% id %}
+	| %identifier _ "(" _ ( module_arguments ) _ ")"	{% moduleCall %}
 
 
 module_arguments
 	-> argument_expression_list	{% id %}
-	| _	{% id %}
+	| _							{% id %}
 
 compound_statement
-	-> "{" _ "}" {% compoundStatement %}
-	| "{" _ (statement_list) _ "}" {% compoundStatement %}
+	-> "{" _ "}"						{% compoundStatement %}
+	| "{" _ (statement_list) _ "}"		{% compoundStatement %}
 
 
 statement_list
-	-> statement	
-	| statement_list statement {% function(d) {return d[0].concat([d[1]])} %}
+	-> statement
+	| statement_list statement 			{% d => d[0].concat([d[1]]) %}
 
 
 
 # Optional white space
-_ -> null | _ [\s] {% function() {} %}
+_ -> null | _ [\s]						{% function() {} %}
 # Required white space
-__ -> [\s] | __ [\s] {% function() {} %}
+__ -> [\s] | __ [\s]					{% function() {} %}
 
 
