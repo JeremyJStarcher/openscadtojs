@@ -58,19 +58,18 @@ function executeBinaryOperator(
 
     if (operator === "=") {
         if (rhandToken.type === "identifier") {
-            rhandToken = runtime.context.getIdentifier(rhandToken.value);
+            rhandToken = runtime.getIdentifier(rhandToken.value);
         }
 
-
-        runtime.context.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
+        runtime.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
     } else {
 
         if (lhandToken.type === "identifier") {
-            lhandToken = runtime.context.getIdentifier(lhandToken.value);
+            lhandToken = runtime.getIdentifier(lhandToken.value);
         }
 
         if (rhandToken.type === "identifier") {
-            rhandToken = runtime.context.getIdentifier(rhandToken.value);
+            rhandToken = runtime.getIdentifier(rhandToken.value);
         }
 
         return runOp(runtime, operator, lhandToken, rhandToken);

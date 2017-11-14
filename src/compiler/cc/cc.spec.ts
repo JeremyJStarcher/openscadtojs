@@ -1,5 +1,3 @@
-import { Logger } from '../logger/logger';
-import { Context } from './context/context';
 import { RunTime } from "../cc/run-time";
 import * as TokenType from "../runtime/token-type";
 import * as cc from "./cc";
@@ -140,14 +138,7 @@ describe('Running compiler tests', () => {
         global.HACK_CODE = code;
 
         new Promise((resolve, reject) => {
-            const logger = new Logger();
-            const context = new Context(null, logger);
-
-            const runtime = new RunTime();
-            runtime.context = context;
-            runtime.logger = logger;
-            runtime.source = code;
-
+            const runtime = new RunTime(code);
 
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
@@ -192,7 +183,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                const value = runtime.context.getIdentifier('var1').value;
+                const value = runtime.getIdentifier('var1').value;
 
                 const [, expression] = code.split('=');
                 const jsValue = (1, eval)(expression);
@@ -225,7 +216,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                const valueToken = runtime.context.getIdentifier('var1');
+                const valueToken = runtime.getIdentifier('var1');
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             };
 
@@ -275,7 +266,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                const valueToken = runtime.context.getIdentifier('result');
+                const valueToken = runtime.getIdentifier('result');
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             };
 
