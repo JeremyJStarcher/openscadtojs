@@ -21,43 +21,44 @@ function generateAst(source: string): moo.Token[] {
         throw new Error('Ambiguous grammar -- internal parsing error');
     }
 
-    // The AST comes out *extremely* and horridly nested.
-    // Each parse type that the object travels through becomes another level of
-    // nesting.
-    // Make it pretty.
-    function deNestify(arr: any[] | any): any {
+    // // The AST comes out *extremely* and horridly nested.
+    // // Each parse type that the object travels through becomes another level of
+    // // nesting.
+    // // Make it pretty.
+    // function deNestify(arr: any[] | any): any {
 
-        if (Array.isArray(arr) && arr.length === 1) {
-            // This is what we are really getting rid of -- things with one level of indent.
-            return deNestify(arr[0]);
-        } else if (Array.isArray(arr)) {
-            const out: any[] = [];
-            arr.forEach(item => {
-                out.push(deNestify(item));
-            });
+    //     if (Array.isArray(arr) && arr.length === 1) {
+    //         // This is what we are really getting rid of -- things with one level of indent.
+    //         return deNestify(arr[0]);
+    //     } else if (Array.isArray(arr)) {
+    //         const out: any[] = [];
+    //         arr.forEach(item => {
+    //             out.push(deNestify(item));
+    //         });
 
-            return out;
+    //         return out;
 
-        } else if (typeof arr === 'object') {
-            Object.keys(arr).forEach(key => {
-                arr[key] = deNestify(arr[key]);
-            });
+    //     } else if (typeof arr === 'object') {
+    //         Object.keys(arr).forEach(key => {
+    //             arr[key] = deNestify(arr[key]);
+    //         });
 
-            return arr;
-        }
+    //         return arr;
+    //     }
 
-        return arr;
-    }
+    //     return arr;
+    // }
 
-    const newList = deNestify(tokenList[0]);
+    return tokenList[0];
 
-    console.log("AST: ", JSON.stringify(newList));
-
-    return newList;
+    // console.log("TOKENLIST", JSON.stringify(tokenList[0]));
+    // const newList = deNestify(tokenList[0]);
+    // console.log("AST: ", JSON.stringify(newList));
+    // return newList;
 }
 
 export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableIterator<boolean> {
-    
+
     try {
         for (let i = 0; i < ast.length; i++) {
             const token = ast[i];
