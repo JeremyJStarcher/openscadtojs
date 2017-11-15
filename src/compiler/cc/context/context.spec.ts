@@ -53,6 +53,20 @@ describe('Running compiler/context tests', () => {
         expect(savedToken.value).toBe(retrievedToken.value);
     });
 
+    it('should create unique ids', () => {
+        const logger = new Logger();
+
+        const contextList = [0, 1, 2, 3, 4, 5, 6, 7].map(id => {
+            return new Context(null, logger);
+        });
+
+        const ids = contextList.map(c => c.getContextId());
+        const allAreUnique = new Set(ids).size === ids.length;
+
+        expect(allAreUnique).toBeTruthy();
+    });
+
+
     it('should not cascade to parent context if child does contain', () => {
         const logger = new Logger();
         const parentContext = new Context(null, logger);

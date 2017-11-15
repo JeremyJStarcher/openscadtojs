@@ -11,10 +11,13 @@ export interface IContext {
     get: (key: string) => TokenType.Value2;
 }
 
+let contextId = 0;
+
 export class Context {
     private parent: Context | null;
     private container: Map<string, TokenType.Value2>;
     private logger: Logger;
+    private contextId: string;
 
     constructor(
         parent: Context | null,
@@ -23,6 +26,12 @@ export class Context {
         this.parent = parent;
         this.container = new Map();
         this.logger = logger;
+        this.contextId = "" + contextId;
+        contextId++;
+    }
+
+    getContextId() {
+        return this.contextId;
     }
 
     setIdentifier(key: string, value: TokenType.Value2) {
