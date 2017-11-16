@@ -182,9 +182,7 @@ describe('Tokenizer Tests', () => {
             it("should error on an incomplete special identifier", () => {
                 catchParseError("$", { line: 1, col: 1 });
             });
-
         });
-
     });
 
     describe('Testing nearly', () => {
@@ -192,7 +190,7 @@ describe('Tokenizer Tests', () => {
 
             var global: any = Function('return this')() || (42, eval)('this');
             global.HACK_CODE = code;
-    
+
 
             const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
             parser.feed(code);

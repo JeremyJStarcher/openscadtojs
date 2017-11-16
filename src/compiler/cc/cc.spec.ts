@@ -131,9 +131,6 @@ describe('Running compiler tests', () => {
         expectedValue: any,
         validate: (runtime: RunTime, expectedValue: any, code: string) => void
     ) {
-
-
-
         const global: any = Function('return this')() || (42, eval)('this');
         global.HACK_CODE = code;
 
@@ -281,7 +278,6 @@ describe('Running compiler tests', () => {
     });
 
     it('should evaluate a compound_statement', () => {
-
         // Compound statements, by themselves, do not create a new scope.
         // only when used with an 'if' or something like that.
 
