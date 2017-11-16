@@ -141,11 +141,11 @@ describe('Running compiler tests', () => {
                 const content = getAllTokens(ast);
                 return Array.from(cc.runAst(runtime, content));
             }).catch(err => {
-                fail(err.message + ": " + code);
+                reject(err);
             }).then(() => {
                 validate(runtime, expectedValue, code);
             }).catch(err => {
-                expect(true).toBe(false, err.message + ": " + code);
+                fail(err);
                 reject(err);
             }).then(() => {
                 resolve();
@@ -313,7 +313,7 @@ describe('Running compiler tests', () => {
                 expect(runtime.geometryList.length).toBe(2);
                 expect(runtime.geometryList[0].function).toBeDefined();
                 expect(runtime.geometryList[1].function).toBeDefined();
-            
+
             };
 
             const p1 = tests.map(test => {
@@ -325,6 +325,4 @@ describe('Running compiler tests', () => {
             });
         });
     });
-
-
 });

@@ -59,50 +59,38 @@ function generateAst(source: string): moo.Token[] {
 
 export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableIterator<boolean> {
 
-    try {
-        for (let i = 0; i < ast.length; i++) {
-            const token = ast[i];
+    for (let i = 0; i < ast.length; i++) {
+        const token = ast[i];
 
-            if (token instanceof TokenType.CompoundStatement) {
-                yield* runAst(runtime, token.statements);
-            } else if (Array.isArray(token)) {
-                if (token.length === 0) {
-                    continue;
-                }
-
-                yield* runAst(runtime, token);
-            } else {
-                runToken(runtime, token);
-                yield true;
+        if (token instanceof TokenType.CompoundStatement) {
+            yield* runAst(runtime, token.statements);
+        } else if (Array.isArray(token)) {
+            if (token.length === 0) {
+                continue;
             }
+
+            yield* runAst(runtime, token);
+        } else {
+            runToken(runtime, token);
+            yield true;
         }
-    } catch (err) {
-        console.error(`Something bad happened in runAst`, err.message);
-        console.error(err);
-        throw (err);
     }
 }
 
 export async function compile(src: string): Promise<TokenType.Token[]> {
+    const fullAst = generateAst(src) as TokenType.Token[];
 
-    try {
-        const fullAst = generateAst(src) as TokenType.Token[];
-
-        const errorToken = fullAst[0];
-        if (errorToken.type === "error") {
-            throw new Error(errorToken.value);
-        }
-
-        return fullAst;
-    } catch (err) {
-        throw err;
+    const errorToken = fullAst[0];
+    if (errorToken.type === "error") {
+        throw new Error(errorToken.value);
     }
+
+    return fullAst;
 }
 
 export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
     // Get the next token, filtering out token types that are valid, but we are not
     // interested in seeing.
-
 
     const filteredTypes = ["eos"];
 
