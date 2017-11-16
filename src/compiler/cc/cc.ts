@@ -72,14 +72,13 @@ export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableItera
 
                 yield* runAst(runtime, token);
             } else {
-
                 runToken(runtime, token);
                 yield true;
             }
         }
     } catch (err) {
-        debugger;
         console.error(`Something bad happened in runAst`, err.message);
+        console.error(err);
         throw (err);
     }
 }

@@ -26,7 +26,7 @@ function unaryOperator(data: any[]) {
 }
 
 function operator(data: any[]) {
-	debugger;
+
 	// multiplicative_expression _ "*" _ cast_expression
     // operator": "1, ,*, ,2",
     //             0 1 2 3 4
@@ -42,7 +42,7 @@ function operator(data: any[]) {
 }
 
 function numberConstant(d:any[]) {
-	debugger;
+
 	return new TokenType.Number(d[0]);
 }
 
@@ -78,7 +78,7 @@ function moduleCall(d:any[]):any {
 	// <name> _ "(" _ expression _ ")"
 	//  0     1  2  3     4      5  6
 
-	return new TokenType.Module(d[0], d[4]);
+	return new TokenType.ModuleCall(d[0], d[4]);
 }
 
 function compoundStatement(d:any[]):any {
@@ -97,9 +97,15 @@ function compoundStatement(d:any[]):any {
 	}
 }
 
+function argumentExpressionList(d: any[]): any{
+	// argument_expression_list _ "," _ assignment_expression 
+	//            0             1  2  3          4
+
+	return d[0].concat(d[4]);
+}
 
  function debug(d:any[]):any {
- 	debugger;
+ 	// debugger;
  	return d;
  }
 void(debug);
@@ -112,7 +118,7 @@ block ->
 
 statement
 	-> module_call _ %eos				{% id %}
-#	| assignment_expression _ %eos		{% function(d) {return debug(d)} %}
+	| assignment_expression _ %eos		{% function(d) {return debug(d)} %}
 #	| labeled_statement					{% id %}
 	| compound_statement				{% id %}
 #	| 
@@ -133,9 +139,6 @@ postfix_expression
 #	| postfix_expression "(" _ ")"
 #	| postfix_expression "(" _ argument_expression_list _ ")"
 	
-argument_expression_list
-	-> module_call						{% id %}
-	| argument_expression_list _ "," _ assignment_expression {% id %}
 
 unary_expression
 	-> postfix_expression				{% id %}
@@ -234,8 +237,13 @@ constant
 
 
 module_call
-	-> assignment_expression							{% id %}
-	| %identifier _ "(" _ ( module_arguments ) _ ")"	{% moduleCall %}
+#	-> assignment_expression							{% id %}
+	-> %identifier _ "(" _ module_arguments _ ")"	{% moduleCall %}
+
+
+argument_expression_list
+	-> assignment_expression
+	| argument_expression_list _ "," _ assignment_expression {% argumentExpressionList %} 
 
 
 module_arguments

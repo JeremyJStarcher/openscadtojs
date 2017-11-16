@@ -3,6 +3,7 @@ import * as TokenType from "../../runtime/token-type";
 
 enum NAME_SPACE {
     IDENTIFIER = "IDENTIFIER",
+    MODULE = "MODULE"
 }
 
 export interface IContext {
@@ -15,7 +16,7 @@ let contextId = 0;
 
 export class Context {
     private parent: Context | null;
-    private container: Map<string, TokenType.Value2>;
+    private container: Map<string, TokenType.Value2 | Function>;
     private logger: Logger;
     private contextId: string;
 
@@ -41,30 +42,45 @@ export class Context {
 
     getIdentifier(key: string): TokenType.Value2 {
         const hash = this.getHash(key, NAME_SPACE.IDENTIFIER);
+        const token = this.get(hash);
+        if (token instanceof TokenType.Value2) {
+            return token;
+        }
+        throw new Error("Context.getIdentifier tried to rturn a bad token");
+    }
+
+    setModule(key: string, value: TokenType.Value2 | Function) {
+        const hash = this.getHash(key, NAME_SPACE.MODULE);
+        this.set(hash, value);
+    }
+
+    getModule(key: string): TokenType.Value2 | Function {
+        const hash = this.getHash(key, NAME_SPACE.MODULE);
         return this.get(hash);
     }
+
 
     private getHash(key: string, ns: NAME_SPACE) {
         const hash = ns + "_" + key;
         return hash;
     }
 
-    private set(key: string, value: TokenType.Value2) {
-        if (!(value instanceof TokenType.Value2)) {
-            const msg = `Context Set: Attempted to set non ScadToken value type`;
-            console.error(msg);
-            throw new Error(msg);
-        }
+    private set(key: string, value: TokenType.Value2 | Function) {
+        // if (!(value instanceof TokenType.Value2)) {
+        //     const msg = `Context Set: Attempted to set non ScadToken value type`;
+        //     console.error(msg);
+        //     throw new Error(msg);
+        // }
 
-        if (!typeof value.getType) {
-            const msg = `Context Set: attempted to set a value with no 'getType`;
-            console.error(msg);
-            throw new Error(msg);
-        }
+        // if (!typeof value.getType) {
+        //     const msg = `Context Set: attempted to set a value with no 'getType`;
+        //     console.error(msg);
+        //     throw new Error(msg);
+        // }
         this.container.set(key, value);
     }
 
-    private get(key: string): TokenType.Value2 {
+    private get(key: string): TokenType.Value2 | Function {
         if (this.container.has(key)) {
             const val = this.container.get(key) as TokenType.Value2;
             return val;

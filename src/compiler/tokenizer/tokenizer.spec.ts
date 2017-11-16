@@ -2,6 +2,8 @@ import * as rules from './tokenizer';
 import * as moo from 'moo'
 import * as grammar from "../nearley/grammar";
 import * as nearley from 'nearley';
+import * as TokenType from "../runtime/token-type";
+
 
 // declare function require(path: string): any;
 // declare function since(text:string):void;
@@ -274,20 +276,31 @@ describe('Tokenizer Tests', () => {
         });
 
         it('should parse a module call', () => {
-            generateAst("echo();");
-            generateAst("echo(11);");
-            generateAst("echo(22,299);");
-            generateAst("echo(33,399,testVar);");
-            generateAst("echo(v1=1,v2=true);");
-        });
+            const calls = [
+                // ["echo();", 0],
+                // ["echo(11);", 1],
+                // ["echo(22,299);", 2],
+                ["echo(33,399,testVar);", 3],
+                ["echo(v1=1,v2=true);", 2],
+            ];
 
+            calls.forEach(cd => {
+                const ast = generateAst("" + cd[0]);
+
+                const moduleCalls = ast[0].filter(n => n instanceof TokenType.ModuleCall);
+                expect(moduleCalls.length).toBe(1);
+
+                const modcall = moduleCalls[0];
+                if (modcall instanceof TokenType.ModuleCall) {
+                    expect(modcall.arguments.length).toBe(+cd[1]);
+                }
+            });
+        });
 
         it('should parse a compound statement', () => {
             generateAst("{}");
             generateAst("{var1=1;}");
             generateAst("{var2=2;var22=22;}");
         });
-
-
     });
 });

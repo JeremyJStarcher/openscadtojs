@@ -2,21 +2,35 @@ import { Context } from './context/context';
 import { Logger } from "../logger/logger";
 import * as TokenType from "../../compiler/runtime/token-type"
 
+import ModuleEcho from "../../compiler/runtime/modules/echo";
 
 
+export interface IModuleCall {
+    context: Context;
+    function: Function;
+    arguments: TokenType.Value2[];
+}
 
 export class RunTime {
-    source: string;
-    // private context: Context;
+    private source: string;
+    private allContexts: { [id: string]: Context } = {};
+    private contextStack: Context[];
+
     logger: Logger;
-    allContexts: { [id: string]: Context } = {};
-    contextStack: Context[];
+    geometryList: IModuleCall[];
 
     constructor(code: string) {
         this.source = code;
         this.logger = new Logger();
         const baseContext = this.createNewContext(null);
+        this.contextStack = [];
+        this.geometryList = [];
+
         this.contextStack.push(baseContext);
+
+        baseContext.setModule('echo', ModuleEcho);
+
+        void (this.source);
     }
 
     createNewContext(parent: Context | null) {
@@ -25,7 +39,7 @@ export class RunTime {
         return context;
     }
 
-    private currentGetCurrentContext() {
+    currentGetCurrentContext() {
         return this.contextStack[this.contextStack.length - 1];
     }
 
@@ -36,4 +50,13 @@ export class RunTime {
     setIdentifier(identifier: string, value: TokenType.Value2) {
         this.currentGetCurrentContext().setIdentifier(identifier, value);
     }
+
+    getModule(identifier: string) {
+        return this.currentGetCurrentContext().getModule(identifier);
+    }
+
+    setModule(identifier: string, value: TokenType.Value2 | Function) {
+        this.currentGetCurrentContext().setModule(identifier, value);
+    }
+
 }

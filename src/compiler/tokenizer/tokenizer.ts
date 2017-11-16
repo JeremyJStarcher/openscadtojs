@@ -1,4 +1,4 @@
-export const OPENSCAD_RULES: /* moo.Rules */ any = {
+export const OPENSCAD_RULES /*:  moo.Rules */ = {
     WS: /[ \t]+/,
     comment: /\/\/.*?$/,
     number: /[0-9]+\.{0,1}[0-9]*[e|E]{1}[+/-]?[0-9]+|[0-9]*\.[0-9]*|[0-9]+\.*|[1-9][0-9]|\.[0-9]*/,
@@ -16,7 +16,8 @@ export const OPENSCAD_RULES: /* moo.Rules */ any = {
     lparen: '(',
     rparen: ')',
     eos: ';',
-    keyword: ['true', 'false', 'module', 'function', 'include', 'use', 'echo', 'for', 'intersection_for', 'if', 'else', 'assign'],
+    /* echo */
+    keyword: ['true', 'false', 'module', 'function', 'include', 'use', 'for', 'intersection_for', 'if', 'else', 'assign'],
     lbrace: '{',
     rbrace: '}',
     unary_operator: ["!", "+", "-"],

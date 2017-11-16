@@ -169,35 +169,12 @@ export class Boolean extends Value2 {
     }
 }
 
-
-export class Module extends Value2 {
-
-    public arguments: Token[];
-
+export class ModuleCall extends Value2 {
+    public arguments: Value2[];
 
     constructor(value: moo.Token, args: Token[]) {
         super(value);
-
-        const argsContainer = args;
-
-        const realArgsIndent = argsContainer.filter(t => {
-
-            const argumentToken = t;
-
-            if (typeof argumentToken !== "object") {
-                return false;
-            }
-
-            if (argumentToken.type === "argument_separator") {
-                return false;
-            }
-
-            return true;
-        });
-
-        const cleanArgs = realArgsIndent.map(ra => ra);
-        this.arguments = cleanArgs;
-
+        this.arguments = args as Value2[];
     }
 }
 

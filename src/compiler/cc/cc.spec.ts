@@ -288,7 +288,6 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                debugger;
                 expect(runtime.logger.getWarnings()[0]).toContain('forcedErrorMessage');
                 // const valueToken = runtime.context.getIdentifier('result');
                 // expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
@@ -303,5 +302,29 @@ describe('Running compiler tests', () => {
             });
         });
     });
+
+    it('should add "echo" to the geometry commands', () => {
+        return new Promise((resolve, reject) => {
+            const tests: [[string, any]] = [
+                ["echo(true);echo(1+99, 200/2, 100/2*4);", 3],
+            ];
+
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                expect(runtime.geometryList.length).toBe(2);
+                expect(runtime.geometryList[0].function).toBeDefined();
+                expect(runtime.geometryList[1].function).toBeDefined();
+            
+            };
+
+            const p1 = tests.map(test => {
+                return compileAndRun(test[0], test[1], validate);
+            });
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+        });
+    });
+
 
 });

@@ -1,6 +1,7 @@
 import { runOp, runUnaryOp } from "./operators";
 import * as TokenType from "./token-type";
 import { RunTime } from "../cc/run-time";
+// import * as cc from "../../compiler/cc/cc";
 
 
 export default function runToken(
@@ -9,12 +10,34 @@ export default function runToken(
 ): TokenType.Token {
 
     if (token instanceof TokenType.UnaryOperator) {
-        const ret = executeUnaryOperator(runtime, token);
-        return ret;
+        return executeUnaryOperator(runtime, token);
     }
 
     if (token instanceof TokenType.Operator) {
         return executeBinaryOperator(runtime, token);
+    }
+
+    if (token instanceof TokenType.ModuleCall) {
+        const source = runtime.getModule(token.value);
+
+        token.arguments.forEach(t => {
+            const k = runToken(runtime, t);
+            void (k);
+
+        });
+
+
+
+        if (source instanceof Function) {
+            runtime.geometryList.push({
+                context: runtime.currentGetCurrentContext(),
+                function: source,
+                arguments: token.arguments
+            });
+        } else {
+            throw new Error('Cannot call user defined modules yet - not impliemented');
+        }
+
     }
 
     return token;
