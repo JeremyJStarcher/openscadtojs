@@ -5,15 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach to Karma Chrome",
+            "port": 9333,
+            "webRoot": "${workspaceRoot}",
+            "pathMapping": {
+                "/": "${workspaceRoot}",
+                "/base/": "${workspaceRoot}/"
+              }
+
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Run Tests",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
-                "test",
-                "debug"
+                "run",
+                "g"
             ],
-            "port": 9229
+            "port": 9876
         }
     ]
 }
