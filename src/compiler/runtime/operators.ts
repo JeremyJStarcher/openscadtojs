@@ -13,7 +13,6 @@
  * If not, return the default.
  */
 import * as TokenType from "./token-type";
-import { VALUE_TYPE } from "./value-type";
 import { RunTime } from "../cc/run-time";
 
 type hashLookupType = (
@@ -32,10 +31,10 @@ const unaryOperatorLookup: Map<string, hashUnaryLookupType> = new Map();
 export function runUnaryOp(
     runtime: RunTime,
     operator: string,
-    operand: TokenType.Token
+    operand: TokenType.Value2
 ) {
     const op = operand as TokenType.Value2;
-    const hash = hashUnaryOp(operator, op.getType());
+    const hash = hashUnaryOp(operator, op.constructor.name);
     const func = unaryOperatorLookup.get(hash) || errorFallbackUnary;
     return func(operand);
 }
@@ -43,48 +42,48 @@ export function runUnaryOp(
 export function runOp(
     runtime: RunTime,
     operator: string,
-    lhand: TokenType.Token,
-    rhand: TokenType.Token
+    lhand: TokenType.Value2,
+    rhand: TokenType.Value2
 ) {
-    let l = lhand as TokenType.Value2;
-    let r = rhand as TokenType.Value2;
-
-
-    const hash = hashOp(operator, l.getType(), r.getType());
+    const hash = hashOp(operator, lhand.constructor.name, lhand.constructor.name);
     const func = operatorLookup.get(hash) || errorFallback;
-    return func(l, r);
+    return func(lhand, rhand);
 }
 
-function hashOp(operator: string,
-    lhandType: VALUE_TYPE,
-    rhandType: VALUE_TYPE
+function hashOp(
+    operator: string,
+    lhandType: string,
+    rhandType: string
 ) {
     return [operator, lhandType, rhandType].join("::");
 }
 
-function hashUnaryOp(operator: string,
-    operand: VALUE_TYPE,
+function hashUnaryOp(
+    operator: string,
+    operand: string,
 ) {
     return [operator, operand].join("::");
 }
+
+const numberClassName = new TokenType.Number(10).constructor.name;
 
 /*
  *  NUMBERS
  */
 
-operatorLookup.set(hashOp("+", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
+operatorLookup.set(hashOp("+", numberClassName, numberClassName),
     (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value + rval.value); }
 );
 
-operatorLookup.set(hashOp("-", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
+operatorLookup.set(hashOp("-", numberClassName, numberClassName),
     (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value - rval.value); }
 );
 
-operatorLookup.set(hashOp("*", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
+operatorLookup.set(hashOp("*", numberClassName, numberClassName),
     (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value * rval.value); }
 );
 
-operatorLookup.set(hashOp("/", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
+operatorLookup.set(hashOp("/", numberClassName, numberClassName),
     (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value / rval.value); }
 );
 
@@ -92,11 +91,11 @@ operatorLookup.set(hashOp("/", VALUE_TYPE.NUMBER, VALUE_TYPE.NUMBER),
  * UNARY NUMBERS
  */
 
-unaryOperatorLookup.set(hashUnaryOp("+", VALUE_TYPE.NUMBER),
+unaryOperatorLookup.set(hashUnaryOp("+", numberClassName),
     (operand: TokenType.Token) => { return new TokenType.Number(+ operand.value); }
 );
 
-unaryOperatorLookup.set(hashUnaryOp("-", VALUE_TYPE.NUMBER),
+unaryOperatorLookup.set(hashUnaryOp("-", numberClassName),
     (operand: TokenType.Token) => { return new TokenType.Number(- operand.value); }
 );
 

@@ -3,11 +3,37 @@ import * as TokenType from "./token-type";
 import { RunTime } from "../cc/run-time";
 // import * as cc from "../../compiler/cc/cc";
 
+export default function executeAssignment(
+    runtime: RunTime,
+    token: TokenType.Operator
+) {
+    const operator = token.value;
 
-export default function runToken(
+    let lhandToken = token.lhand;
+    let rhandToken = token.rhand;
+
+    if (lhandToken instanceof TokenType.Evalutable) {
+        lhandToken = valueOfExpression(runtime, lhandToken);
+    }
+
+    if (rhandToken instanceof TokenType.Evalutable) {
+        rhandToken = valueOfExpression(runtime, rhandToken);
+    }
+
+    if (operator === "=") {
+        if (rhandToken.type === "identifier") {
+            rhandToken = runtime.getIdentifier(rhandToken.value);
+        }
+
+        runtime.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
+    }
+}
+
+
+export function valueOfExpression(
     runtime: RunTime,
     token: TokenType.Evalutable
-): TokenType.Token {
+): TokenType.Value2 {
 
     if (token instanceof TokenType.UnaryOperator) {
         return executeUnaryOperator(runtime, token);
@@ -17,43 +43,23 @@ export default function runToken(
         return executeBinaryOperator(runtime, token);
     }
 
-    if (token instanceof TokenType.ModuleCall) {
-        const source = runtime.getModule(token.value);
-
-        token.arguments.forEach(t => {
-            const k = runToken(runtime, t);
-            void (k);
-
-        });
-
-
-
-        if (source instanceof Function) {
-            runtime.geometryList.push({
-                context: runtime.currentGetCurrentContext(),
-                function: source,
-                arguments: token.arguments
-            });
-        } else {
-            throw new Error('Cannot call user defined modules yet - not impliemented');
-        }
-
+    if (token instanceof TokenType.Value2) {
+        return token;
     }
-
-    return token;
+    throw new Error(`runToken does not know how to handle statement: ${token.value}`);
 }
 
 function executeUnaryOperator(
     runtime: RunTime,
     token: TokenType.UnaryOperator
-): TokenType.Token {
+): TokenType.Value2 {
     const operator = token;
     const operand = token.operand;
 
     let operandToken = operand;
 
-    if (operandToken instanceof TokenType.Evalutable) {
-        operandToken = runToken(runtime, operandToken);
+    if (operandToken instanceof TokenType.Value2) {
+        operandToken = valueOfExpression(runtime, operandToken);
     }
 
     return runUnaryOp(runtime, operator.value, operandToken);
@@ -62,41 +68,28 @@ function executeUnaryOperator(
 function executeBinaryOperator(
     runtime: RunTime,
     token: TokenType.Operator
-): TokenType.Token {
+): TokenType.Value2 {
 
     let lhandToken = token.lhand;
     let rhandToken = token.rhand;
 
-
     if (lhandToken instanceof TokenType.Evalutable) {
-        lhandToken = runToken(runtime, lhandToken);
+        lhandToken = valueOfExpression(runtime, lhandToken);
     }
 
     if (rhandToken instanceof TokenType.Evalutable) {
-        rhandToken = runToken(runtime, rhandToken);
+        rhandToken = valueOfExpression(runtime, rhandToken);
     }
-
 
     const operator = token.value;
 
-    if (operator === "=") {
-        if (rhandToken.type === "identifier") {
-            rhandToken = runtime.getIdentifier(rhandToken.value);
-        }
-
-        runtime.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
-    } else {
-
-        if (lhandToken.type === "identifier") {
-            lhandToken = runtime.getIdentifier(lhandToken.value);
-        }
-
-        if (rhandToken.type === "identifier") {
-            rhandToken = runtime.getIdentifier(rhandToken.value);
-        }
-
-        return runOp(runtime, operator, lhandToken, rhandToken);
+    if (lhandToken.type === "identifier") {
+        lhandToken = runtime.getIdentifier(lhandToken.value);
     }
 
-    return TokenType.VALUE_UNDEFINED;
+    if (rhandToken.type === "identifier") {
+        rhandToken = runtime.getIdentifier(rhandToken.value);
+    }
+
+    return runOp(runtime, operator, lhandToken, rhandToken);
 }

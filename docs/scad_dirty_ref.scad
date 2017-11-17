@@ -1,5 +1,10 @@
 cube(1);
 
+// This causes an error. Good.
+// multitest1 = multitest1 = 100;
+// echo(multitest1, multitest2, multitest3);
+
+
 
 ftestvar1 = 100;
 function myfun(k) = ftestvar1 / k;

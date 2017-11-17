@@ -2,7 +2,7 @@ import * as moo from 'moo';
 import * as grammar from '../nearley/grammar';
 import * as nearley from 'nearley';
 import * as TokenType from '../runtime/token-type';
-import runToken from "../runtime/run";
+import valueOfExpression from "../runtime/run";
 import { RunTime } from "./run-time";
 
 function parseToAst(source: string): moo.Token[] {
@@ -38,8 +38,29 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
 
             yield* astRunner(runtime, token);
         } else {
-            runToken(runtime, token);
+            executeStatement(runtime, token);
             yield true;
+        }
+    }
+}
+
+
+function executeStatement(runtime: RunTime, token: TokenType.Token) {
+    if (token instanceof TokenType.Operator && token.value === "=") {
+        valueOfExpression(runtime, token);
+    }
+
+    if (token instanceof TokenType.ModuleCall) {
+        const source = runtime.getModule(token.value);
+
+        if (source instanceof Function) {
+            runtime.geometryList.push({
+                context: runtime.currentGetCurrentContext(),
+                function: source,
+                arguments: token.arguments
+            });
+        } else {
+            throw new Error('Cannot call user defined modules yet - not impliemented');
         }
     }
 }

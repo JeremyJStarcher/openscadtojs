@@ -1,6 +1,4 @@
 import { Context } from '../cc/context/context';
-import { VALUE_TYPE } from "./value-type";
-
 
 export class Token {
     public toString: () => string;
@@ -59,33 +57,16 @@ export class Value2 extends Evalutable {
     constructor(mooToken: moo.Token) {
         super(mooToken);
     }
-
-    getType(): VALUE_TYPE {
-        const type = typeof this.value;
-
-        switch (type) {
-            case "number":
-                return VALUE_TYPE.NUMBER;
-            case "undefined":
-                return VALUE_TYPE.UNDEFINED;
-            case "string":
-                return VALUE_TYPE.STRING;
-            case "boolean":
-                return VALUE_TYPE.BOOLEAN;
-        }
-
-        return VALUE_TYPE.NOT_IMP;
-    }
 }
 
 export class Operator extends Value2 {
-    public lhand: Token;
-    public rhand: Token;
+    public lhand: Value2;
+    public rhand: Value2;
 
     constructor(
         mooToken: moo.Token,
-        lhand: Token,
-        rhand: Token) {
+        lhand: Value2,
+        rhand: Value2) {
         super(mooToken);
 
         this.lhand = lhand;
@@ -94,11 +75,11 @@ export class Operator extends Value2 {
 }
 
 export class UnaryOperator extends Value2 {
-    public operand: Token;
+    public operand: Value2;
 
     constructor(
         mooToken: moo.Token | moo.Token[],
-        operand: Token
+        operand: Value2
     ) {
 
         function getInnerValue(item: any | any[]): moo.Token {
