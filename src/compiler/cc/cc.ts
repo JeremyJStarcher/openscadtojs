@@ -5,7 +5,7 @@ import * as TokenType from '../runtime/token-type';
 import runToken from "../runtime/run";
 import { RunTime } from "./run-time";
 
-function generateAst(source: string): moo.Token[] {
+function parseToAst(source: string): moo.Token[] {
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
 
     parser.feed(source);
@@ -24,19 +24,19 @@ function generateAst(source: string): moo.Token[] {
     return tokenList[0];
 }
 
-export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableIterator<boolean> {
+export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIterator<boolean> {
 
     for (let i = 0; i < ast.length; i++) {
         const token = ast[i];
 
         if (token instanceof TokenType.CompoundStatement) {
-            yield* runAst(runtime, token.statements);
+            yield* astRunner(runtime, token.statements);
         } else if (Array.isArray(token)) {
             if (token.length === 0) {
                 continue;
             }
 
-            yield* runAst(runtime, token);
+            yield* astRunner(runtime, token);
         } else {
             runToken(runtime, token);
             yield true;
@@ -45,7 +45,7 @@ export function* runAst(runtime: RunTime, ast: TokenType.Token[]): IterableItera
 }
 
 export async function compile(src: string): Promise<TokenType.Token[]> {
-    const fullAst = generateAst(src) as TokenType.Token[];
+    const fullAst = parseToAst(src) as TokenType.Token[];
 
     const errorToken = fullAst[0];
     if (errorToken.type === "error") {
@@ -55,7 +55,7 @@ export async function compile(src: string): Promise<TokenType.Token[]> {
     return fullAst;
 }
 
-export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
+export function* tokenProvider(ast: moo.Token[]): IterableIterator<moo.Token> {
     // Get the next token, filtering out token types that are valid, but we are not
     // interested in seeing.
 
@@ -69,7 +69,7 @@ export function* tokenFeeder(ast: moo.Token[]): IterableIterator<moo.Token> {
         const token = ast[i];
         if (Array.isArray(token)) {
             const tokenAsArray = token as moo.Token[];
-            yield* tokenFeeder(tokenAsArray);
+            yield* tokenProvider(tokenAsArray);
         } else {
             if (filteredTypes.indexOf("" + token.type) > -1) {
                 continue;

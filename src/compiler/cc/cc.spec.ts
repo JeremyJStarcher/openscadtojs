@@ -37,7 +37,7 @@ describe('Running compiler tests', () => {
             return getAllTokens([ast]);
         }
 
-        const tokenStream = cc.tokenFeeder(ast);
+        const tokenStream = cc.tokenProvider(ast);
         const content: any = Array.from(tokenStream);
 
         if (!Array.isArray(content)) {
@@ -139,7 +139,7 @@ describe('Running compiler tests', () => {
 
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
-                return Array.from(cc.runAst(runtime, content));
+                return Array.from(cc.astRunner(runtime, content));
             }).catch(err => {
                 reject(err);
             }).then(() => {
