@@ -85,10 +85,6 @@ function compoundStatement(d:any[]):any {
 	// "{" _ (statement_list) _ "}"
 	//  0  1        2         3  4
 
-	// const global: any = Function('return this')() || (42, eval)('this');
-	// console.log("code = ", global.HACK_CODE);
-	// console.log('length = ', d.length);
-
 	if (d.length === 3) {
 		return new TokenType.CompoundStatement(d[0], []);
 	} 
@@ -104,7 +100,30 @@ function argumentExpressionList(d: any[]): any{
 	return d[0].concat(d[4]);
 }
 
+function functionDefinition(d: any[]):any {
+	//	"function" __ <name> _ "(" _ argument_expression_list _   ")"  _  "="   _    (expression)
+	//	    0       1     3  4  5  6              7            8   9  10   11  12         13
+
+	//	"function" __ <name> _ "(" _ ")"  _  "="   _   (expression)
+	//	    0       1     3  4  5  6  7   8   9    10       11
+
+	const d0len = d[0].length;
+	if (d0len === 13) {
+		const [,,functionName,,,,args,,,,,,expression] = d[0];
+		return new TokenType.FunctionDefinition(functionName, args, expression);
+	} else {
+		const [,,functionName,,,,,,,,expression] = d[0];
+		return new TokenType.FunctionDefinition(functionName, [], expression);
+	}
+}
+
  function debug(d:any[]):any {
+	// const global: any = Function('return this')() || (42, eval)('this');
+	// const code = global.HACK_CODE;
+	// console.log("code = ", global.HACK_CODE);
+	// console.log('length = ', d.length);
+
+
  	// debugger;
  	return d;
  }
@@ -118,7 +137,8 @@ block ->
 
 statement
 	-> module_call _ %eos				{% id %}
-	| assignment_expression _ %eos		{% function(d) {return debug(d)} %}
+	| assignment_expression _ %eos		{% id %}
+	| function_statement _ %eos			{% functionDefinition  %}
 #	| labeled_statement					{% id %}
 	| compound_statement				{% id %}
 #	| 
@@ -254,6 +274,10 @@ compound_statement
 	-> "{" _ "}"						{% compoundStatement %}
 	| "{" _ (statement_list) _ "}"		{% compoundStatement %}
 
+
+function_statement
+	->"function" __ %identifier _ "(" _ ")" _ "=" _ expression
+	|	"function" __ %identifier _ "(" _ argument_expression_list _ ")" _ "=" _ (expression)
 
 statement_list
 	-> statement

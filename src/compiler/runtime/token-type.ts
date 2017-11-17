@@ -159,4 +159,17 @@ export class ModuleCall extends Value2 {
     }
 }
 
+
+export class FunctionDefinition extends Token {
+    public arguments: Value2[];
+    public returnValue: Value2;
+
+    constructor(value: moo.Token, args: Token[], returnValue: Value2) {
+        super(value);
+        this.arguments = args as Value2[];
+        this.returnValue = returnValue;
+    }
+    
+}
+
 export const VALUE_UNDEFINED = new Undefined();

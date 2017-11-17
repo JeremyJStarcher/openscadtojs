@@ -277,9 +277,9 @@ describe('Tokenizer Tests', () => {
 
         it('should parse a module call', () => {
             const calls = [
-                // ["echo();", 0],
-                // ["echo(11);", 1],
-                // ["echo(22,299);", 2],
+                ["echo();", 0],
+                ["echo(11);", 1],
+                ["echo(22,299);", 2],
                 ["echo(33,399,testVar);", 3],
                 ["echo(v1=1,v2=true);", 2],
             ];
@@ -298,9 +298,16 @@ describe('Tokenizer Tests', () => {
         });
 
         it('should parse a compound statement', () => {
-            generateAst("{}");
-            generateAst("{var1=1;}");
-            generateAst("{var2=2;var22=22;}");
+            generateAst('{}');
+            generateAst('{var1=1;}');
+            generateAst('{var2=2;var22=22;}');
         });
+
+        it('should parse function declarations', () => {
+            generateAst('function func0() = 5;');
+            generateAst('function func1(x=3) = 2*x+1;');
+            generateAst('function func2(x,y) = 2*x+y;');
+        });
+
     });
 });
