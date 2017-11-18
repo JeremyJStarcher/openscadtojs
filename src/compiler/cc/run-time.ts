@@ -15,6 +15,7 @@ export class RunTime {
     private source: string;
     private allContexts: { [id: string]: Context } = {};
     private contextStack: Context[];
+    public currentContext: Context;
 
     logger: Logger;
     geometryList: IModuleCall[];
@@ -42,6 +43,9 @@ export class RunTime {
     }
 
     currentGetCurrentContext() {
+        if (this.currentContext) {
+            return this.currentContext;
+        }
         return this.contextStack[this.contextStack.length - 1];
     }
 

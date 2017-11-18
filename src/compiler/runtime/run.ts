@@ -3,7 +3,7 @@ import * as TokenType from "./token-type";
 import { RunTime } from "../cc/run-time";
 // import * as cc from "../../compiler/cc/cc";
 
-export default function executeAssignment(
+export function executeAssignment(
     runtime: RunTime,
     token: TokenType.Operator
 ) {
@@ -29,10 +29,9 @@ export default function executeAssignment(
     }
 }
 
-
 export function valueOfExpression(
     runtime: RunTime,
-    token: TokenType.Evalutable
+    token: TokenType.Value2
 ): TokenType.Value2 {
 
     if (token instanceof TokenType.UnaryOperator) {
@@ -46,7 +45,7 @@ export function valueOfExpression(
     if (token instanceof TokenType.Value2) {
         return token;
     }
-    throw new Error(`runToken does not know how to handle statement: ${token.value}`);
+    throw new Error(`runToken does not know how to handle statement: ${token}`);
 }
 
 function executeUnaryOperator(

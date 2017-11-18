@@ -1,6 +1,9 @@
 import { RunTime } from "../../cc/run-time";
+import * as TokenType from "../../runtime/token-type";
 
-export default function echo(runtime: RunTime, ...args: any[]) {
-    runtime.logger.info(args.join(", "));
-    console.log(args);
+export default function echo(runtime: RunTime, ...args: TokenType.Value2[]) {
+    const valsAsStr = args.map(arg => arg.value);
+
+    runtime.logger.info(valsAsStr.join(", "));
+    // console.log('ECHO: ' + valsAsStr);
 }

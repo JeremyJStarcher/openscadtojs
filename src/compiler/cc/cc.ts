@@ -2,7 +2,7 @@ import * as moo from 'moo';
 import * as grammar from '../nearley/grammar';
 import * as nearley from 'nearley';
 import * as TokenType from '../runtime/token-type';
-import valueOfExpression from "../runtime/run";
+import { executeAssignment } from "../runtime/run";
 import { RunTime } from "./run-time";
 
 function parseToAst(source: string): moo.Token[] {
@@ -44,10 +44,9 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
     }
 }
 
-
 function executeStatement(runtime: RunTime, token: TokenType.Token) {
     if (token instanceof TokenType.Operator && token.value === "=") {
-        valueOfExpression(runtime, token);
+        executeAssignment(runtime, token);
     }
 
     if (token instanceof TokenType.ModuleCall) {
@@ -101,8 +100,6 @@ function hoist(block: TokenType.Token[]) {
     }
 
     inner(block);
-
-    debugger;
 
     const ast = [...funcList, ...varList, ...otherList];
     return ast;
