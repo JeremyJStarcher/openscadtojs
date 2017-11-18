@@ -29,8 +29,10 @@ export class RunTime {
         this.contextStack.push(baseContext);
 
         baseContext.setModule('echo', ModuleEcho);
+    }
 
-        void (this.source);
+    getSource() {
+        return this.source;
     }
 
     createNewContext(parent: Context | null) {
