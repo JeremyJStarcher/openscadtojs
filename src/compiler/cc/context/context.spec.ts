@@ -94,12 +94,12 @@ describe('Running compiler/context tests', () => {
         const variableName = 'longVariableName';
         const retrievedToken = childContext.getIdentifier(variableName);
 
-        const warnings = logger.getWarnings();
+        const logs = logger.getLogs();
 
         expect(retrievedToken).toEqual(jasmine.any(TokenType.Undefined));
         // expect(retrievedToken.value).not.toBeDefined();
-        expect(warnings.length).toBe(1);
-        expect(warnings[0]).toContain(variableName);
+        expect(logs.length).toBe(1);
+        expect(logs[0]).toContain(variableName);
     });
 
 });

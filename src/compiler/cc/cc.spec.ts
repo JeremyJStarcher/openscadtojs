@@ -303,7 +303,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                expect(runtime.logger.getWarnings()[0]).toContain('forcedErrorMessage');
+                expect(runtime.logger.getLogs()[0]).toContain('forcedErrorMessage');
                 // const valueToken = runtime.context.getIdentifier('result');
                 // expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             };
@@ -325,7 +325,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                const echoLog = runtime.logger.getInfos()
+                const echoLog = runtime.logger.getLogs()
                 expect(echoLog[0]).toContain("true");
                 expect(echoLog[1]).toContain("100");
                 expect(echoLog[1]).toContain("200");
@@ -359,7 +359,7 @@ describe('Running compiler tests', () => {
                     const t1 = runtime.getIdentifier('t1');
                     const t2 = runtime.getIdentifier('t2');
 
-                    expect(runtime.logger.getWarnings().length).toBe(0);
+                    expect(runtime.logger.getLogs().length).toBe(0);
                     expect(t1.value).toEqual(expectedValue[0], `${code} did not equal ${expectedValue[0]}`);
                     expect(t2.value).toEqual(expectedValue[1], `${code} did not equal ${expectedValue[1]}`);
                 };

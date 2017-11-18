@@ -11,61 +11,53 @@ describe('Running compiler/logger tests', () => {
 
     it('Should log two errors', () => {
         const logger = new Logger();
-        const msg1 = "String 1";
-        const msg2 = "String 2";
+        const msg1 = "Log Two Errors String 1";
+        const msg2 = "Log Two Errors String 2";
         logger.error(msg1);
         logger.error(msg2);
 
         const errs = logger.getErrors();
-        const infos = logger.getInfos();
-        const warnings = logger.getWarnings();
+        const infos = logger.getLogs();
 
         expect(errs.length).toBe(2);
         expect(infos.length).toBe(0);
-        expect(warnings.length).toBe(0);
 
-        expect(errs[0]).toBe(msg1);
-        expect(errs[1]).toBe(msg2);
+        expect(errs[0]).toContain(msg1);
+        expect(errs[1]).toContain(msg2);
     });
 
-    it('Should log two infos', () => {
+    it('Should log two logs', () => {
         const logger = new Logger();
-        const msg1 = "String 1";
-        const msg2 = "String 2";
-        logger.info(msg1);
-        logger.info(msg2);
+        const msg1 = "Log Two Logs String 1";
+        const msg2 = "Log Two Logs String 2";
+        logger.log(msg1);
+        logger.log(msg2);
 
         const errs = logger.getErrors();
-        const infos = logger.getInfos();
-        const warnings = logger.getWarnings();
+        const logs = logger.getLogs();
 
         expect(errs.length).toBe(0);
-        expect(infos.length).toBe(2);
-        expect(warnings.length).toBe(0);
+        expect(logs.length).toBe(2);
 
-        expect(infos[0]).toBe(msg1);
-        expect(infos[1]).toBe(msg2);
+        expect(logs[0]).toContain(msg1);
+        expect(logs[1]).toContain(msg2);
     });
 
     it('Should log two warnings', () => {
         const logger = new Logger();
-        const msg1 = "String 1";
-        const msg2 = "String 2";
+        const msg1 = "Log Two Warnings String 1";
+        const msg2 = "Log Two Warnings String 2";
         logger.warn(msg1);
         logger.warn(msg2);
 
         const errs = logger.getErrors();
-        const infos = logger.getInfos();
-        const warnings = logger.getWarnings();
+        const logs = logger.getLogs();
 
         expect(errs.length).toBe(0);
-        expect(infos.length).toBe(0);
-        expect(warnings.length).toBe(2);
+        expect(logs.length).toBe(2);
 
-        expect(warnings[0]).toBe(msg1);
-        expect(warnings[1]).toBe(msg2);
+        expect(logs[0]).toContain(msg1);
+        expect(logs[1]).toContain(msg2);
     });
-
-
 });
 

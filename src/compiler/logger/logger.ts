@@ -1,12 +1,10 @@
 export class Logger {
     private errors: string[];
-    private warnings: string[];
-    private infos: string[];
+    private logs: string[];
 
     constructor() {
         this.errors = [];
-        this.warnings = [];
-        this.infos = [];
+        this.logs = [];
     }
 
     error(str: string) {
@@ -14,23 +12,18 @@ export class Logger {
     }
 
     warn(str: string) {
-        this.warnings.push(str);
+        this.logs.push('WARNING: ' + str);
     }
 
-    info(str: string) {
-        this.infos.push(str);
+    log(str: string) {
+        this.logs.push('LOG: ' + str);
     }
 
     getErrors() {
         return this.errors;
     }
 
-    getWarnings() {
-        return this.warnings;
+    getLogs() {
+        return this.logs;
     }
-
-    getInfos() {
-        return this.infos;
-    }
-
 }
