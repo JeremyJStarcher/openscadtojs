@@ -2,6 +2,9 @@
 dist/
 typings/**/*
 
+
+scad_tests/output/scad.ts
+
 npm-debug.log
 
 src/compiler/nearley/grammar.err
