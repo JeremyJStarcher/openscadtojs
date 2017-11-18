@@ -11,7 +11,7 @@ const destDir = './output';
 
 interface ScadResult {
     warnings: string[];
-    echos: string[];
+    logs: string[];
     source: string;
     fname: string;
 }
@@ -34,12 +34,10 @@ function runOpenScad(filename: string): Promise<ScadResult> {
     return new Promise<ScadResult>((resolve, reject) => {
         const result: ScadResult = {
             warnings: [],
-            echos: [],
+            logs: [],
             source: "",
             fname: "",
         };
-
-
 
         readFile(filename, 'utf8').then((source: string) => {
             result.source = source;
@@ -53,7 +51,7 @@ function runOpenScad(filename: string): Promise<ScadResult> {
                     }
 
                     result.fname = filename;
-                    result.echos = stdout.split(/\r\n|\r|\n/);
+                    result.logs = stdout.split(/\r\n|\r|\n/);
                     result.warnings = stderr.split(/\r\n|\r|\n/);
                     resolve(result);
                 });
@@ -80,7 +78,7 @@ async function buildJsTests() {
     const ts = `
 export interface ScadResult {
     warnings: string[];
-    echos: string[];
+    logs: string[];
     source: string;
     fname: string;
 } 

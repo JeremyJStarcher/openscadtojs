@@ -1,7 +1,6 @@
 import { Context } from '../cc/context/context';
 
 export class Token {
-    public toString: () => string;
     public type: string | undefined;
     public value: any;
     public offset: number;
@@ -11,8 +10,6 @@ export class Token {
     public col: number;
 
     constructor(mooToken: moo.Token) {
-        this.toString = mooToken.toString;
-
         this.type = mooToken.type;
         this.value = mooToken.value;
         this.offset = mooToken.offset;
@@ -24,6 +21,10 @@ export class Token {
 
     execute(context: Context) {
         throw new Error(`execute method needs overridden for base class Token`);
+    }
+
+    public toString(): string {
+        return this.value;
     }
 }
 
@@ -96,7 +97,6 @@ export class UnaryOperator extends Value2 {
         super(getInnerValue(mooToken));
         this.operand = operand;
     }
-
 }
 
 export class Identifier extends Value2 {
@@ -122,6 +122,10 @@ export class Undefined extends Value2 {
     constructor() {
         const valueToken = makeMooToken(undefined);
         super(valueToken);
+    }
+
+    public toString(): string {
+        return "undef";
     }
 }
 
@@ -169,7 +173,6 @@ export class FunctionDefinition extends Token {
         this.arguments = args as Value2[];
         this.returnValue = returnValue;
     }
-    
 }
 
 export const VALUE_UNDEFINED = new Undefined();

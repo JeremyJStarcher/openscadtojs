@@ -384,7 +384,6 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                debugger;
                 const echoLog = runtime.logger.getLogs()
                 expect(echoLog[0]).toContain("Echo Moon");
             };
@@ -439,11 +438,14 @@ describe('Running compiler tests', () => {
                     ];
 
                     const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                        const logs = runtime.logger.getLogs();
-                        expect(logs.length).toEqual(test.echos.length);
+                        const logs = runtime.logger.getLogs().filter(l => l);
+                        const incomingLogs = test.warnings.filter(l => l);
+
+                        expect(logs.length).toEqual(incomingLogs.length);
 
                         logs.forEach((line, i) => {
-                            expect(line).toEqual(logs[i]);
+                            const incoming = incomingLogs[i]
+                            expect(line).toEqual(incoming);
                         });
                     };
 

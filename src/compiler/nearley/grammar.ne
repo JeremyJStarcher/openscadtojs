@@ -133,7 +133,7 @@ function functionDefinition(d: any[]):any {
 // len 1, 4 - echomoon
 // Len 4 - no echo moon
 
- 	debugger;
+ 	// debugger;
  	return d;
  }
 void(debug);

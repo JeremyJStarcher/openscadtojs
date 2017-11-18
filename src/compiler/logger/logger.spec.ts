@@ -30,8 +30,8 @@ describe('Running compiler/logger tests', () => {
         const logger = new Logger();
         const msg1 = "Log Two Logs String 1";
         const msg2 = "Log Two Logs String 2";
-        logger.log(msg1);
-        logger.log(msg2);
+        logger.echo(msg1);
+        logger.echo(msg2);
 
         const errs = logger.getErrors();
         const logs = logger.getLogs();

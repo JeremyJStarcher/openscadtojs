@@ -15,8 +15,8 @@ export class Logger {
         this.logs.push('WARNING: ' + str);
     }
 
-    log(str: string) {
-        this.logs.push('LOG: ' + str);
+    echo(str: string) {
+        this.logs.push('ECHO: ' + str);
     }
 
     getErrors() {
