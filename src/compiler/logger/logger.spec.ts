@@ -60,4 +60,3 @@ describe('Running compiler/logger tests', () => {
         expect(logs[1]).toContain(msg2);
     });
 });
-
