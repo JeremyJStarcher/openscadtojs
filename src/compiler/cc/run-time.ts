@@ -3,7 +3,7 @@ import { Logger } from "../logger/logger";
 import * as TokenType from "../../compiler/runtime/token-type"
 
 import ModuleEcho from "../../compiler/runtime/modules/echo";
-
+import ModuleCube from "../../compiler/runtime/modules/cube";
 
 export interface IModuleCall {
     context: Context;
@@ -30,6 +30,7 @@ export class RunTime {
         this.contextStack.push(baseContext);
 
         baseContext.setModule('echo', ModuleEcho);
+        baseContext.setModule('cube', ModuleCube);
     }
 
     getSource() {
@@ -64,5 +65,4 @@ export class RunTime {
     setModule(identifier: string, value: TokenType.Value2 | Function) {
         this.currentGetCurrentContext().setModule(identifier, value);
     }
-
 }
