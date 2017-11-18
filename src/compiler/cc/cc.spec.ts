@@ -325,4 +325,33 @@ describe('Running compiler tests', () => {
             });
         });
     });
+
+    describe('testing hoisting', () => {
+        it('should hoist var declarations, keeping only the latest', () => {
+
+            return new Promise((resolve, reject) => {
+                const tests: [[string, number[]]] = [
+                    ["t1=100;t2=t1;t2=2*t1;t1=200;", [200, 400]],
+                ];
+
+                const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                    const t1 = runtime.getIdentifier('t1');
+                    const t2 = runtime.getIdentifier('t2');
+
+                    expect(runtime.logger.getWarnings().length).toBe(0);
+                    expect(t1.value).toEqual(expectedValue[0], `${code} did not equal ${expectedValue[0]}`);
+                    expect(t2.value).toEqual(expectedValue[1], `${code} did not equal ${expectedValue[1]}`);
+                };
+
+                const p1 = tests.map(test => {
+                    return compileAndRun(test[0], test[1], validate);
+                });
+
+                Promise.all(p1).then(() => {
+                    resolve();
+                });
+            });
+
+        });
+    });
 });

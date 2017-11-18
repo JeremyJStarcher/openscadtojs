@@ -65,6 +65,50 @@ function executeStatement(runtime: RunTime, token: TokenType.Token) {
     }
 }
 
+function hoist(block: TokenType.Token[]) {
+    const varList: TokenType.Operator[] = [];
+    const funcList: TokenType.Token[] = [];
+    const otherList: TokenType.Token[] = [];
+
+    function inner(bl: TokenType.Token[]) {
+        bl.forEach(token => {
+
+            if (Array.isArray(token)) {
+                return inner(token);
+            }
+
+            if (token instanceof TokenType.Operator) {
+                const idx = (() => {
+                    for (var i = 0; i < varList.length; i += 1) {
+                        if (varList[i].lhand.value === token.lhand.value) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                })();
+
+                if (idx === -1) {
+                    varList.push(token);
+                } else {
+                    varList[idx] = token;
+                }
+
+            } else {
+                otherList.push(token);
+            }
+
+        });
+    }
+
+    inner(block);
+
+    debugger;
+
+    const ast = [...funcList, ...varList, ...otherList];
+    return ast;
+}
+
+
 export async function compile(src: string): Promise<TokenType.Token[]> {
     const fullAst = parseToAst(src) as TokenType.Token[];
 
@@ -73,7 +117,8 @@ export async function compile(src: string): Promise<TokenType.Token[]> {
         throw new Error(errorToken.value);
     }
 
-    return fullAst;
+    const hoistedAst = hoist(fullAst);
+    return hoistedAst;
 }
 
 export function* tokenProvider(ast: moo.Token[]): IterableIterator<moo.Token> {

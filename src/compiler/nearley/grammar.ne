@@ -137,7 +137,7 @@ block ->
 
 statement
 	-> module_call _ %eos				{% id %}
-	| assignment_expression _ %eos		{% id %}
+	| assignment_expression _ %eos		{% debug %}
 	| function_statement _ %eos			{% functionDefinition  %}
 #	| labeled_statement					{% id %}
 	| compound_statement				{% id %}
