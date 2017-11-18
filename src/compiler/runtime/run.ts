@@ -21,7 +21,7 @@ export function executeAssignment(
     }
 
     if (operator === "=") {
-        if (rhandToken.type === "identifier") {
+        if (rhandToken.type instanceof TokenType.Identifier) {
             rhandToken = runtime.getIdentifier(rhandToken.value);
         }
 
@@ -34,6 +34,10 @@ export function valueOfExpression(
     token: TokenType.Value2
 ): TokenType.Value2 {
 
+    if (token instanceof TokenType.Identifier) {
+        return runtime.getIdentifier(token.value);
+    }
+
     if (token instanceof TokenType.UnaryOperator) {
         return executeUnaryOperator(runtime, token);
     }
@@ -45,7 +49,7 @@ export function valueOfExpression(
     if (token instanceof TokenType.Value2) {
         return token;
     }
-    throw new Error(`runToken does not know how to handle statement: ${token}`);
+    throw new Error(`valueOfExpression does not know how to handle statement: ${token}`);
 }
 
 function executeUnaryOperator(
@@ -82,11 +86,11 @@ function executeBinaryOperator(
 
     const operator = token.value;
 
-    if (lhandToken.type === "identifier") {
+    if (lhandToken.type instanceof TokenType.Identifier) {
         lhandToken = runtime.getIdentifier(lhandToken.value);
     }
 
-    if (rhandToken.type === "identifier") {
+    if (rhandToken.type instanceof TokenType.Identifier) {
         rhandToken = runtime.getIdentifier(rhandToken.value);
     }
 

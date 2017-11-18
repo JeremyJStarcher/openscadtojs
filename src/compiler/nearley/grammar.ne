@@ -41,8 +41,11 @@ function operator(data: any[]) {
      return new TokenType.Operator(expToken, lhand, rhand);
 }
 
-function numberConstant(d:any[]) {
+function identifierF(d:any[]) {
+	return new TokenType.Identifier(d[0]);
+}
 
+function numberConstant(d:any[]) {
 	return new TokenType.Number(d[0]);
 }
 
@@ -148,7 +151,7 @@ statement
 
 
 primary_expression
-	-> %identifier						{% id %}
+	-> %identifier						{% identifierF %}
 	| constant							{% id %}
 	| "(" _ expression _ ")"			{% unwrapParens %}
 

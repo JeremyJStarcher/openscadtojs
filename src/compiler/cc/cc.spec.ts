@@ -321,7 +321,7 @@ describe('Running compiler tests', () => {
     it('should add "echo" to the geometry commands', () => {
         return new Promise((resolve, reject) => {
             const tests: [[string, any]] = [
-                ["echo(true);echo(1+99, 400/2, 1000/2*4);", 3],
+                ["echo(true);echo(1+99, 400/2, 1000/2*4);var1=999;echo(var1);", 3],
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
@@ -330,8 +330,9 @@ describe('Running compiler tests', () => {
                 expect(echoLog[1]).toContain("100");
                 expect(echoLog[1]).toContain("200");
                 expect(echoLog[1]).toContain("2000");
+                expect(echoLog[2]).toContain("999");
 
-                expect(runtime.geometryList.length).toBe(2);
+                expect(runtime.geometryList.length).toBe(3);
                 expect(runtime.geometryList[0].function).toBeDefined();
                 expect(runtime.geometryList[1].function).toBeDefined();
             };
