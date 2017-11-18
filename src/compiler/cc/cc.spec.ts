@@ -153,7 +153,6 @@ describe('Running compiler tests', () => {
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
                 const res = Array.from(cc.astRunner(runtime, content));
-                debugger;
                 return res;
             }).catch(err => {
                 console.log(code);
@@ -326,11 +325,10 @@ describe('Running compiler tests', () => {
         });
     });
 
-    fit('should add "echo" to the geometry commands', () => {
+    it('should add "echo" to the geometry commands', () => {
         return new Promise((resolve, reject) => {
             const tests: [[string, any]] = [
                 ["echo(true);echo(1+99, 400/2, 1000/2*4);var1=999;echo(var1);", 3],
-                [`echo("Hello");`, 3]
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
@@ -344,6 +342,51 @@ describe('Running compiler tests', () => {
                 expect(runtime.geometryList.length).toBe(3);
                 expect(runtime.geometryList[0].function).toBeDefined();
                 expect(runtime.geometryList[1].function).toBeDefined();
+            };
+
+            const p1 = tests.map(test => {
+                return compileAndRun(test[0], test[1], validate);
+            });
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+        });
+    });
+
+    xit('should add "echo" empty parens', () => {
+        return new Promise((resolve, reject) => {
+            const tests: [[string, any]] = [
+                [`echo();`, 3],
+                [`echo( );`, 3],
+            ];
+
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+            };
+
+            const p1 = tests.map(test => {
+                return compileAndRun(test[0], test[1], validate);
+            });
+
+            Promise.all(p1).then(() => {
+                resolve();
+            });
+        });
+    });
+
+
+    it('should add "echo" string constants with spaces.', () => {
+        return new Promise((resolve, reject) => {
+            const tests: [[string, any]] = [
+                [`echo("Echo Moon");`, 3],
+                [`a1=1;echo("Echo Moon");`, 3],
+                [`a1="Echo Moon";echo(a1);`, 3],
+            ];
+
+            const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                debugger;
+                const echoLog = runtime.logger.getLogs()
+                expect(echoLog[0]).toContain("Echo Moon");
             };
 
             const p1 = tests.map(test => {
@@ -385,7 +428,7 @@ describe('Running compiler tests', () => {
         });
     });
 
-    fdescribe(`Running OpenSCAD code and results`, () => {
+    describe(`Running OpenSCAD code and results`, () => {
 
         scadTests.scadTest.forEach(test => {
             it(`Should pass: ${test.fname}`, () => {

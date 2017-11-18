@@ -278,6 +278,7 @@ describe('Tokenizer Tests', () => {
         it('should parse a module call', () => {
             const calls = [
                 ["echo();", 0],
+                //FIXME: ["echo(     );", 0],
                 ["echo(11);", 1],
                 ["echo(22,299);", 2],
                 ["echo(33,399,testVar);", 3],

@@ -1,1 +1,2 @@
-cube(1);echo("Hello World");
+cube(1);
+echo("Hello World");

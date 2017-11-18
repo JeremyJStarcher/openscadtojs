@@ -18,9 +18,7 @@ function parseToAst(source: string): moo.Token[] {
         throw new Error('Unexpected end of input');
     }
     if (tokenList.length > 1) {
-
         console.log(tokenList);
-
         debugger;
         throw new Error('Ambiguous grammar -- internal parsing error');
     }
@@ -138,6 +136,13 @@ export function* tokenProvider(ast: moo.Token[]): IterableIterator<moo.Token> {
             const tokenAsArray = token as moo.Token[];
             yield* tokenProvider(tokenAsArray);
         } else {
+
+            // HACK: This really should go in the grammar to handle newlines.
+            if (token === undefined) {
+                continue;
+            }
+
+
             if (filteredTypes.indexOf("" + token.type) > -1) {
                 continue;
             }

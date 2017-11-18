@@ -81,7 +81,11 @@ function moduleCall(d:any[]):any {
 	// <name> _ "(" _ expression _ ")"
 	//  0     1  2  3     4      5  6
 
-	return new TokenType.ModuleCall(d[0], d[4]);
+	if (d.length === 7) {
+		return new TokenType.ModuleCall(d[0], d[4]);
+	} else {
+		return new TokenType.ModuleCall(d[0], []);
+	}
 }
 
 function compoundStatement(d:any[]):any {
@@ -126,8 +130,10 @@ function functionDefinition(d: any[]):any {
 	// console.log("code = ", global.HACK_CODE);
 	// console.log('length = ', d.length);
 
+// len 1, 4 - echomoon
+// Len 4 - no echo moon
 
- 	// debugger;
+ 	debugger;
  	return d;
  }
 void(debug);
@@ -139,8 +145,8 @@ block ->
 	| block statement _
 
 statement
-	-> module_call _ %eos				{% id %}
-	| assignment_expression _ %eos		{% debug %}
+	-> assignment_expression _ %eos		{% debug %}
+	| module_call _ %eos				{% id %}
 	| function_statement _ %eos			{% functionDefinition  %}
 #	| labeled_statement					{% id %}
 	| compound_statement				{% id %}
@@ -259,9 +265,13 @@ constant
 #	| %predefined_constant						{% builtInConstant %}
 
 
+module_call2
+	-> %identifier _ "(" __ ")"	{% moduleCall %}
+
+
 module_call
-#	-> assignment_expression							{% id %}
 	-> %identifier _ "(" _ module_arguments _ ")"	{% moduleCall %}
+    | %identifier _ "(" ")"	{% moduleCall %}
 
 
 argument_expression_list
@@ -271,7 +281,7 @@ argument_expression_list
 
 module_arguments
 	-> argument_expression_list	{% id %}
-	| _							{% id %}
+
 
 compound_statement
 	-> "{" _ "}"						{% compoundStatement %}
@@ -288,6 +298,7 @@ statement_list
 
 # Optional white space
 _ -> null | _ [\s] 						{% function() {} %}
+
 # Required white space
 __ -> [\s] | __ [\s]					{% function() {} %}
 
