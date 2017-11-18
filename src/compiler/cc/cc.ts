@@ -60,7 +60,7 @@ function executeStatement(runtime: RunTime, token: TokenType.Token) {
                 arguments: token.arguments
             });
         } else {
-            throw new Error('Cannot call user defined modules yet - not impliemented');
+            throw new Error('Cannot call user defined modules yet - not implemented');
         }
     }
 }
