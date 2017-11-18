@@ -313,7 +313,6 @@ describe('Running compiler tests', () => {
                 expect(runtime.geometryList.length).toBe(2);
                 expect(runtime.geometryList[0].function).toBeDefined();
                 expect(runtime.geometryList[1].function).toBeDefined();
-
             };
 
             const p1 = tests.map(test => {
