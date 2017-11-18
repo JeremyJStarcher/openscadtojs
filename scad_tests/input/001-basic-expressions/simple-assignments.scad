@@ -1,4 +1,1 @@
-cube(1);
-var1=10;
-echo(var1);
-
+cube(1);var1=10;echo(var1);

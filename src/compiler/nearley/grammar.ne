@@ -61,6 +61,10 @@ function undefinedConstant(d:any[]) {
 	return new TokenType.Undefined();
 }
 
+function nullify(d:any[]) {
+	return null;
+}
+
 // function builtInConstant(d:any[]) {
 // 	// return new ScadTokens.BuiltInConstant(d[0]);
 // }
@@ -74,10 +78,6 @@ function unwrapParens(d:any[]):any {
 }
 
 function moduleCall(d:any[]):any {
-	if (d[0].value !== "echo") {
-		throw new Error("ACK. moduleCall should be 'echo'");
-	}
-
 	// <name> _ "(" _ expression _ ")"
 	//  0     1  2  3     4      5  6
 
@@ -277,7 +277,6 @@ compound_statement
 	-> "{" _ "}"						{% compoundStatement %}
 	| "{" _ (statement_list) _ "}"		{% compoundStatement %}
 
-
 function_statement
 	->"function" __ %identifier _ "(" _ ")" _ "=" _ expression
 	|	"function" __ %identifier _ "(" _ argument_expression_list _ ")" _ "=" _ (expression)
@@ -287,10 +286,11 @@ statement_list
 	| statement_list statement 			{% d => d[0].concat([d[1]]) %}
 
 
-
 # Optional white space
-_ -> null | _ [\s]						{% function() {} %}
+_ -> null | _ [\s] 						{% function() {} %}
 # Required white space
 __ -> [\s] | __ [\s]					{% function() {} %}
 
 
+LineEnd -> null {% nullify %}
+          | [^\n] LineEnd {% nullify %}

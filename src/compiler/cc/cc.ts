@@ -18,6 +18,10 @@ function parseToAst(source: string): moo.Token[] {
         throw new Error('Unexpected end of input');
     }
     if (tokenList.length > 1) {
+
+        console.log(tokenList);
+
+        debugger;
         throw new Error('Ambiguous grammar -- internal parsing error');
     }
 

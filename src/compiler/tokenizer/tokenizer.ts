@@ -1,5 +1,6 @@
 export const OPENSCAD_RULES /*:  moo.Rules */ = {
     WS: /[ \t]+/,
+    NL: { match: /\n|\r/, lineBreaks: true },
     comment: /\/\/.*?$/,
     number: /[0-9]+\.{0,1}[0-9]*[e|E]{1}[+/-]?[0-9]+|[0-9]*\.[0-9]*|[0-9]+\.*|[1-9][0-9]|\.[0-9]*/,
     //constant_undefined: 'undef',
@@ -22,9 +23,10 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     rbrace: '}',
     unary_operator: ["!", "+", "-"],
     argument_separator: ",",
-    operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
-    NL: { match: /\n/, lineBreaks: true },
+    operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"]
 };
+
+
 
 
 // IDEN: {match: /[a-zA-Z]+/, keywords: {

@@ -2,7 +2,7 @@ import { RunTime } from "../cc/run-time";
 import * as TokenType from "../runtime/token-type";
 import * as cc from "./cc";
 import { valueOfExpression } from "../runtime/run";
-
+import * as scadTests from "../../../scad_tests/output/scad"
 
 
 describe('Running compiler tests', () => {
@@ -152,15 +152,23 @@ describe('Running compiler tests', () => {
 
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
-                return Array.from(cc.astRunner(runtime, content));
+                const res = Array.from(cc.astRunner(runtime, content));
+                debugger;
+                return res;
             }).catch(err => {
+                console.log(code);
+                console.error(err);
+                fail(err.message + ' : ' + JSON.stringify(code));
                 reject(err);
             }).then(() => {
                 return runGeometry(runtime);
             }).then(() => {
                 validate(runtime, expectedValue, code);
             }).catch(err => {
-                fail(err);
+                console.log(code);
+                console.error(err);
+
+                fail(err.message);
                 reject(err);
             }).then(() => {
                 resolve();
@@ -318,10 +326,11 @@ describe('Running compiler tests', () => {
         });
     });
 
-    it('should add "echo" to the geometry commands', () => {
+    fit('should add "echo" to the geometry commands', () => {
         return new Promise((resolve, reject) => {
             const tests: [[string, any]] = [
                 ["echo(true);echo(1+99, 400/2, 1000/2*4);var1=999;echo(var1);", 3],
+                [`echo("Hello");`, 3]
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
@@ -374,5 +383,39 @@ describe('Running compiler tests', () => {
             });
 
         });
+    });
+
+    fdescribe(`Running OpenSCAD code and results`, () => {
+
+        scadTests.scadTest.forEach(test => {
+            it(`Should pass: ${test.fname}`, () => {
+
+                return new Promise((resolve, reject) => {
+                    const tests: [[string, undefined]] = [
+                        [test.source, undefined],
+                    ];
+
+                    const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                        const logs = runtime.logger.getLogs();
+                        expect(logs.length).toEqual(test.echos.length);
+
+                        logs.forEach((line, i) => {
+                            expect(line).toEqual(logs[i]);
+                        });
+                    };
+
+                    const p1 = tests.map(test => {
+                        return compileAndRun(test[0], test[1], validate);
+                    });
+
+                    Promise.all(p1).then(() => {
+                        resolve();
+                    });
+                });
+
+
+            });
+        });
+
     });
 });
