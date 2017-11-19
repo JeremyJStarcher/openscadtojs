@@ -6,6 +6,9 @@ enum NAME_SPACE {
     MODULE = "MODULE"
 }
 
+const HASHER = "_";
+
+
 export interface IContext {
     parent: IContext;
     set: (key: string, value: TokenType.Value2) => void;
@@ -42,7 +45,7 @@ export class Context {
 
     getIdentifier(key: string): TokenType.Value2 {
         const hash = this.getHash(key, NAME_SPACE.IDENTIFIER);
-        const token = this.get(hash);
+        const token = this.get(hash, 'variable');
         if (token instanceof TokenType.Value2) {
             return token;
         }
@@ -56,12 +59,11 @@ export class Context {
 
     getModule(key: string): TokenType.Value2 | Function {
         const hash = this.getHash(key, NAME_SPACE.MODULE);
-        return this.get(hash);
+        return this.get(hash, 'module');
     }
 
-
     private getHash(key: string, ns: NAME_SPACE) {
-        const hash = ns + "_" + key;
+        const hash = ns + HASHER + key;
         return hash;
     }
 
@@ -80,15 +82,17 @@ export class Context {
         this.container.set(key, value);
     }
 
-    private get(key: string): TokenType.Value2 | Function {
+    private get(key: string, type: string): TokenType.Value2 | Function {
         if (this.container.has(key)) {
             const val = this.container.get(key) as TokenType.Value2;
             return val;
         }
         if (this.parent) {
-            return this.parent.get(key);
+            return this.parent.get(key, type);
         }
-        this.logger.warn(`Ignoring unknown variable '${key}'.`);
+
+        const name = key.split(HASHER)[1];
+        this.logger.warn(`Ignoring unknown ${type} '${name}'.`);
         return new TokenType.Undefined();
     }
 }

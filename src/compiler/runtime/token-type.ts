@@ -112,9 +112,24 @@ export class Number extends Value2 {
             super(valueToken);
         } else {
             super(value);
-
             this.value = parseFloat(value.value);
         }
+    }
+
+    public toString(): string {
+        if (isNaN(this.value)) {
+            return "nan";
+        }
+
+        if (!isFinite(this.value)) {
+            if (this.value < 0) {
+                return "-inf";
+            } else {
+                return "inf";
+            }
+        }
+
+        return this.value;
     }
 }
 
@@ -162,7 +177,6 @@ export class ModuleCall extends Value2 {
         this.arguments = args as Value2[];
     }
 }
-
 
 export class FunctionDefinition extends Token {
     public arguments: Value2[];
