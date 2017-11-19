@@ -16,7 +16,6 @@ interface ScadResult {
     fname: string;
 }
 
-
 const walkSync = (dir: string, filelist: string[] = []) => {
     fs.readdirSync(dir).forEach((file: string) => {
 
@@ -27,7 +26,6 @@ const walkSync = (dir: string, filelist: string[] = []) => {
     });
     return filelist;
 }
-
 
 function runOpenScad(filename: string): Promise<ScadResult> {
 
