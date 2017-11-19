@@ -275,6 +275,11 @@ describe('Tokenizer Tests', () => {
             generateAst("line1=-1;    ");
         });
 
+        it('should parse vectors', () => {
+            generateAst(`line1=[1, 2, true, "A"];`);
+            generateAst(`line1=[[1, 2], [true], "A"];`);
+        });
+
         it('should parse a module call', () => {
             const calls = [
                 ["echo();", 0],

@@ -169,6 +169,26 @@ export class Boolean extends Value2 {
     }
 }
 
+export class Vector extends Value2 {
+    values: Value2[];
+
+    constructor(value: moo.Token, values: Value2[]) {
+        if (typeof value === "boolean") {
+            const valueToken = makeMooToken(value);
+            super(valueToken);
+        } else {
+            super(value);
+
+            this.values = values;
+        }
+    }
+
+    public toString(): string {
+        const out2 =  this.values.map(val => val.toString());
+        return `[` + out2.join(", ") + `]`;
+    }
+}
+
 export class ModuleCall extends Token {
     public arguments: Value2[];
 

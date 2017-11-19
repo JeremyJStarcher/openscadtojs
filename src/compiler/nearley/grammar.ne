@@ -123,6 +123,14 @@ function functionDefinition(d: any[]):any {
 		return new TokenType.FunctionDefinition(functionName, [], expression);
 	}
 }
+ function vector(d:any[]):any {
+	 debugger;
+	 if (d.length === 5) {
+		 	return new TokenType.Vector(d[0], d[2]);
+	 } else {
+	 	return new TokenType.Vector(d[0], d[4]);
+	 }
+ }
 
  function debug(d:any[]):any {
 	// const global: any = Function('return this')() || (42, eval)('this');
@@ -133,7 +141,7 @@ function functionDefinition(d: any[]):any {
 // len 1, 4 - echomoon
 // Len 4 - no echo moon
 
- 	// debugger;
+ 	 // debugger;
  	return d;
  }
 void(debug);
@@ -145,7 +153,7 @@ block ->
 	| block statement _
 
 statement
-	-> assignment_expression _ %eos		{% debug %}
+	-> assignment_expression _ %eos		{% d => d %}
 	| module_call _ %eos				{% id %}
 	| function_statement _ %eos			{% functionDefinition  %}
 #	| labeled_statement					{% id %}
@@ -244,8 +252,13 @@ conditional_expression
 	| logical_or_expression _ "?" _ expression _ ":" _ conditional_expression
 	
 
-assignment_expression
+
+vector_expression
 	-> conditional_expression									{% id %}
+	|	"[" _ argument_expression_list _ "]"					{% vector %}
+
+assignment_expression
+	-> vector_expression									{% id %}
 	| %identifier _ assignment_operator _ assignment_expression	{% operator %}
 	
 
@@ -256,6 +269,7 @@ expression
 	-> assignment_expression					{% id %}
 	| expression _ "," _ assignment_expression	{% id %}
 	
+
 
 constant
 	-> %string									{% stringConstant %}
