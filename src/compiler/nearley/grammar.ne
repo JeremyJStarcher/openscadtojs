@@ -136,11 +136,6 @@ function functionDefinition(d: any[]):any {
 	// const code = global.HACK_CODE;
 	// console.log("code = ", global.HACK_CODE);
 	// console.log('length = ', d.length);
-
-// len 1, 4 - echomoon
-// Len 4 - no echo moon
-
- 	 // debugger;
  	return d;
  }
 void(debug);
