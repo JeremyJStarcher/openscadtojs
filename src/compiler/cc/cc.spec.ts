@@ -4,7 +4,6 @@ import * as cc from "./cc";
 import { valueOfExpression } from "../runtime/run";
 import * as scadTests from "../../../scad_tests/output/scad"
 
-
 describe('Running compiler tests', () => {
     it('should have the test infrastructure in place', () => {
         expect(true).toBe(true, "We are testing??");
@@ -33,7 +32,6 @@ describe('Running compiler tests', () => {
             done();
         });
     });
-
 
     function getAllTokens(ast: moo.Token | moo.Token[]): TokenType.Token[] {
         if (!Array.isArray(ast)) {
@@ -222,7 +220,6 @@ describe('Running compiler tests', () => {
             Promise.all(p1).then(() => {
                 resolve();
             });
-
         });
     });
 
@@ -441,7 +438,7 @@ describe('Running compiler tests', () => {
                         const logs = runtime.logger.getLogs().filter(l => l);
                         const incomingLogs = test.warnings.filter(l => l);
 
-                        expect(logs.length).toEqual(incomingLogs.length);
+                        expect(logs.length).toEqual(incomingLogs.length, 'Difference in number of logged messages');
 
                         logs.forEach((line, i) => {
                             const incoming = incomingLogs[i]
@@ -457,10 +454,7 @@ describe('Running compiler tests', () => {
                         resolve();
                     });
                 });
-
-
             });
         });
-
     });
 });
