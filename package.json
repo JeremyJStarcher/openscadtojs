@@ -1,7 +1,7 @@
 {
-  "name": "typescript-webpack-starter",
-  "version": "0.2.0",
-  "description": "A damn simple starter for Typescript and Webpack",
+  "name": "open-scad-viewer",
+  "version": "0.0.0",
+  "description": "(Eventually) a web viewer for OpenSCAD files",
   "main": "src/index.ts",
   "scripts": {
     "start": "npm run server:dev",
@@ -23,7 +23,7 @@
     "type": "git",
     "url": "https://github.com/emyann/typescript-webpack-starter"
   },
-  "author": "yrenaudin",
+  "author": "jeremy.starcher@gmail.com",
   "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "^2.5.53",
