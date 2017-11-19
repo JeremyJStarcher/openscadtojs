@@ -1,4 +1,6 @@
 import { Context } from '../cc/context/context';
+import { RunTime } from '../cc/run-time';
+import * as evaluate from '../../compiler/runtime/evaluate';
 
 export class Token {
     public type: string | undefined;
@@ -23,7 +25,11 @@ export class Token {
         throw new Error(`execute method needs overridden for base class Token`);
     }
 
-    public toString(): string {
+    public toString() {
+        return this.value;
+    }
+
+    public toScadString(runtime: RunTime): string {
         return this.value;
     }
 }
@@ -58,6 +64,10 @@ export class Value2 extends Evalutable {
     constructor(mooToken: moo.Token) {
         super(mooToken);
     }
+
+    valueOf(runtime: RunTime): Value2 {
+        return this;
+    }
 }
 
 export class Operator extends Value2 {
@@ -72,6 +82,11 @@ export class Operator extends Value2 {
 
         this.lhand = lhand;
         this.rhand = rhand;
+    }
+
+    valueOf(runtime: RunTime): Value2 {
+        const ret = evaluate.executeBinaryOperator(runtime, this);
+        return ret;
     }
 }
 
@@ -97,11 +112,19 @@ export class UnaryOperator extends Value2 {
         super(getInnerValue(mooToken));
         this.operand = operand;
     }
+
+    valueOf(runtime: RunTime): Value2 {
+        return evaluate.executeUnaryOperator(runtime, this);
+    }
 }
 
 export class Identifier extends Value2 {
     constructor(mooToken: moo.Token) {
         super(mooToken);
+    }
+
+    valueOf(runtime: RunTime): Value2 {
+        return runtime.getIdentifier(this.value);
     }
 }
 
@@ -116,7 +139,7 @@ export class Number extends Value2 {
         }
     }
 
-    public toString(): string {
+    public toScadString(): string {
         if (isNaN(this.value)) {
             return "nan";
         }
@@ -139,7 +162,7 @@ export class Undefined extends Value2 {
         super(valueToken);
     }
 
-    public toString(): string {
+    public toScadString(): string {
         return "undef";
     }
 }
@@ -183,8 +206,8 @@ export class Vector extends Value2 {
         }
     }
 
-    public toString(): string {
-        const out2 =  this.values.map(val => val.toString());
+    public toScadString(runtime: RunTime): string {
+        const out2 = this.values.map(val => val.valueOf(runtime).toScadString(runtime));
         return `[` + out2.join(", ") + `]`;
     }
 }

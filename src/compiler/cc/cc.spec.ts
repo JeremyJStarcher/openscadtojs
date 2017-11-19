@@ -1,7 +1,6 @@
 import { RunTime } from "../cc/run-time";
 import * as TokenType from "../runtime/token-type";
 import * as cc from "./cc";
-import { valueOfExpression } from "../runtime/run";
 import * as scadTests from "../../../scad_tests/output/scad"
 
 describe('Running compiler tests', () => {
@@ -131,8 +130,7 @@ describe('Running compiler tests', () => {
         for (var i = 0; i < runtime.geometryList.length; i++) {
             const geometryStatement = runtime.geometryList[i];
             runtime.currentContext = geometryStatement.context;
-
-            const values = geometryStatement.arguments.map(token => valueOfExpression(runtime, token));
+            const values = geometryStatement.arguments.map(token => token.valueOf(runtime));
             geometryStatement.function.call(null, runtime, ...values);
         }
     }
@@ -200,7 +198,7 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                const value = runtime.getIdentifier('var1').value;
+                const value = runtime.getIdentifier('var1').valueOf(runtime).value;
 
                 const [, expression] = code.split('=');
                 const jsValue = (1, eval)(expression);
@@ -282,7 +280,8 @@ describe('Running compiler tests', () => {
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
-                const valueToken = runtime.getIdentifier('result');
+                const token = runtime.getIdentifier('result');
+                const valueToken = token.valueOf(runtime);
                 expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
             };
 

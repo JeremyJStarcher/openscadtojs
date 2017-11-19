@@ -2,7 +2,8 @@ import * as moo from 'moo';
 import * as grammar from '../nearley/grammar';
 import * as nearley from 'nearley';
 import * as TokenType from '../runtime/token-type';
-import { executeAssignment } from "../runtime/run";
+import * as evaluate from "../../compiler/runtime/evaluate";
+
 import { RunTime } from "./run-time";
 
 function parseToAst(source: string): moo.Token[] {
@@ -19,7 +20,6 @@ function parseToAst(source: string): moo.Token[] {
     }
     if (tokenList.length > 1) {
         console.log(tokenList);
-        debugger;
         throw new Error('Ambiguous grammar -- internal parsing error');
     }
 
@@ -48,7 +48,7 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
 
 function executeStatement(runtime: RunTime, token: TokenType.Token) {
     if (token instanceof TokenType.Operator && token.value === "=") {
-        executeAssignment(runtime, token);
+        evaluate.executeAssignment(runtime, token);
     }
 
     if (token instanceof TokenType.ModuleCall) {

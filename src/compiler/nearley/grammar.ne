@@ -124,7 +124,6 @@ function functionDefinition(d: any[]):any {
 	}
 }
  function vector(d:any[]):any {
-	 debugger;
 	 if (d.length === 5) {
 		 	return new TokenType.Vector(d[0], d[2]);
 	 } else {

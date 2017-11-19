@@ -16,15 +16,15 @@ import * as TokenType from "./token-type";
 import { RunTime } from "../cc/run-time";
 
 type hashLookupType = (
-    l: TokenType.Token,
-    r: TokenType.Token
-) => TokenType.Token;
+    l: TokenType.Value2,
+    r: TokenType.Value2
+) => TokenType.Value2;
 
 const operatorLookup: Map<string, hashLookupType> = new Map();
 
 type hashUnaryLookupType = (
-    o: TokenType.Token,
-) => TokenType.Token;
+    o: TokenType.Value2,
+) => TokenType.Value2;
 
 const unaryOperatorLookup: Map<string, hashUnaryLookupType> = new Map();
 
@@ -33,6 +33,7 @@ export function runUnaryOp(
     operator: string,
     operand: TokenType.Value2
 ) {
+    initFuncs();
     const op = operand as TokenType.Value2;
     const hash = hashUnaryOp(operator, op.constructor.name);
     const func = unaryOperatorLookup.get(hash) || errorFallbackUnary;
@@ -45,6 +46,7 @@ export function runOp(
     lhand: TokenType.Value2,
     rhand: TokenType.Value2
 ) {
+    initFuncs();
     const hash = hashOp(operator, lhand.constructor.name, lhand.constructor.name);
     const func = operatorLookup.get(hash) || errorFallback;
     return func(lhand, rhand);
@@ -65,43 +67,52 @@ function hashUnaryOp(
     return [operator, operand].join("::");
 }
 
-const numberClassName = new TokenType.Number(10).constructor.name;
+let wasInitRun = false;
+function initFuncs() {
+    if (wasInitRun) {
+        return;
+    }
 
-/*
- *  NUMBERS
- */
+    wasInitRun = true;
 
-operatorLookup.set(hashOp("+", numberClassName, numberClassName),
-    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value + rval.value); }
-);
+    const numberClassName = new TokenType.Number(10).constructor.name;
 
-operatorLookup.set(hashOp("-", numberClassName, numberClassName),
-    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value - rval.value); }
-);
+    /*
+     *  NUMBERS
+     */
 
-operatorLookup.set(hashOp("*", numberClassName, numberClassName),
-    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value * rval.value); }
-);
+    operatorLookup.set(hashOp("+", numberClassName, numberClassName),
+        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value + rval.value); }
+    );
 
-operatorLookup.set(hashOp("/", numberClassName, numberClassName),
-    (lval: TokenType.Token, rval: TokenType.Token) => { return new TokenType.Number(lval.value / rval.value); }
-);
+    operatorLookup.set(hashOp("-", numberClassName, numberClassName),
+        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value - rval.value); }
+    );
 
-/*
- * UNARY NUMBERS
- */
+    operatorLookup.set(hashOp("*", numberClassName, numberClassName),
+        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value * rval.value); }
+    );
 
-unaryOperatorLookup.set(hashUnaryOp("+", numberClassName),
-    (operand: TokenType.Token) => { return new TokenType.Number(+ operand.value); }
-);
+    operatorLookup.set(hashOp("/", numberClassName, numberClassName),
+        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value / rval.value); }
+    );
 
-unaryOperatorLookup.set(hashUnaryOp("-", numberClassName),
-    (operand: TokenType.Token) => { return new TokenType.Number(- operand.value); }
-);
+    /*
+     * UNARY NUMBERS
+     */
+
+    unaryOperatorLookup.set(hashUnaryOp("+", numberClassName),
+        (operand: TokenType.Value2) => { return new TokenType.Number(+ operand.value); }
+    );
+
+    unaryOperatorLookup.set(hashUnaryOp("-", numberClassName),
+        (operand: TokenType.Value2) => { return new TokenType.Number(- operand.value); }
+    );
+}
 
 /*
  * FALLBACKS, just in case.
  */
 
-const errorFallback = (lval: TokenType.Token, rval: TokenType.Token) => TokenType.VALUE_UNDEFINED;
-const errorFallbackUnary = (o: TokenType.Token) => TokenType.VALUE_UNDEFINED;
+const errorFallback = (lval: TokenType.Value2, rval: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
+const errorFallbackUnary = (o: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
