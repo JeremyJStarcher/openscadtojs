@@ -169,7 +169,7 @@ export class Boolean extends Value2 {
     }
 }
 
-export class ModuleCall extends Value2 {
+export class ModuleCall extends Token {
     public arguments: Value2[];
 
     constructor(value: moo.Token, args: Token[]) {
