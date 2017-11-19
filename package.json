@@ -16,8 +16,8 @@
     "testui": "karma start --single-run false",
     "build:grammar": "nearleyc src/compiler/nearley/grammar.ne > src/compiler/nearley/grammar.ts 2> src/compiler/nearley/grammar.err",
     "build:scadtest": "cd scad_tests;ts-node build.ts;cd ..",
-    "g": "npm run build:grammar && npm run build:scadtest && npm run testui",
-    "t": "npm run build:grammar && npm run build:scadtest && npm run test"
+    "g": "npm run build:scadtest && npm run build:grammar && npm run testui",
+    "t": "npm run build:scadtest && npm run build:grammar && npm run test"
   },
   "repository": {
     "type": "git",
