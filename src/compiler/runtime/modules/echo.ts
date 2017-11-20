@@ -6,6 +6,6 @@ export default function echo(runtime: RunTime, ...args: TokenType.Value2[]) {
     const valsAsStr = argValues.map(arg => arg.toScadString(runtime));
     const out = valsAsStr.join(", ");
 
-    console.info("ECHO: ", out);
+    // console.info("ECHO: ", out);
     runtime.logger.echo(out);
 }
