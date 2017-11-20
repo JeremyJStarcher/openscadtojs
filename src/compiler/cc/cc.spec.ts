@@ -307,8 +307,8 @@ describe('Running compiler tests', () => {
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
                 expect(runtime.logger.getLogs()[0]).toContain('forcedErrorMessage');
-                // const valueToken = runtime.context.getIdentifier('result');
-                // expect(valueToken.value).toEqual(expectedValue, `${code} did not equal ${expectedValue}`);
+                const valueToken = runtime.getIdentifier('cperror');
+                expect(valueToken.value).toBeUndefined(`${code} did not equal ${expectedValue}`);
             };
 
             const p1 = tests.map(test => {
