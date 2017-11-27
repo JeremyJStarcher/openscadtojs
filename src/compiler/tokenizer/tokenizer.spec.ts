@@ -315,5 +315,9 @@ describe('Tokenizer Tests', () => {
             generateAst('function func2(x,y) = 2*x+y;');
         });
 
+        it('should parse vector comparisons', () => {
+            generateAst('echo([1] == [1]);');
+        });
+
     });
 });

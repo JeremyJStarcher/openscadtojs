@@ -162,7 +162,7 @@ primary_expression
 	-> %identifier						{% identifierF %}
 	| constant							{% id %}
 	| "(" _ expression _ ")"			{% unwrapParens %}
-
+	| vector_expression					{% id %}
 
 postfix_expression
 	->  primary_expression				{% id %}
@@ -248,11 +248,11 @@ conditional_expression
 
 
 vector_expression
-	-> conditional_expression									{% id %}
-	|	"[" _ argument_expression_list _ "]"					{% vector %}
+	#-> conditional_expression									{% id %}
+	->	"[" _ argument_expression_list _ "]"					{% vector %}
 
 assignment_expression
-	-> vector_expression									{% id %}
+	-> conditional_expression									{% id %}
 	| %identifier _ assignment_operator _ assignment_expression	{% operator %}
 	
 
