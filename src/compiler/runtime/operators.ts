@@ -15,7 +15,9 @@
 import * as TokenType from "./token-type";
 import { RunTime } from "../cc/run-time";
 
+
 type hashLookupType = (
+    runtime: RunTime,
     l: TokenType.Value2,
     r: TokenType.Value2
 ) => TokenType.Value2;
@@ -49,7 +51,7 @@ export function runOp(
     initFuncs();
     const hash = hashOp(operator, lhand.constructor.name, rhand.constructor.name);
     const func = operatorLookup.get(hash) || errorFallback;
-    return func(lhand, rhand);
+    return func(runtime, lhand, rhand);
 }
 
 function hashOp(
@@ -78,25 +80,26 @@ function initFuncs() {
     const numberClassName = new TokenType.Number(10).constructor.name;
     const stringClassName = new TokenType.String("10").constructor.name;
     const booleanClassName = new TokenType.Boolean(true).constructor.name;
+    const vectorClassName = new TokenType.Vector([]).constructor.name;
 
     /*
      *  NUMBERS MATH OPERATIONS
      */
 
     operatorLookup.set(hashOp("+", numberClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value + rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value + rval.value); }
     );
 
     operatorLookup.set(hashOp("-", numberClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value - rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value - rval.value); }
     );
 
     operatorLookup.set(hashOp("*", numberClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value * rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value * rval.value); }
     );
 
     operatorLookup.set(hashOp("/", numberClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value / rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Number(lval.value / rval.value); }
     );
 
     /*
@@ -104,39 +107,67 @@ function initFuncs() {
      */
 
     operatorLookup.set(hashOp("==", numberClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
     );
 
     operatorLookup.set(hashOp("==", numberClassName, stringClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", numberClassName, booleanClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+    );
+
+    operatorLookup.set(hashOp("==", numberClassName, vectorClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", stringClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", stringClassName, booleanClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+    );
+
+    operatorLookup.set(hashOp("==", stringClassName, vectorClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", stringClassName, stringClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
     );
 
     operatorLookup.set(hashOp("==", booleanClassName, stringClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", booleanClassName, numberClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { debugger; return new TokenType.Boolean(false); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+    );
+
+    operatorLookup.set(hashOp("==", booleanClassName, vectorClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", booleanClassName, booleanClassName),
-        (lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
+    );
+
+    operatorLookup.set(hashOp("==", vectorClassName, vectorClassName),
+        (runtime: RunTime, lval: TokenType.Vector, rval: TokenType.Vector) => { return new TokenType.Boolean(lval.toScadString(runtime) === rval.toScadString(runtime)); }
+    );
+
+    operatorLookup.set(hashOp("==", vectorClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+    );
+
+    operatorLookup.set(hashOp("==", vectorClassName, stringClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
+    );
+
+    operatorLookup.set(hashOp("==", vectorClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     /*
@@ -156,5 +187,5 @@ function initFuncs() {
  * FALLBACKS, just in case.
  */
 
-const errorFallback = (lval: TokenType.Value2, rval: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
+const errorFallback = (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
 const errorFallbackUnary = (o: TokenType.Value2) => TokenType.VALUE_UNDEFINED;

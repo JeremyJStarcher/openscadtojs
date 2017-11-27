@@ -195,14 +195,16 @@ export class Boolean extends Value2 {
 export class Vector extends Value2 {
     values: Value2[];
 
-    constructor(value: moo.Token, values: Value2[]) {
-        if (typeof value === "boolean") {
+    constructor(value: moo.Token | any[], values?: Value2[]) {
+        if (Array.isArray(value)) {
             const valueToken = makeMooToken(value);
             super(valueToken);
+            values = value;
         } else {
             super(value);
-
-            this.values = values;
+            if (values) {
+                this.values = values;
+            }
         }
     }
 
