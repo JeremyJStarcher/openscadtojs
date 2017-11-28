@@ -21,9 +21,8 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     rbrace: '}',
     lbracket: '[',
     rbracket: ']',
-    unary_operator: ["!", "+", "-"],
     argument_separator: ",",
-    operator: ["=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
+    operator: ["!", "=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
     WS: /[ \t]+/,
     NL: { match: /\n|\r/, lineBreaks: true }
 };
