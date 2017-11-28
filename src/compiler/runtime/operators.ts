@@ -30,6 +30,8 @@ type hashUnaryLookupType = (
 
 const unaryOperatorLookup: Map<string, hashUnaryLookupType> = new Map();
 
+const comparisonOperators = ["=="];
+
 export function runUnaryOp(
     runtime: RunTime,
     operator: string,
@@ -50,8 +52,16 @@ export function runOp(
 ) {
     initFuncs();
     const hash = hashOp(operator, lhand.constructor.name, rhand.constructor.name);
-    const func = operatorLookup.get(hash) || errorFallback;
-    return func(runtime, lhand, rhand);
+    const func = operatorLookup.get(hash);
+    if (func) {
+        return func(runtime, lhand, rhand);
+    }
+
+    if (comparisonOperators.indexOf(operator) >= 0) {
+        return new TokenType.Boolean(false);
+    }
+
+    return TokenType.VALUE_UNDEFINED;
 }
 
 function hashOp(
@@ -110,44 +120,8 @@ function initFuncs() {
         (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
     );
 
-    operatorLookup.set(hashOp("==", numberClassName, stringClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", numberClassName, booleanClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", numberClassName, vectorClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", stringClassName, numberClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", stringClassName, booleanClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", stringClassName, vectorClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
     operatorLookup.set(hashOp("==", stringClassName, stringClassName),
         (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value === rval.value); }
-    );
-
-    operatorLookup.set(hashOp("==", booleanClassName, stringClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", booleanClassName, numberClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", booleanClassName, vectorClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
     );
 
     operatorLookup.set(hashOp("==", booleanClassName, booleanClassName),
@@ -158,17 +132,6 @@ function initFuncs() {
         (runtime: RunTime, lval: TokenType.Vector, rval: TokenType.Vector) => { return new TokenType.Boolean(lval.toScadString(runtime) === rval.toScadString(runtime)); }
     );
 
-    operatorLookup.set(hashOp("==", vectorClassName, numberClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", vectorClassName, stringClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
-
-    operatorLookup.set(hashOp("==", vectorClassName, booleanClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(false); }
-    );
 
     /*
      * UNARY NUMBERS
@@ -187,5 +150,6 @@ function initFuncs() {
  * FALLBACKS, just in case.
  */
 
-const errorFallback = (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
+
+
 const errorFallbackUnary = (o: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
