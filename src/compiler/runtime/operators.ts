@@ -180,26 +180,6 @@ function initFuncs() {
     );
 
 
-    operatorLookup.set(hashOp(">", numberClassName, numberClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
-    );
-
-    operatorLookup.set(hashOp(">", stringClassName, stringClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
-    );
-
-    operatorLookup.set(hashOp(">", booleanClassName, booleanClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
-    );
-
-    operatorLookup.set(hashOp(">", booleanClassName, numberClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(booleanToNumber(lval.value) > rval.value); }
-    );
-
-    operatorLookup.set(hashOp(">", numberClassName, booleanClassName),
-        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > booleanToNumber(rval.value)); }
-    );
-
     operatorLookup.set(hashOp("<", numberClassName, numberClassName),
         (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value < rval.value); }
     );
