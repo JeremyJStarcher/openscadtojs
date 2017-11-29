@@ -423,7 +423,7 @@ describe('Running compiler tests', () => {
         });
     });
 
-    describe(`Running OpenSCAD code and results`, () => {
+    fdescribe(`Running OpenSCAD code and results`, () => {
 
         scadTests.scadTest.forEach(test => {
             it(`Should pass: ${test.fname}`, () => {

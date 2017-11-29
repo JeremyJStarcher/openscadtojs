@@ -43,6 +43,8 @@ export function runUnaryOp(
     return func(operand);
 }
 
+const operatorsThatReturnFalseOnTypeMistmatch = ["==", ">"];
+
 export function runOp(
     runtime: RunTime,
     operator: string,
@@ -56,7 +58,7 @@ export function runOp(
         return func(runtime, lhand, rhand);
     }
 
-    if (operator === "==") {
+    if (operatorsThatReturnFalseOnTypeMistmatch.indexOf(operator) > -1) {
         return new TokenType.Boolean(false);
     }
 
@@ -152,6 +154,32 @@ function initFuncs() {
         (runtime: RunTime, lval: TokenType.Vector, rval: TokenType.Vector) => { return new TokenType.Boolean(lval.toScadString(runtime) !== rval.toScadString(runtime)); }
     );
 
+    operatorLookup.set(hashOp(">", numberClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", stringClassName, stringClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", booleanClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", booleanClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(booleanToNumber(lval.value) > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", numberClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > booleanToNumber(rval.value)); }
+    );
+
+
+    operatorLookup.set(hashOp(">", vectorClassName, vectorClassName),
+        (runtime: RunTime, lval: TokenType.Vector, rval: TokenType.Vector) => { return new TokenType.Boolean(lval.toScadString(runtime) > rval.toScadString(runtime)); }
+    );
+
+
 
     /*
      * UNARY NUMBERS
@@ -164,6 +192,11 @@ function initFuncs() {
     unaryOperatorLookup.set(hashUnaryOp("-", numberClassName),
         (operand: TokenType.Value2) => { return new TokenType.Number(- operand.value); }
     );
+
+
+    function booleanToNumber(b: boolean) {
+        return b ? 1 : 0;
+    }
 }
 
 /*
