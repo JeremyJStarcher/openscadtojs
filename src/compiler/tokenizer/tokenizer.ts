@@ -15,7 +15,6 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     lparen: '(',
     rparen: ')',
     eos: ';',
-    /* echo */
     keyword: ['true', 'false', 'module', 'function', 'include', 'use', 'for', 'intersection_for', 'if', 'else', 'assign'],
     lbrace: '{',
     rbrace: '}',
