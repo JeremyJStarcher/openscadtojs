@@ -43,7 +43,7 @@ export function runUnaryOp(
     return func(operand);
 }
 
-const operatorsThatReturnFalseOnTypeMistmatch = ["==", ">"];
+const operatorsThatReturnFalseOnTypeMistmatch = ["==", ">", "<"];
 
 export function runOp(
     runtime: RunTime,
@@ -179,6 +179,46 @@ function initFuncs() {
         (runtime: RunTime, lval: TokenType.Vector, rval: TokenType.Vector) => { return new TokenType.Boolean(lval.toScadString(runtime) > rval.toScadString(runtime)); }
     );
 
+
+    operatorLookup.set(hashOp(">", numberClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", stringClassName, stringClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", booleanClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", booleanClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(booleanToNumber(lval.value) > rval.value); }
+    );
+
+    operatorLookup.set(hashOp(">", numberClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value > booleanToNumber(rval.value)); }
+    );
+
+    operatorLookup.set(hashOp("<", numberClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value < rval.value); }
+    );
+
+    operatorLookup.set(hashOp("<", stringClassName, stringClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value < rval.value); }
+    );
+
+    operatorLookup.set(hashOp("<", booleanClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value < rval.value); }
+    );
+
+    operatorLookup.set(hashOp("<", booleanClassName, numberClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(booleanToNumber(lval.value) < rval.value); }
+    );
+
+    operatorLookup.set(hashOp("<", numberClassName, booleanClassName),
+        (runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) => { return new TokenType.Boolean(lval.value < booleanToNumber(rval.value)); }
+    );
 
 
     /*
