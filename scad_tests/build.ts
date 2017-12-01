@@ -5,6 +5,7 @@ const exec = Bluebird.promisify(require('child_process').exec);
 const readdir = Bluebird.promisify(require('fs').readdir);
 const readFile = Bluebird.promisify(require('fs').readFile);
 const writeFile = Bluebird.promisify(require('fs').writeFile);
+const unlink = Bluebird.promisify(require('fs').unlink);
 
 const sourceDir = './input';
 const destDir = './output';
@@ -58,8 +59,17 @@ function runOpenScad(filename: string): Promise<ScadResult> {
 }
 
 async function buildJsTests() {
+    const destFileName = `${destDir}/scad.ts`;
     const json: ScadResult[] = [];
     // const allFiles: string[] = await readdir(sourceDir);
+
+    try {
+        await unlink(destFileName);
+    } catch (err) {
+        if (err.code !== 'ENOENT') {
+            throw err;
+        }
+    }
 
     const allFiles: string[] = walkSync(sourceDir);
     const scadFiles = allFiles.filter(fn => fn.endsWith('.scad'));
@@ -84,7 +94,12 @@ export interface ScadResult {
 export const scadTest: ScadResult[] = ${JSON.stringify(json, null, 4)};`;
 
     // console.log(`ts = `, ts);
-    await writeFile(`${destDir}/scad.ts`, ts, 'utf8');
+    await writeFile(destFileName, ts, 'utf8');
 }
 
-buildJsTests();
+buildJsTests().then(() => {
+}).catch(err => {
+    console.error("Runtime error: " + err.message);
+    process.exit(1);
+});
+
