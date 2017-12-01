@@ -61,9 +61,9 @@ function undefinedConstant(d:any[]) {
 	return new TokenType.Undefined();
 }
 
-function nullify(d:any[]) {
-	return null;
-}
+// function nullify(d:any[]) {
+// 	return null;
+// }
 
 // function builtInConstant(d:any[]) {
 // 	// return new ScadTokens.BuiltInConstant(d[0]);
@@ -304,12 +304,30 @@ statement_list
 	| statement_list statement 			{% d => d[0].concat([d[1]]) %}
 
 
+
+BlockComment -> "/*" commentbody "*/" {% function() {} %}
+LineComment -> "//" (linecommentbody)  [\n] {% function() {} %}
+
+
+linecommentbody -> null {% function() {} %}
+    | [a-zA-Z0-9\ \(\)\[\]\t;] linecommentbody {% function() {} %}
+	
+
+
+commentbody -> null {% function() {} %}
+    | [^\*] commentbody {% function() {} %}
+	| "*" [^\/] commentbody {% function() {} %}
+	
+
 # Optional white space
 _ -> null | _ [\s] 						{% function() {} %}
+  | BlockComment
+  | LineComment
+  | LineComment LineComment
 
 # Required white space
 __ -> [\s] | __ [\s]					{% function() {} %}
 
 
-LineEnd -> null {% nullify %}
-          | [^\n] LineEnd {% nullify %}
+LineEnd -> null {% function() {} %}
+          | [^\n] LineEnd {% function() {} %}

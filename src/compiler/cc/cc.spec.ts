@@ -1,7 +1,7 @@
 import { RunTime } from "../cc/run-time";
 import * as TokenType from "../runtime/token-type";
 import * as cc from "./cc";
-import * as scadTests from "../../../scad_tests/output/scad"
+import * as scadTests from "../../../scad_tests/output/scad";
 
 describe('Running compiler tests', () => {
     it('should have the test infrastructure in place', () => {
@@ -394,6 +394,59 @@ describe('Running compiler tests', () => {
         });
     });
 
+    describe('testing comments', () => {
+        it('handle single-line comments', () => {
+
+            return new Promise((resolve, reject) => {
+                const tests: [[string, number]] = [
+                    ["// This is a test\nt2=1;", 1],
+                    ["v=1;//this is a test\nt2=100;", 100]
+                ];
+
+                const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                    const t2 = runtime.getIdentifier('t2');
+                    expect(t2.value).toEqual(expectedValue, `${code} did not equal ${expectedValue[0]}`);
+                };
+
+                const p1 = tests.map(test => {
+                    return compileAndRun(test[0], test[1], validate);
+                });
+
+                Promise.all(p1).then(() => {
+                    resolve();
+                });
+            });
+
+        });
+
+        it('handle multi-line comment on one line', () => {
+
+            return new Promise((resolve, reject) => {
+                const tests: [[string, number]] = [
+                    ["/* this is a test */\nt2=1;", 1],
+                    ["v=1;/* this is a test */\nt2=100;", 100]
+                ];
+
+                const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                    const t2 = runtime.getIdentifier('t2');
+
+                    expect(t2.value).toEqual(expectedValue, `${code} did not equal ${expectedValue[0]}`);
+                };
+
+                const p1 = tests.map(test => {
+                    return compileAndRun(test[0], test[1], validate);
+                });
+
+                Promise.all(p1).then(() => {
+                    resolve();
+                });
+            });
+
+        });
+
+    });
+
+
     describe('testing hoisting', () => {
         it('should hoist var declarations, keeping only the latest', () => {
 
@@ -423,7 +476,7 @@ describe('Running compiler tests', () => {
         });
     });
 
-    fdescribe(`Running OpenSCAD code and results`, () => {
+    describe(`Running OpenSCAD code and results`, () => {
 
         scadTests.scadTest.forEach(test => {
             it(`Should pass: ${test.fname}`, () => {
@@ -434,6 +487,7 @@ describe('Running compiler tests', () => {
                     ];
 
                     const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+
                         const logs = runtime.logger.getLogs().filter(l => l);
                         const incomingLogs = test.warnings.filter(l => l);
 

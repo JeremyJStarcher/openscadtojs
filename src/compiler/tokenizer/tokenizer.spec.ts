@@ -193,6 +193,8 @@ describe('Tokenizer Tests', () => {
             var global: any = Function('return this')() || (42, eval)('this');
             global.HACK_CODE = code;
 
+            // Make sure dangling comments don't cause death.
+            code += "\n";
 
             const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
             parser.feed(code);
@@ -319,5 +321,24 @@ describe('Tokenizer Tests', () => {
             generateAst('echo([1] == [1]);');
         });
 
+        it('should parse white space', () => {
+            generateAst(' echo([1] == [1]);');
+            generateAst('\techo([1] == [1]);');
+            generateAst('\recho([1] == [1]);');
+        });
+
+
+        it('should parse singe-line comments', () => {
+            generateAst('// this is a comment\nt1=1;');
+            generateAst('t2=100;// this is a comment');
+        });
+
+        it('should parse multi-line comment on one line', () => {
+            generateAst('t1=100;/* A comment */');
+        });
+
+        it('should parse multi-line comment on two lines', () => {
+            generateAst('/* A \ncomment */t1=200;');
+        });
     });
 });

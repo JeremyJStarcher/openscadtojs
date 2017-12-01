@@ -7,6 +7,13 @@ import * as evaluate from "../../compiler/runtime/evaluate";
 import { RunTime } from "./run-time";
 
 function parseToAst(source: string): moo.Token[] {
+
+    // Carriage returns? Meh, forget 'em.
+    source = source.replace(/\r/g, "\n");
+    // Make sure the thing ends on a new line, just in case of
+    // dangling comments.
+    source += "\n";
+
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
 
     parser.feed(source);
@@ -19,7 +26,7 @@ function parseToAst(source: string): moo.Token[] {
         throw new Error('Unexpected end of input');
     }
     if (tokenList.length > 1) {
-        console.log(tokenList);
+        console.log(JSON.stringify(tokenList));
         throw new Error('Ambiguous grammar -- internal parsing error');
     }
 
@@ -112,7 +119,7 @@ export async function compile(src: string): Promise<TokenType.Token[]> {
     const fullAst = parseToAst(src) as TokenType.Token[];
 
     const errorToken = fullAst[0];
-    if (errorToken.type === "error") {
+    if (errorToken && errorToken.type === "error") {
         throw new Error(errorToken.value);
     }
 
