@@ -453,7 +453,6 @@ describe('Running compiler tests', () => {
 
     });
 
-
     describe('testing hoisting', () => {
         it('should hoist var declarations, keeping only the latest', () => {
 

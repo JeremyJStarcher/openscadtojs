@@ -100,6 +100,21 @@ function compoundStatement(d:any[]):any {
 	}
 }
 
+function rangeExpressionList(d: any[]): any{
+	// argument_expression_list _ "," _ assignment_expression 
+	//            0             1  2  3          4
+
+	// argument_expression_list _ "," _ assignment_expression _ ":" _ assignment_expression
+	//            0             1  2  3          4            5  6  7           8
+
+	if (d.length === 9) {
+		return [d[0], d[4], d[8]];
+	} else if (d.length === 5) {
+		return [d[0], new TokenType.Number(1), d[4]];
+	}
+}
+
+
 function argumentExpressionList(d: any[]): any{
 	// argument_expression_list _ "," _ assignment_expression 
 	//            0             1  2  3          4
@@ -123,13 +138,18 @@ function functionDefinition(d: any[]):any {
 		return new TokenType.FunctionDefinition(functionName, [], expression);
 	}
 }
- function vector(d:any[]):any {
-	 if (d.length === 5) {
-		 	return new TokenType.Vector(d[0], d[2]);
-	 } else {
-	 	return new TokenType.Vector(d[0], d[4]);
-	 }
- }
+
+function vector(d:any[]):any {
+	if (d.length === 5) {
+			return new TokenType.Vector(d[0], d[2]);
+	} else {
+		return new TokenType.Vector(d[0], d[4]);
+	}
+}
+
+function range(d:any[]):any {
+	return new TokenType.Range(d[0], d[2]);
+}
 
 function comment(d:any[]) {
 	return d;
@@ -168,6 +188,7 @@ primary_expression
 	| constant							{% id %}
 	| "(" _ expression _ ")"			{% unwrapParens %}
 	| vector_expression					{% id %}
+	| range_expression					{% id %}
 
 postfix_expression
 	->  primary_expression				{% id %}
@@ -249,12 +270,7 @@ logical_or_expression
 conditional_expression
 	-> logical_or_expression									{% id %}
 	| logical_or_expression _ "?" _ expression _ ":" _ conditional_expression
-	
 
-
-vector_expression
-	#-> conditional_expression									{% id %}
-	->	"[" _ argument_expression_list _ "]"					{% vector %}
 
 assignment_expression
 	-> conditional_expression									{% id %}
@@ -268,7 +284,11 @@ expression
 	-> assignment_expression					{% id %}
 	| expression _ "," _ assignment_expression	{% id %}
 	
+vector_expression
+	->	"[" _ argument_expression_list _ "]"					{% vector %}
 
+range_expression
+	->	"[" _ range_expression_list _ "]"					{% range %}
 
 constant
 	-> %string									{% stringConstant %}
@@ -291,10 +311,12 @@ argument_expression_list
 	-> assignment_expression
 	| argument_expression_list _ "," _ assignment_expression {% argumentExpressionList %} 
 
+range_expression_list
+	-> assignment_expression _ ":" _ assignment_expression _ ":" _ assignment_expression {% rangeExpressionList %} 
+	| assignment_expression _ ":" _ assignment_expression {% rangeExpressionList %} 
 
 module_arguments
 	-> argument_expression_list	{% id %}
-
 
 compound_statement
 	-> "{" _ "}"						{% compoundStatement %}

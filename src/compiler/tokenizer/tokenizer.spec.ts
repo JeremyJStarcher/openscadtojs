@@ -290,6 +290,11 @@ describe('Tokenizer Tests', () => {
             generateAst(`line1=[[1, 2], [true], "A"];`);
         });
 
+        it('should parse ranges', () => {
+            generateAst(`line1=[102:1002];`);
+            generateAst(`line1=[1003:30:1030];`);
+        });
+
         it('should parse a module call', () => {
             const calls = [
                 ["echo();", 0],

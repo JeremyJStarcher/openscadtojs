@@ -214,6 +214,24 @@ export class Vector extends Value2 {
     }
 }
 
+export class Range extends Value2 {
+    start: Value2;
+    step: Value2;
+    end: Value2;
+
+    constructor(value: moo.Token, values:Value2[]) {
+        super(value);
+        this.start = values[0];
+        this.step = values[1];
+        this.end = values[2];
+    }
+
+    public toScadString(runtime: RunTime): string {
+        const out2 = [this.start, this.step, this.end].map(val => val.valueOf(runtime).toScadString(runtime));
+        return `[` + out2.join(" : ") + `]`;
+    }
+}
+
 export class ModuleCall extends Token {
     public arguments: Value2[];
 

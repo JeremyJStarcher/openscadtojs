@@ -20,7 +20,7 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     lbracket: '[',
     rbracket: ']',
     argument_separator: ",",
-    operator: ["!", "=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||"],
+    operator: ["!", "=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||", ":"],
     WS: /[ \t]+/,
     NL: { match: /\n|\r/, lineBreaks: true }
 };
