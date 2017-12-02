@@ -46,7 +46,7 @@ describe('Running compiler tests', () => {
         return content;
     }
 
-    it('should run compile a simple program', async () => {
+    it('should compile a simple program', async () => {
 
         const ast = await cc.compile('line1=1;line2=2+1;');
 
@@ -148,6 +148,11 @@ describe('Running compiler tests', () => {
 
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
+
+                // const k = code;
+                // void (k);
+                // debugger;
+
                 const res = Array.from(cc.astRunner(runtime, content));
                 return res;
             }).catch(err => {
@@ -419,7 +424,7 @@ describe('Running compiler tests', () => {
 
         });
 
-        it('handle multi-line comment on one line', () => {
+        xit('handle multi-line comment on one line', () => {
 
             return new Promise((resolve, reject) => {
                 const tests: [[string, number]] = [

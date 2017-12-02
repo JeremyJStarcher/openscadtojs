@@ -131,11 +131,16 @@ function functionDefinition(d: any[]):any {
 	 }
  }
 
+function comment(d:any[]) {
+	return d;
+}
+
  function debug(d:any[]):any {
-	// const global: any = Function('return this')() || (42, eval)('this');
-	// const code = global.HACK_CODE;
-	// console.log("code = ", global.HACK_CODE);
-	// console.log('length = ', d.length);
+	//  const global: any = Function('return this')() || (42, eval)('this');
+	//  const code = global.HACK_CODE;
+	//  console.log("code = ", global.HACK_CODE);
+	//  console.log('length = ', d.length);
+	//  debugger;
  	return d;
  }
 void(debug);
@@ -303,31 +308,18 @@ statement_list
 	-> statement
 	| statement_list statement 			{% d => d[0].concat([d[1]]) %}
 
-
-
-BlockComment -> "/*" commentbody "*/" {% function() {} %}
-LineComment -> "//" (linecommentbody)  [\n] {% function() {} %}
-
-
-linecommentbody -> null {% function() {} %}
-    | [a-zA-Z0-9\ \(\)\[\]\t;] linecommentbody {% function() {} %}
-	
-
-
-commentbody -> null {% function() {} %}
-    | [^\*] commentbody {% function() {} %}
-	| "*" [^\/] commentbody {% function() {} %}
-	
+comments
+	-> %single_line_comment				{% comment %}
 
 # Optional white space
-_ -> null | _ [\s] 						{% function() {} %}
-  | BlockComment
-  | LineComment
-  | LineComment LineComment
+_
+	-> null
+	| _ comments					{% id %}
+	| _ %WS 						{% function(d) {return void( '[WS' + d + ']')} %}
+	| _ %NL 						{% function(d) {return void('[NL' + d + ']')} %}
 
 # Required white space
-__ -> [\s] | __ [\s]					{% function() {} %}
+__
+	-> [\s]
+	| __ [\s]						{% function() {} %}
 
-
-LineEnd -> null {% function() {} %}
-          | [^\n] LineEnd {% function() {} %}

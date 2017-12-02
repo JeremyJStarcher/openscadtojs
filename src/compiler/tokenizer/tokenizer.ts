@@ -1,7 +1,7 @@
 export const OPENSCAD_RULES /*:  moo.Rules */ = {
-    comment: ["/*", "*/", "//"],
+    block_comment: ["/*", "*/"],
 
-    // comment: /\/\/.*?$/,
+    single_line_comment: /\/\/.*?$/,
     number: /[0-9]+\.{0,1}[0-9]*[e|E]{1}[+/-]?[0-9]+|[0-9]*\.[0-9]*|[0-9]+\.*|[1-9][0-9]|\.[0-9]*/,
     //constant_undefined: 'undef',
     //predefined_constant: 'pi',
