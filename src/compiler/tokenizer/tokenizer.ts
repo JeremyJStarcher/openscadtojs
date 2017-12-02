@@ -1,11 +1,8 @@
 export const OPENSCAD_RULES /*:  moo.Rules */ = {
-    block_comment: ["/*", "*/"],
+    block_comment: { match: /\/\*(?:[^\*\/]||\/\*|\\.)*?\*\//, lineBreaks: true },
 
     single_line_comment: /\/\/.*?$/,
     number: /[0-9]+\.{0,1}[0-9]*[e|E]{1}[+/-]?[0-9]+|[0-9]*\.[0-9]*|[0-9]+\.*|[1-9][0-9]|\.[0-9]*/,
-    //constant_undefined: 'undef',
-    //predefined_constant: 'pi',
-    //constant_boolean: ['true', 'false'],
     identifier: {
         match: /[a-zA-Z_][0-9a-zA-Z_]*/, keywords: {
             constant_boolean: ['true', 'false'],

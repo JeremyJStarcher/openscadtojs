@@ -424,11 +424,13 @@ describe('Running compiler tests', () => {
 
         });
 
-        xit('handle multi-line comment on one line', () => {
+        it('handle block comments', () => {
 
             return new Promise((resolve, reject) => {
                 const tests: [[string, number]] = [
+                    ["/*two comments */ /* this is a test */\nt2=1;", 1],
                     ["/* this is a test */\nt2=1;", 1],
+                    ["v=1;\n/* this\nis a  \n\r test */\nt2=100;", 100],
                     ["v=1;/* this is a test */\nt2=100;", 100]
                 ];
 

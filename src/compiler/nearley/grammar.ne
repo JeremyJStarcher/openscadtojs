@@ -310,6 +310,8 @@ statement_list
 
 comments
 	-> %single_line_comment				{% comment %}
+	| %block_comment					{% comment %}
+
 
 # Optional white space
 _

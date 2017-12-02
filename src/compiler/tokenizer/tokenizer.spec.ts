@@ -196,6 +196,14 @@ describe('Tokenizer Tests', () => {
             // Make sure dangling comments don't cause death.
             code += "\n";
 
+            // let lexer = moo.compile(<any>rules.OPENSCAD_RULES);
+            // lexer.reset(code);
+            // let t = lexer.next();
+            // while (t) {
+            //     debugger;
+            //     t = lexer.next();
+            // }
+
             const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
             parser.feed(code);
             const res = parser.results as [moo.Token[]];
@@ -332,12 +340,28 @@ describe('Tokenizer Tests', () => {
             generateAst('singleLineComment2;// this is a comment');
         });
 
-        xit('should parse multi-line comment on one line', () => {
+
+        it('should parse empty comment block', () => {
+            generateAst('/**/emptyCommentBlock=true;');
+        });
+
+        it('should parse multi-line comment on one line', () => {
             generateAst('t1=100;/* A comment */');
         });
 
-        xit('should parse multi-line comment on two lines', () => {
+        it('should parse multi-line comment on two lines', () => {
             generateAst('/* A \ncomment */t1=200;');
         });
+
+        it('should parse multi-line comment with quote marks', () => {
+            generateAst(`/* a quote ' */t1=200;`);
+            generateAst(`/* a double-quote " */t1=200;`);
+        });
+
+        it('should parse nested multi-line comments', () => {
+            generateAst(`/* /* a nested comment */t1=200;`);
+            generateAst(`/* /* /* a double-nested comment */t1=200;`);
+        });
+
     });
 });
