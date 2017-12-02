@@ -110,7 +110,7 @@ function rangeExpressionList(d: any[]): any{
 	if (d.length === 9) {
 		return [d[0], d[4], d[8]];
 	} else if (d.length === 5) {
-		return [d[0], new TokenType.Number(1), d[4]];
+		return [d[0], d[4]];
 	}
 }
 

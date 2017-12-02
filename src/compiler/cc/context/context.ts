@@ -92,7 +92,7 @@ export class Context {
         }
 
         const name = key.split(HASHER)[1];
-        this.logger.warn(`Ignoring unknown ${type} '${name}'.`);
+        this.logger.warn(`WARNING: Ignoring unknown ${type} '${name}'.`);
         return new TokenType.Undefined();
     }
 }

@@ -12,7 +12,7 @@ export class Logger {
     }
 
     warn(str: string) {
-        this.logs.push('WARNING: ' + str);
+        this.logs.push(str);
     }
 
     echo(str: string) {

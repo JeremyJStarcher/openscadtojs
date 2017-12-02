@@ -218,16 +218,40 @@ export class Range extends Value2 {
     start: Value2;
     step: Value2;
     end: Value2;
+    styleTwoPart: boolean;
 
-    constructor(value: moo.Token, values:Value2[]) {
+    constructor(value: moo.Token, values: Value2[]) {
         super(value);
-        this.start = values[0];
-        this.step = values[1];
-        this.end = values[2];
+        this.value = value;
+        if (values.length === 3) {
+            this.start = values[0];
+            this.step = values[1];
+            this.end = values[2];
+            this.styleTwoPart = false;
+        } else {
+            this.start = values[0];
+            this.step = new Number(1)
+            this.end = values[1];
+            this.styleTwoPart = true;
+        }
+    }
+
+    valueOf(runtime: RunTime): Value2 {
+        const _start = this.start.valueOf(runtime);
+        const _step = this.step.valueOf(runtime);
+        const _end = this.end.valueOf(runtime);
+
+        if ((_start.value > _end.value) && this.styleTwoPart) {
+            runtime.logger.warn("DEPRECATED: Using ranges of the form [begin:end] with begin value greater than the end value is deprecated.");
+            return new Range(this.value, [_end, _step, _start]);
+        } else {
+            return this;
+        }
     }
 
     public toScadString(runtime: RunTime): string {
-        const out2 = [this.start, this.step, this.end].map(val => val.valueOf(runtime).toScadString(runtime));
+        const valOf = this.valueOf(runtime) as Range;
+        const out2 = [valOf.start, valOf.step, valOf.end].map(val => val.valueOf(runtime).toScadString(runtime));
         return `[` + out2.join(" : ") + `]`;
     }
 }
