@@ -174,8 +174,12 @@ export class String extends Value2 {
             super(valueToken);
         } else {
             super(value);
-            this.value = "" + this.value;
+            this.value = ("" + this.value).slice(1, -1);
         }
+    }
+
+    public toScadString(): string {
+        return `"${this.value}"`;
     }
 }
 

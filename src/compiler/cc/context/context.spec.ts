@@ -79,8 +79,8 @@ describe('Running compiler/context tests', () => {
 
         parentContext.setIdentifier(variableName, savedParentToken);
         childContext.setIdentifier(variableName, savedChildToken);
-        const retrievedChildToken = childContext.getIdentifier(variableName);
-        const retrievedParentToken = parentContext.getIdentifier(variableName);
+        const retrievedChildToken = childContext.getIdentifier(variableName) as TokenType.String;
+        const retrievedParentToken = parentContext.getIdentifier(variableName) as TokenType.String;
 
         expect(savedChildToken).toBe(retrievedChildToken);
         expect(retrievedParentToken.value).toBe(savedParentToken.value);
