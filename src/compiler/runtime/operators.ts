@@ -248,20 +248,48 @@ function initFuncs() {
     );
 
     unaryOperatorLookup.set(hashUnaryOp("!", booleanClassName),
-        (operand: TokenType.Value2) => { return new TokenType.Boolean(!operand.value); }
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!toBooleanPrimitive(operand)); }
     );
 
     unaryOperatorLookup.set(hashUnaryOp("!", numberClassName),
-        (operand: TokenType.Value2) => { return new TokenType.Boolean(!operand.value); }
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!toBooleanPrimitive(operand)); }
     );
 
     unaryOperatorLookup.set(hashUnaryOp("!", vectorClassName),
-        (operand: TokenType.Vector) => { return new TokenType.Boolean(operand.values.length === 0); }
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!toBooleanPrimitive(operand)); }
     );
 
     unaryOperatorLookup.set(hashUnaryOp("!", stringClassName),
-        (operand: TokenType.String) => { return new TokenType.Boolean(operand.value === ""); });
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!toBooleanPrimitive(operand)); }
+    );
 
+
+    function toBooleanPrimitive(value: TokenType.Value2) {
+
+        let ret: boolean | null = null;
+
+        if (value instanceof TokenType.Boolean) {
+            ret = value.value;
+        }
+
+        if (value instanceof TokenType.Number) {
+            ret = value.value;
+        }
+
+        if (value instanceof TokenType.Vector) {
+            ret = value.values.length !== 0;
+        }
+
+        if (value instanceof TokenType.String) {
+            ret = value.value !== "";
+        }
+
+        if (ret === null) {
+            throw new Error("Unknown type passed to toBooleanPrimitive: " + value.value);
+        }
+
+        return ret;
+    }
 
     function booleanToNumber(b: boolean) {
         return b ? 1 : 0;
