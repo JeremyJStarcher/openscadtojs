@@ -236,7 +236,7 @@ function initFuncs() {
 
 
     /*
-     * UNARY NUMBERS
+     * UNARY OPERATORS
      */
 
     unaryOperatorLookup.set(hashUnaryOp("+", numberClassName),
@@ -245,6 +245,28 @@ function initFuncs() {
 
     unaryOperatorLookup.set(hashUnaryOp("-", numberClassName),
         (operand: TokenType.Value2) => { return new TokenType.Number(- operand.value); }
+    );
+
+    unaryOperatorLookup.set(hashUnaryOp("!", booleanClassName),
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!operand.value); }
+    );
+
+    unaryOperatorLookup.set(hashUnaryOp("!", numberClassName),
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!operand.value); }
+    );
+
+    unaryOperatorLookup.set(hashUnaryOp("!", vectorClassName),
+        (operand: TokenType.Vector) => { return new TokenType.Boolean(operand.values.length === 0); }
+    );
+
+    unaryOperatorLookup.set(hashUnaryOp("!", stringClassName),
+        (operand: TokenType.String) => {
+            debugger;
+            if (operand.value === "") {
+                return new TokenType.Boolean(true);
+            }
+            return new TokenType.Boolean(false);
+        }
     );
 
 
