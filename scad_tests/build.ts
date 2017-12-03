@@ -10,7 +10,7 @@ const tempy = require('tempy');
 
 const sourceDir = './input';
 const destDir = './output';
-const CHUNK_SEPARATER = "//%";
+const CHUNK_SEPARATER = '//%';
 
 const tempFileNames: string[] = [];
 
@@ -30,12 +30,12 @@ const walkSync = (dir: string, filelist: string[] = []) => {
 
     });
     return filelist;
-}
+};
 
 function openScadDummyCode() {
     // OpenSCAD needs geometry before it will do anything useful, including
     // 'echo'.
-    return "cube(1);"
+    return 'cube(1);';
 }
 
 function runOpenScad(filename: string, displayName: string): Promise<ScadResult> {
@@ -44,8 +44,8 @@ function runOpenScad(filename: string, displayName: string): Promise<ScadResult>
         const result: ScadResult = {
             warnings: [],
             logs: [],
-            source: "",
-            fname: "",
+            source: '',
+            fname: '',
         };
 
         readFile(filename, 'utf8').then((source: string) => {
@@ -85,7 +85,7 @@ async function buildJsTests() {
     const scadFiles = allFiles.filter(fn => fn.endsWith('.scad'));
     scadFiles.sort();
 
-    for (var i = 0; i < scadFiles.length; i++) {
+    for (let i = 0; i < scadFiles.length; i++) {
         const sourceFile = scadFiles[i];
 
         console.log(`Processing file: ${sourceFile}`);
@@ -117,7 +117,7 @@ export interface ScadResult {
     logs: string[];
     source: string;
     fname: string;
-} 
+}
 
 export const scadTest: ScadResult[] = ${JSON.stringify(json, null, 4)};`;
 
@@ -132,28 +132,28 @@ function chunkify(source: string) {
 
     source.split(/\n|\r|\r\n/).forEach(line => {
         if (line.startsWith(CHUNK_SEPARATER)) {
-            chunks.push(chunk.join("\n"));
+            chunks.push(chunk.join('\n'));
             chunk = [];
         } else {
             chunk.push(line);
         }
     });
-    chunks.push(chunk.join("\n"));
+    chunks.push(chunk.join('\n'));
 
     return chunks;
-};
+}
 
 
 buildJsTests().then(() => {
 }).catch(err => {
-    console.error("Runtime error: " + err.message);
+    console.error('Runtime error: ' + err.message);
     process.exit(1);
 }).then(() => {
     const promises: Promise<void>[] = [];
 
     tempFileNames.forEach(fname => {
         promises.push(unlink(fname));
-    })
+    });
 
     return Promise.all(promises);
 });

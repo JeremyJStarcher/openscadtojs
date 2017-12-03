@@ -1,9 +1,9 @@
 import { Context } from './context/context';
-import { Logger } from "../logger/logger";
-import * as TokenType from "../../compiler/runtime/token-type"
+import { Logger } from '../logger/logger';
+import * as TokenType from '../../compiler/runtime/token-type';
 
-import ModuleEcho from "../../compiler/runtime/modules/echo";
-import ModuleCube from "../../compiler/runtime/modules/cube";
+import ModuleEcho from '../../compiler/runtime/modules/echo';
+import ModuleCube from '../../compiler/runtime/modules/cube';
 
 export interface IModuleCall {
     context: Context;

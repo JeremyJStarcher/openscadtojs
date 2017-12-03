@@ -19,18 +19,9 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     rbrace: '}',
     lbracket: '[',
     rbracket: ']',
-    argument_separator: ",",
-    operator: ["!", "=", "+", "-", "*", "/", "%", "<", "<=", "==", "!=", ">=", ">", "&&", "||", ":"],
+    argument_separator: ',',
+    operator: ['!', '=', '+', '-', '*', '/', '%', '<', '<=', '==', '!=', '>=', '>', '&&', '||', ':'],
     WS: /[ \t]+/,
     NL: { match: /\n|\r/, lineBreaks: true }
 };
 
-
-
-
-// IDEN: {match: /[a-zA-Z]+/, keywords: {
-  //      KW: ['while', 'if', 'else', 'moo', 'cows']),
-    //  }},
-
-      //    identifier: /[a-zA-Z_][0-9a-zA-Z_]*/,
-      //*/

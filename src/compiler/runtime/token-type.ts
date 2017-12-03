@@ -101,7 +101,7 @@ export class UnaryOperator extends Value2 {
         function getInnerValue(item: any | any[]): moo.Token {
             if (Array.isArray(item)) {
                 if (item.length !== 1) {
-                    console.error("Gack, getInnerValue");
+                    console.error('Gack, getInnerValue');
                 }
                 return getInnerValue(item[0]);
             } else {
@@ -130,7 +130,7 @@ export class Identifier extends Value2 {
 
 export class Number extends Value2 {
     constructor(value: moo.Token | number) {
-        if (typeof value === "number") {
+        if (typeof value === 'number') {
             const valueToken = makeMooToken(value);
             super(valueToken);
         } else {
@@ -141,14 +141,14 @@ export class Number extends Value2 {
 
     public toScadString(): string {
         if (isNaN(this.value)) {
-            return "nan";
+            return 'nan';
         }
 
         if (!isFinite(this.value)) {
             if (this.value < 0) {
-                return "-inf";
+                return '-inf';
             } else {
-                return "inf";
+                return 'inf';
             }
         }
 
@@ -163,18 +163,18 @@ export class Undefined extends Value2 {
     }
 
     public toScadString(): string {
-        return "undef";
+        return 'undef';
     }
 }
 
 export class String extends Value2 {
     constructor(value: moo.Token | string) {
-        if (typeof value === "string") {
+        if (typeof value === 'string') {
             const valueToken = makeMooToken(value);
             super(valueToken);
         } else {
             super(value);
-            this.value = ("" + this.value).slice(1, -1);
+            this.value = ('' + this.value).slice(1, -1);
         }
     }
 
@@ -185,13 +185,13 @@ export class String extends Value2 {
 
 export class Boolean extends Value2 {
     constructor(value: moo.Token | boolean) {
-        if (typeof value === "boolean") {
+        if (typeof value === 'boolean') {
             const valueToken = makeMooToken(value);
             super(valueToken);
         } else {
             super(value);
 
-            this.value = this.value === "true";
+            this.value = this.value === 'true';
         }
     }
 }
@@ -214,7 +214,7 @@ export class Vector extends Value2 {
 
     public toScadString(runtime: RunTime): string {
         const out2 = this.values.map(val => val.valueOf(runtime).toScadString(runtime));
-        return `[` + out2.join(", ") + `]`;
+        return `[` + out2.join(', ') + `]`;
     }
 }
 
@@ -234,7 +234,7 @@ export class Range extends Value2 {
             this.styleTwoPart = false;
         } else {
             this.start = values[0];
-            this.step = new Number(1)
+            this.step = new Number(1);
             this.end = values[1];
             this.styleTwoPart = true;
         }
@@ -246,7 +246,7 @@ export class Range extends Value2 {
         const _end = this.end.valueOf(runtime);
 
         if ((_start.value > _end.value) && this.styleTwoPart) {
-            runtime.logger.warn("DEPRECATED: Using ranges of the form [begin:end] with begin value greater than the end value is deprecated.");
+            runtime.logger.warn('DEPRECATED: Using ranges of the form [begin:end] with begin value greater than the end value is deprecated.');
             return new Range(this.value, [_end, _step, _start]);
         } else {
             return this;
@@ -256,7 +256,7 @@ export class Range extends Value2 {
     public toScadString(runtime: RunTime): string {
         const valOf = this.valueOf(runtime) as Range;
         const out2 = [valOf.start, valOf.step, valOf.end].map(val => val.valueOf(runtime).toScadString(runtime));
-        return `[` + out2.join(" : ") + `]`;
+        return `[` + out2.join(' : ') + `]`;
     }
 }
 

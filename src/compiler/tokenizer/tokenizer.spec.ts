@@ -1,8 +1,8 @@
 import * as rules from './tokenizer';
-import * as moo from 'moo'
-import * as grammar from "../nearley/grammar";
+import * as moo from 'moo';
+import * as grammar from '../nearley/grammar';
 import * as nearley from 'nearley';
-import * as TokenType from "../runtime/token-type";
+import * as TokenType from '../runtime/token-type';
 
 
 // declare function require(path: string): any;
@@ -13,24 +13,24 @@ export function toCode(subtree: any): string {
         const str = subtree.map(b => {
             return toCode(b);
         });
-        return str.join(" ");
+        return str.join(' ');
     } else {
-        if (subtree.type === "number" || subtree.type === "identifier") {
+        if (subtree.type === 'number' || subtree.type === 'identifier') {
             return subtree.value;
         }
 
-        if (subtree.type === "operator") {
+        if (subtree.type === 'operator') {
             const op = subtree.func;
             const v1 = toCode(subtree.lhand);
             const v2 = toCode(subtree.rhand);
 
-            return `${op} (${v1}, ${v2})`
+            return `${op} (${v1}, ${v2})`;
         }
-        if (subtree.type === "eos") {
+        if (subtree.type === 'eos') {
             return subtree.value;
         }
     }
-    return "???" + JSON.stringify(subtree) + Array.isArray(subtree);
+    return '???' + JSON.stringify(subtree) + Array.isArray(subtree);
 }
 
 describe('Tokenizer Tests', () => {
@@ -42,7 +42,7 @@ describe('Tokenizer Tests', () => {
         lexer.reset(source);
         const tokens: moo.Token[] = Array.from(<any>lexer);
 
-        if ((<any>tokens[0]).type === "myError") {
+        if ((<any>tokens[0]).type === 'myError') {
             throw tokens[0];
         }
         return tokens;
@@ -61,10 +61,10 @@ describe('Tokenizer Tests', () => {
     }
 
     it('Should have the test infrastructure in place', () => {
-        expect(true).toBe(true, "We are testing??");
+        expect(true).toBe(true, 'We are testing??');
     });
 
-    describe("testing the 'moo' parser", () => {
+    describe(`testing the 'moo' parser`, () => {
         function testSimpleTokens(
             testedValue: string,
             expectedType: string,
@@ -82,98 +82,98 @@ describe('Tokenizer Tests', () => {
             expect(token.value).toBe(expectedValue, `Expected token value to be ${expectedValue}`);
         }
 
-        describe("Testing that strings parse properly", () => {
-            it(`it should handle "Normal Strings"`, () => {
+        describe('Testing that strings parse properly', () => {
+            it(`it should handle 'Normal Strings'`, () => {
                 const testedValue = `"Normal String"`;
-                testSimpleTokens(testedValue, "string", testedValue);
+                testSimpleTokens(testedValue, 'string', testedValue);
             });
             it(`it should handle strings with embedded quotes`, () => {
                 const testedValue = `"Normal \\"String\\""`;
-                testSimpleTokens(testedValue, "string", testedValue);
+                testSimpleTokens(testedValue, 'string', testedValue);
             });
             it(`it should handle strings ith simple escape sequences`, () => {
                 const testedValue = `"Backslash \\\\ tab \\t newline\\n cr \\r"`;
-                testSimpleTokens(testedValue, "string", testedValue);
+                testSimpleTokens(testedValue, 'string', testedValue);
             });
             it(`it should handle unicode escape sequences`, () => {
                 const testedValue = `"Omega \\u03a9"`;
-                testSimpleTokens(testedValue, "string", testedValue);
+                testSimpleTokens(testedValue, 'string', testedValue);
             });
             it(`it should not be too greedy about strings`, () => {
-                testSimpleTokens(`"Hello" "World"`, "string", `"Hello"`);
-                testSimpleTokens(`"Hello""World"`, "string", `"Hello"`);
-                testSimpleTokens(`"Hello"1`, "string", `"Hello"`);
+                testSimpleTokens(`"Hello" "World"`, 'string', `"Hello"`);
+                testSimpleTokens(`"Hello""World"`, 'string', `"Hello"`);
+                testSimpleTokens(`"Hello"1`, 'string', `"Hello"`);
             });
         });
 
-        describe("Test that it parses numbers correctly", () => {
-            //* These numbers have been tested in OpenSCAD
-            //   and all parsed in their compilier.
+        describe('Test that it parses numbers correctly', () => {
+            // These numbers have been tested in OpenSCAD
+            // and all parsed in their compilier.
 
             it(`should handle normal integers`, () => {
                 const testedValue = `123`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
             it(`should handle a leading decimal point`, () => {
                 const testedValue = `.123`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
             it(`should handle a trailing decimal point`, () => {
                 const testedValue = `123.`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
             it(`should handle a mid decimal point`, () => {
                 const testedValue = `1.23`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
             it(`should split a number at the first decimal point`, () => {
-                testSimpleTokens("1.2.3", "number", "1.2");
+                testSimpleTokens('1.2.3', 'number', '1.2');
             });
             it(`should handle the number 0`, () => {
                 const testedValue = `0`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
 
-            it("should handle scientific notation: 3.2e23", () => {
+            it('should handle scientific notation: 3.2e23', () => {
                 const testedValue = `3.2e23`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
 
-            it("should handle scientific notation: 4.70e+9", () => {
+            it('should handle scientific notation: 4.70e+9', () => {
                 const testedValue = `4.70e+9`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
-            it("should handle scientific notation: 2E-4", () => {
+            it('should handle scientific notation: 2E-4', () => {
                 const testedValue = `2E-4`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
 
-            it("should handle scientific notation: 37.e88", () => {
+            it('should handle scientific notation: 37.e88', () => {
                 const testedValue = `37.e88`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
 
-            it("should handle leading 0's: 0003", () => {
+            it(`should handle leading 0's: 0003`, () => {
                 const testedValue = `0003`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
 
-            it("should handle trailing 0's: 3.0000", () => {
+            it(`should handle trailing 0's: 3.0000`, () => {
                 const testedValue = `3.0000`;
-                testSimpleTokens(testedValue, "number", testedValue);
+                testSimpleTokens(testedValue, 'number', testedValue);
             });
 
             it(`should parse 12a as <12> <a>`, () => {
-                const tokens = generateParseTree("12a");
-                expect(tokens[0].value).toBe("12");
-                expect(tokens[1].value).toBe("a");
+                const tokens = generateParseTree('12a');
+                expect(tokens[0].value).toBe('12');
+                expect(tokens[1].value).toBe('a');
             });
 
         });
 
-        describe("Testing that parsing works correctly", () => {
-            it("Verifying that good identifiers parse", () => {
-                const identifiers = ["a", "bb", "abc", "_abc", "$abc", "$abc123", "ABc", "abC", "Ab_3c"];
+        describe('Testing that parsing works correctly', () => {
+            it('Verifying that good identifiers parse', () => {
+                const identifiers = ['a', 'bb', 'abc', '_abc', '$abc', '$abc123', 'ABc', 'abC', 'Ab_3c'];
 
                 identifiers.forEach((identifier) => {
                     const tokens = generateParseTree(identifier);
@@ -181,8 +181,8 @@ describe('Tokenizer Tests', () => {
                 });
             });
 
-            it("should error on an incomplete special identifier", () => {
-                catchParseError("$", { line: 1, col: 1 });
+            it('should error on an incomplete special identifier', () => {
+                catchParseError('$', { line: 1, col: 1 });
             });
         });
     });
@@ -190,11 +190,11 @@ describe('Tokenizer Tests', () => {
     describe('Testing nearly', () => {
         function generateAst(code: string) {
 
-            var global: any = Function('return this')() || (42, eval)('this');
+            const global: any = Function('return this')() || (42, eval)('this');
             global.HACK_CODE = code;
 
             // Make sure dangling comments don't cause death.
-            code += "\n";
+            code += '\n';
 
             // let lexer = moo.compile(<any>rules.OPENSCAD_RULES);
             // lexer.reset(code);
@@ -208,13 +208,13 @@ describe('Tokenizer Tests', () => {
             parser.feed(code);
             const res = parser.results as [moo.Token[]];
 
-            // console.log("===================================================");
+            // console.log('===================================================');
             // console.log(code);
             // console.log(JSON.stringify(res));
 
             // If the length == 0, there was no valid tree built.
             // if the length > 1, there is ambiguous grammar that can be parsed
-            //   multiple ways.  Either condition is bad. 
+            //   multiple ways.  Either condition is bad.
             expect(res.length).toBe(1, `AST length should === 1 for ${code}`);
             return res;
         }
@@ -238,15 +238,15 @@ describe('Tokenizer Tests', () => {
         });
 
         it('parse simple assignments', () => {
-            generateAst("line1=1;");
-            generateAst("line2=2-1 ; ");
-            generateAst("line3=bbba + 3; ");
-            generateAst(`line4 = "Hellow" +"World"  ;`);
-            generateAst(`line5 = "9"+ "a" ;`);
+            generateAst('line1=1;');
+            generateAst('line2=2-1 ; ');
+            generateAst('line3=bbba + 3; ');
+            generateAst(`line4 = "Hellow' +'World"  ;`);
+            generateAst(`line5 = "9" + "a" ;`);
         });
 
         it('should fail assigning to a numeric constant', () => {
-            catchAstError("1=1;", { line: 1, col: 2 });
+            catchAstError('1=1;', { line: 1, col: 2 });
         });
 
         it('should fail assigning to a string constant', () => {
@@ -258,31 +258,31 @@ describe('Tokenizer Tests', () => {
         });
 
         it('parse complex assignments', () => {
-            generateAst("line1 = (1 * 2);");
-            generateAst("line1 = 1;");
-            generateAst("line1 = 1 + 2 * 3;");
-            generateAst("line2 = (1+3) * 4 * 5 / (2-1);");
+            generateAst('line1 = (1 * 2);');
+            generateAst('line1 = 1;');
+            generateAst('line1 = 1 + 2 * 3;');
+            generateAst('line2 = (1+3) * 4 * 5 / (2-1);');
         });
 
         it('parse multiple statements', () => {
-            generateAst("line1=1;    ");
-            generateAst("    line1=1;    ");
-            generateAst("line1=1;line2=2;line3=3;");
-            generateAst("line1 = 1;  line2 = 2;line3 =3;");
-            generateAst("  line1 = 1;  line2 = 2;line3 =3;");
-            generateAst("  line1 = 1;  line2 = 2;line3 =3;   ");
+            generateAst('line1=1;    ');
+            generateAst('    line1=1;    ');
+            generateAst('line1=1;line2=2;line3=3;');
+            generateAst('line1 = 1;  line2 = 2;line3 =3;');
+            generateAst('  line1 = 1;  line2 = 2;line3 =3;');
+            generateAst('  line1 = 1;  line2 = 2;line3 =3;   ');
         });
 
         it('should parse unary !', () => {
-            generateAst("line1=!1;    ");
+            generateAst('line1=!1;    ');
         });
 
         it('should parse unary +', () => {
-            generateAst("line1=+1;    ");
+            generateAst('line1=+1;    ');
         });
 
         it('should parse unary -', () => {
-            generateAst("line1=-1;    ");
+            generateAst('line1=-1;    ');
         });
 
         it('should parse vectors', () => {
@@ -297,16 +297,16 @@ describe('Tokenizer Tests', () => {
 
         it('should parse a module call', () => {
             const calls = [
-                ["echo();", 0],
-                //FIXME: ["echo(     );", 0],
-                ["echo(11);", 1],
-                ["echo(22,299);", 2],
-                ["echo(33,399,testVar);", 3],
-                ["echo(v1=1,v2=true);", 2],
+                ['echo();', 0],
+                // FIXME: ['echo(     );', 0],
+                ['echo(11);', 1],
+                ['echo(22,299);', 2],
+                ['echo(33,399,testVar);', 3],
+                ['echo(v1=1,v2=true);', 2],
             ];
 
             calls.forEach(cd => {
-                const ast = generateAst("" + cd[0]);
+                const ast = generateAst('' + cd[0]);
 
                 const moduleCalls = ast[0].filter(n => n instanceof TokenType.ModuleCall);
                 expect(moduleCalls.length).toBe(1);
@@ -360,7 +360,7 @@ describe('Tokenizer Tests', () => {
 
         it('should parse multi-line comment with quote marks', () => {
             generateAst(`/* a quote ' */t1=200;`);
-            generateAst(`/* a double-quote " */t1=200;`);
+            generateAst(`/* a double-quote ' */t1=200;`);
         });
 
         it('should parse nested multi-line comments', () => {

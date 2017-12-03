@@ -1,6 +1,6 @@
-import { Context } from "./context";
-import { Logger } from "../../logger/logger";
-import * as TokenType from "../../runtime/token-type";
+import { Context } from './context';
+import { Logger } from '../../logger/logger';
+import * as TokenType from '../../runtime/token-type';
 
 describe('Running compiler/context tests', () => {
     it('should have the test infrastructure in place', () => {
@@ -22,7 +22,7 @@ describe('Running compiler/context tests', () => {
 
     it('should set and get a a string', () => {
         const context = new Context(null, new Logger());
-        const savedToken = new TokenType.String("Fizzban");
+        const savedToken = new TokenType.String('Fizzban');
         context.setIdentifier('a', savedToken);
         const retrievedToken = context.getIdentifier('a');
 
@@ -34,7 +34,7 @@ describe('Running compiler/context tests', () => {
         const parentContext = new Context(null, logger);
         const childContext = new Context(parentContext, logger);
 
-        const savedToken = new TokenType.String("Fizzban");
+        const savedToken = new TokenType.String('Fizzban');
         parentContext.setIdentifier('a', savedToken);
         const retrievedToken = childContext.getIdentifier('a');
 
@@ -46,7 +46,7 @@ describe('Running compiler/context tests', () => {
         const parentContext = new Context(null, logger);
         const childContext = new Context(parentContext, logger);
 
-        const savedToken = new TokenType.String("Fizzban");
+        const savedToken = new TokenType.String('Fizzban');
         parentContext.setIdentifier('a', savedToken);
         const retrievedToken = childContext.getIdentifier('a');
 
@@ -73,8 +73,8 @@ describe('Running compiler/context tests', () => {
         const childContext = new Context(parentContext, logger);
 
         const variableName = 'varname';
-        const savedParentToken = new TokenType.String("Dragon Poker");
-        const savedChildToken = new TokenType.String("Fizzbin");
+        const savedParentToken = new TokenType.String('Dragon Poker');
+        const savedChildToken = new TokenType.String('Fizzbin');
 
 
         parentContext.setIdentifier(variableName, savedParentToken);

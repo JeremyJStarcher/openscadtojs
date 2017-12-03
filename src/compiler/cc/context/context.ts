@@ -1,12 +1,12 @@
-import { Logger } from "../../logger/logger";
-import * as TokenType from "../../runtime/token-type";
+import { Logger } from '../../logger/logger';
+import * as TokenType from '../../runtime/token-type';
 
 enum NAME_SPACE {
-    IDENTIFIER = "IDENTIFIER",
-    MODULE = "MODULE"
+    IDENTIFIER = 'IDENTIFIER',
+    MODULE = 'MODULE'
 }
 
-const HASHER = "_";
+const HASHER = '_';
 
 
 export interface IContext {
@@ -30,7 +30,7 @@ export class Context {
         this.parent = parent;
         this.container = new Map();
         this.logger = logger;
-        this.contextId = "" + contextId;
+        this.contextId = '' + contextId;
         contextId++;
     }
 
@@ -49,7 +49,7 @@ export class Context {
         if (token instanceof TokenType.Value2) {
             return token;
         }
-        throw new Error("Context.getIdentifier tried to rturn a bad token");
+        throw new Error('Context.getIdentifier tried to rturn a bad token');
     }
 
     setModule(key: string, value: TokenType.Value2 | Function) {

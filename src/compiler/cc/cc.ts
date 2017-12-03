@@ -2,17 +2,17 @@ import * as moo from 'moo';
 import * as grammar from '../nearley/grammar';
 import * as nearley from 'nearley';
 import * as TokenType from '../runtime/token-type';
-import * as evaluate from "../../compiler/runtime/evaluate";
+import * as evaluate from '../../compiler/runtime/evaluate';
 
-import { RunTime } from "./run-time";
+import { RunTime } from './run-time';
 
 function parseToAst(source: string): moo.Token[] {
 
     // Carriage returns? Meh, forget 'em.
-    source = source.replace(/\r/g, "\n");
+    source = source.replace(/\r/g, '\n');
     // Make sure the thing ends on a new line, just in case of
     // dangling comments.
-    source += "\n";
+    source += '\n';
 
     const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
 
@@ -54,7 +54,7 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
 }
 
 function executeStatement(runtime: RunTime, token: TokenType.Token) {
-    if (token instanceof TokenType.Operator && token.value === "=") {
+    if (token instanceof TokenType.Operator && token.value === '=') {
         evaluate.executeAssignment(runtime, token);
     }
 
@@ -87,7 +87,7 @@ function hoist(block: TokenType.Token[]) {
 
             if (token instanceof TokenType.Operator) {
                 const idx = (() => {
-                    for (var i = 0; i < varList.length; i += 1) {
+                    for (let i = 0; i < varList.length; i += 1) {
                         if (varList[i].lhand.value === token.lhand.value) {
                             return i;
                         }
@@ -119,7 +119,7 @@ export async function compile(src: string): Promise<TokenType.Token[]> {
     const fullAst = parseToAst(src) as TokenType.Token[];
 
     const errorToken = fullAst[0];
-    if (errorToken && errorToken.type === "error") {
+    if (errorToken && errorToken.type === 'error') {
         throw new Error(errorToken.value);
     }
 
@@ -131,7 +131,7 @@ export function* tokenProvider(ast: moo.Token[]): IterableIterator<moo.Token> {
     // Get the next token, filtering out token types that are valid, but we are not
     // interested in seeing.
 
-    const filteredTypes = ["eos"];
+    const filteredTypes = ['eos'];
 
     if (!Array.isArray(ast)) {
         throw new Error(`tokenFeeder must be given an array`);
@@ -150,7 +150,7 @@ export function* tokenProvider(ast: moo.Token[]): IterableIterator<moo.Token> {
             }
 
 
-            if (filteredTypes.indexOf("" + token.type) > -1) {
+            if (filteredTypes.indexOf('' + token.type) > -1) {
                 continue;
             }
             yield token;

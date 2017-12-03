@@ -1,6 +1,6 @@
-import { runOp, runUnaryOp } from "./operators";
-import * as TokenType from "./token-type";
-import { RunTime } from "../cc/run-time";
+import { runOp, runUnaryOp } from './operators';
+import * as TokenType from './token-type';
+import { RunTime } from '../cc/run-time';
 
 export function executeAssignment(
     runtime: RunTime,
@@ -9,7 +9,7 @@ export function executeAssignment(
     const operator = token.value;
     const rhandToken = token.rhand.valueOf(runtime);
 
-    if (operator === "=") {
+    if (operator === '=') {
         // if (rhandToken.type instanceof TokenType.Identifier) {
         //     rhandToken = runtime.getIdentifier(rhandToken.value);
         // }
@@ -17,7 +17,7 @@ export function executeAssignment(
 
         runtime.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
     } else {
-        throw new Error(`executeAssignment called but the token was ${token}`)
+        throw new Error(`executeAssignment called but the token was ${token}`);
     }
 }
 

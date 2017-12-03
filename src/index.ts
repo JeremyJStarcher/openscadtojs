@@ -3,7 +3,7 @@
 export default class Main {
   constructor() {
     setTimeout(() => {
-      console.log("Main called");
+      console.log('Main called');
     });
   }
 }
