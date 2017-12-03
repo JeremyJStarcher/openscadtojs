@@ -260,14 +260,7 @@ function initFuncs() {
     );
 
     unaryOperatorLookup.set(hashUnaryOp("!", stringClassName),
-        (operand: TokenType.String) => {
-            debugger;
-            if (operand.value === "") {
-                return new TokenType.Boolean(true);
-            }
-            return new TokenType.Boolean(false);
-        }
-    );
+        (operand: TokenType.String) => { return new TokenType.Boolean(operand.value === ""); });
 
 
     function booleanToNumber(b: boolean) {
