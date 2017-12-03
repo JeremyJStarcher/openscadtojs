@@ -4,6 +4,7 @@ typings/**/*
 
 
 scad_tests/output/scad.ts
+scad_tests/test.stl
 
 npm-debug.log
 

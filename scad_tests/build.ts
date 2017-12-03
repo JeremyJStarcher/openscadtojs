@@ -85,16 +85,18 @@ async function buildJsTests() {
     const scadFiles = allFiles.filter(fn => fn.endsWith('.scad'));
     scadFiles.sort();
 
-
     for (var i = 0; i < scadFiles.length; i++) {
         const sourceFile = scadFiles[i];
 
+        console.log(`Processing file: ${sourceFile}`);
+
         const source = await readFile(sourceFile, 'utf8');
-        console.log(source);
 
         const chunks = chunkify(source);
 
-        await chunks.forEach(async (chunk, idx) => {
+        for (let idx = 0; idx < chunks.length; idx++) {
+            const chunk = chunks[idx];
+
             const tname = tempy.file({ extension: '.scad' });
             tempFileNames.push(tname);
 
@@ -104,7 +106,7 @@ async function buildJsTests() {
 
             const res = await runOpenScad(tname, `${sourceFile}-${scadCode}`);
             json.push(res);
-        })
+        }
 
         // console.log(res);
     }
