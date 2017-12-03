@@ -140,8 +140,10 @@ function functionDefinition(d: any[]):any {
 }
 
 function vector(d:any[]):any {
-	if (d.length === 5) {
-			return new TokenType.Vector(d[0], d[2]);
+	if (d.length === 3) {
+		return new TokenType.Vector(d[0], []);
+	} else if (d.length === 5) {
+		return new TokenType.Vector(d[0], d[2]);
 	} else {
 		return new TokenType.Vector(d[0], d[4]);
 	}
@@ -286,6 +288,7 @@ expression
 	
 vector_expression
 	->	"[" _ argument_expression_list _ "]"					{% vector %}
+	|	"[" _ "]"												{% vector %}
 
 range_expression
 	->	"[" _ range_expression_list _ "]"					{% range %}
