@@ -6,9 +6,13 @@ const readdir = Bluebird.promisify(require('fs').readdir);
 const readFile = Bluebird.promisify(require('fs').readFile);
 const writeFile = Bluebird.promisify(require('fs').writeFile);
 const unlink = Bluebird.promisify(require('fs').unlink);
+const tempy = require('tempy');
 
 const sourceDir = './input';
 const destDir = './output';
+const CHUNK_SEPARATER = "//%";
+
+const tempFileNames: string[] = [];
 
 interface ScadResult {
     warnings: string[];
@@ -28,7 +32,13 @@ const walkSync = (dir: string, filelist: string[] = []) => {
     return filelist;
 }
 
-function runOpenScad(filename: string): Promise<ScadResult> {
+function openScadDummyCode() {
+    // OpenSCAD needs geometry before it will do anything useful, including
+    // 'echo'.
+    return "cube(1);"
+}
+
+function runOpenScad(filename: string, displayName: string): Promise<ScadResult> {
 
     return new Promise<ScadResult>((resolve, reject) => {
         const result: ScadResult = {
@@ -49,7 +59,7 @@ function runOpenScad(filename: string): Promise<ScadResult> {
                         return;
                     }
 
-                    result.fname = filename;
+                    result.fname = displayName;
                     result.logs = stdout.split(/\r\n|\r|\n/);
                     result.warnings = stderr.split(/\r\n|\r|\n/);
                     resolve(result);
@@ -77,9 +87,25 @@ async function buildJsTests() {
 
 
     for (var i = 0; i < scadFiles.length; i++) {
-        const fn = scadFiles[i];
-        const res = await runOpenScad(fn);
-        json.push(res);
+        const sourceFile = scadFiles[i];
+
+        const source = await readFile(sourceFile, 'utf8');
+        console.log(source);
+
+        const chunks = chunkify(source);
+
+        await chunks.forEach(async (chunk, idx) => {
+            const tname = tempy.file({ extension: '.scad' });
+            tempFileNames.push(tname);
+
+            const scadCode = openScadDummyCode() + chunk;
+
+            await writeFile(tname, scadCode, 'utf8');
+
+            const res = await runOpenScad(tname, `${sourceFile}-${scadCode}`);
+            json.push(res);
+        })
+
         // console.log(res);
     }
 
@@ -97,9 +123,36 @@ export const scadTest: ScadResult[] = ${JSON.stringify(json, null, 4)};`;
     await writeFile(destFileName, ts, 'utf8');
 }
 
+
+function chunkify(source: string) {
+    const chunks: string[] = [];
+    let chunk: string[] = [];
+
+    source.split(/\n|\r|\r\n/).forEach(line => {
+        if (line.startsWith(CHUNK_SEPARATER)) {
+            chunks.push(chunk.join("\n"));
+            chunk = [];
+        } else {
+            chunk.push(line);
+        }
+    });
+    chunks.push(chunk.join("\n"));
+
+    return chunks;
+};
+
+
 buildJsTests().then(() => {
 }).catch(err => {
     console.error("Runtime error: " + err.message);
     process.exit(1);
+}).then(() => {
+    const promises: Promise<void>[] = [];
+
+    tempFileNames.forEach(fname => {
+        promises.push(unlink(fname));
+    })
+
+    return Promise.all(promises);
 });
 
