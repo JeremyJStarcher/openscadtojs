@@ -65,11 +65,13 @@ export function runOp(
         return logicalAnd(runtime, lhand, rhand);
     }
 
+    if (operator === '||') {
+        return logicalOr(runtime, lhand, rhand);
+    }
 
     if (operator === '!=') {
         return new TokenType.Boolean(true);
     }
-
 
     return TokenType.VALUE_UNDEFINED;
 }
@@ -306,6 +308,12 @@ function logicalAnd(runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Va
     const lbool = toBooleanPrimitive(lval);
     const rbool = toBooleanPrimitive(rval);
     return new TokenType.Boolean(lbool && rbool);
+}
+
+function logicalOr(runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) {
+    const lbool = toBooleanPrimitive(lval);
+    const rbool = toBooleanPrimitive(rval);
+    return new TokenType.Boolean(lbool || rbool);
 }
 
 
