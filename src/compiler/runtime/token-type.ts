@@ -129,6 +129,8 @@ export class Identifier extends Value2 {
 }
 
 export class Number extends Value2 {
+    public value: number;
+
     constructor(value: moo.Token | number) {
         if (typeof value === 'number') {
             const valueToken = makeMooToken(value);
@@ -152,7 +154,7 @@ export class Number extends Value2 {
             }
         }
 
-        return this.value;
+        return '' + this.value;
     }
 }
 
@@ -168,6 +170,8 @@ export class Undefined extends Value2 {
 }
 
 export class String extends Value2 {
+    public value: string;
+
     constructor(value: moo.Token | string) {
         if (typeof value === 'string') {
             const valueToken = makeMooToken(value);
@@ -184,6 +188,8 @@ export class String extends Value2 {
 }
 
 export class Boolean extends Value2 {
+    public value: boolean;
+
     constructor(value: moo.Token | boolean) {
         if (typeof value === 'boolean') {
             const valueToken = makeMooToken(value);
@@ -191,7 +197,7 @@ export class Boolean extends Value2 {
         } else {
             super(value);
 
-            this.value = this.value === 'true';
+            this.value = value.value === 'true';
         }
     }
 }

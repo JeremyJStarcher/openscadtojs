@@ -61,6 +61,11 @@ export function runOp(
         return new TokenType.Boolean(false);
     }
 
+    if (operator === '&&') {
+        return logicalAnd(runtime, lhand, rhand);
+    }
+
+
     if (operator === '!=') {
         return new TokenType.Boolean(true);
     }
@@ -263,38 +268,46 @@ function initFuncs() {
     );
 
 
-    function toBooleanPrimitive(value: TokenType.Value2) {
-
-        let ret: boolean | null = null;
-
-        if (value instanceof TokenType.Boolean) {
-            ret = value.value;
-        }
-
-        if (value instanceof TokenType.Number) {
-            ret = value.value;
-        }
-
-        if (value instanceof TokenType.Vector) {
-            ret = value.values.length !== 0;
-        }
-
-        if (value instanceof TokenType.String) {
-            ret = value.value !== '';
-        }
-
-        if (ret === null) {
-            throw new Error('Unknown type passed to toBooleanPrimitive: ' + value.value);
-        }
-
-        return ret;
-    }
-
-
     function booleanToNumber(b: boolean) {
         return b ? 1 : 0;
     }
 }
+
+
+function toBooleanPrimitive(value: TokenType.Value2) {
+
+    let ret: boolean | null = null;
+
+    if (value instanceof TokenType.Boolean) {
+        ret = value.value;
+    }
+
+    if (value instanceof TokenType.Number) {
+        ret = value.value !== 0;
+    }
+
+    if (value instanceof TokenType.Vector) {
+        ret = value.values.length !== 0;
+    }
+
+    if (value instanceof TokenType.String) {
+        ret = value.value !== '';
+    }
+
+    if (ret === null) {
+        throw new Error('Unknown type passed to toBooleanPrimitive: ' + value.value);
+    }
+
+    return ret;
+}
+
+
+function logicalAnd(runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) {
+    const lbool = toBooleanPrimitive(lval);
+    const rbool = toBooleanPrimitive(rval);
+    return new TokenType.Boolean(lbool && rbool);
+}
+
 
 /*
  * FALLBACKS, just in case.
