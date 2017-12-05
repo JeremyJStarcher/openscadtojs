@@ -30,3 +30,7 @@ echo(!"");
 echo(!" ");
 //%
 echo(!"Hello");
+//%
+echo(!(0/0));
+//%
+echo(!undef);

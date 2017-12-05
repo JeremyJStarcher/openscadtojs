@@ -99,6 +99,7 @@ function initFuncs() {
 
     wasInitRun = true;
 
+    const undefinedClassNamed = new TokenType.Undefined().constructor.name;
     const numberClassName = new TokenType.Number(10).constructor.name;
     const stringClassName = new TokenType.String('10').constructor.name;
     const booleanClassName = new TokenType.Boolean(true).constructor.name;
@@ -269,6 +270,9 @@ function initFuncs() {
         (operand: TokenType.Value2) => { return new TokenType.Boolean(!toBooleanPrimitive(operand)); }
     );
 
+    unaryOperatorLookup.set(hashUnaryOp('!', undefinedClassNamed),
+        (operand: TokenType.Value2) => { return new TokenType.Boolean(!toBooleanPrimitive(operand)); }
+    );
 
     function booleanToNumber(b: boolean) {
         return b ? 1 : 0;
@@ -279,6 +283,10 @@ function initFuncs() {
 function toBooleanPrimitive(value: TokenType.Value2) {
 
     let ret: boolean | null = null;
+
+    if (value instanceof TokenType.Undefined) {
+        ret = false;
+    }
 
     if (value instanceof TokenType.Boolean) {
         ret = value.value;
@@ -303,7 +311,6 @@ function toBooleanPrimitive(value: TokenType.Value2) {
     return ret;
 }
 
-
 function logicalAnd(runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Value2) {
     const lbool = toBooleanPrimitive(lval);
     const rbool = toBooleanPrimitive(rval);
@@ -316,11 +323,8 @@ function logicalOr(runtime: RunTime, lval: TokenType.Value2, rval: TokenType.Val
     return new TokenType.Boolean(lbool || rbool);
 }
 
-
 /*
  * FALLBACKS, just in case.
  */
-
-
 
 const errorFallbackUnary = (o: TokenType.Value2) => TokenType.VALUE_UNDEFINED;
