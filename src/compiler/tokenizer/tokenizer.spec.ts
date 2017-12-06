@@ -219,7 +219,7 @@ describe('Tokenizer Tests', () => {
 
                 if (res.length !== 1) {
                     debugger;
-                    fail(`AST length should === 1 for ${code}`);
+                    fail(`AST length (${res.length}) should === 1 for ${code}`);
                 }
 
                 setTimeout(() => {
@@ -470,14 +470,14 @@ describe('Tokenizer Tests', () => {
 
         describe(`Broken If/Else`, () => {
             it('should parse if/else statements2', (done) => {
-                generateAst(`if(true) if(false) {t1=200;} else {echo("hi");}`).then((d) => done());
+                generateAst(`if(true) if(false) {echo("innerif");} else {echo("innerelse");}`).then(() => done());
             });
         });
 
         describe(`if/else statements`, () => {
 
             it('should parse if/else statements1', (done) => {
-                generateAst(`if(true){t1=200;} else {t2=500;}`).then((d) => done());
+                generateAst(`if(true){t1=200;} else {t2=500;}`).then(() => done());
             });
             it('should parse if/else statements3', (done) => {
                 generateAst(`if(true) t1=200; else t2=500;`).then(() => done());

@@ -164,18 +164,14 @@ function ifstatement(d:any[]):any {
 	// "if" _ "(" _ expression _ ")" _ statement _ "else" _ statement
 	//   0   1  2  3     4      5  6  7     8     9    10  11    12
 
-
 	//  const global: any = Function('return this')() || (42, eval)('this');
 	//  const code = global.HACK_CODE;
-	//  console.log("code = ", global.HACK_CODE);
+	//  console.log("code = ", code);
 	//  console.log('length = ', d.length);
 
-
 	if (d.length === 9) {
-//		debugger;
 		return new TokenType.IfStatement(d[0], d[4], d[8], null);
 	} else {
-//		debugger;
 		return new TokenType.IfStatement(d[0], d[4], d[8], d[12]);
 	}
 }
@@ -197,16 +193,23 @@ block ->
 	| block statement _
 
 statement
+	-> MatchedStatement
+	| OpenStatement
+
+MatchedStatement
+	-> "if" _ "(" _ expression _ ")" _ MatchedStatement _ "else" _ MatchedStatement {% ifstatement %}
+	| statementOther
+
+OpenStatement
+	->	"if" _ "(" _ expression _ ")" _ statement  {% ifstatement %}
+	| "if" _ "(" _ expression _ ")" _ MatchedStatement _ "else" _ OpenStatement {% ifstatement %}
+
+statementOther
 	-> assignment_expression _ %eos		{% d => d %}
 	| module_call _ %eos				{% id %}
 	| function_statement _ %eos			{% functionDefinition  %}
-#	| labeled_statement					{% id %}
 	| compound_statement				{% id %}
-#	| 
-	| selection_statement				{% id %}
-#	| iteration_statement				{% id %}
 #	| jump_statement					{% id %}
-
 
 primary_expression
 	-> %identifier						{% identifierF %}
@@ -360,21 +363,6 @@ comments
 	-> %single_line_comment				{% comment %}
 	| %block_comment					{% comment %}
 
-
-selection_statement
-	-> elseIfStatement {% id %}
-
-elseIfStatement
-	-> "if" _ "(" _ expression _ ")" _ statement  (_ "else" _ statement):? {% ifstatement %}
-
-
-#zzzIfStatement
-#   -> "if" _ "(" _ expression _ ")" _ statement (
-#        _ "else" _ (
-#            statement {% id %}
-#        ) {% debug %}
-#	):?  {% debug %}
-	
 
 
 # Optional white space
