@@ -286,4 +286,18 @@ export class FunctionDefinition extends Token {
     }
 }
 
+export class IfStatement extends Token {
+    public condition: Value2;
+    public iftrue: Token;
+    public iffalse: Token | null;
+
+    constructor(value: moo.Token, condition: Value2, ift: Token, iff: Token | null) {
+        super(value);
+
+        this.condition = condition;
+        this.iftrue = ift;
+        this.iffalse = iff;
+    }
+}
+
 export const VALUE_UNDEFINED = new Undefined();

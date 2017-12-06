@@ -15,7 +15,7 @@
     "test": "karma start",
     "testui": "karma start --single-run false",
     "build:grammar": "nearleyc src/compiler/nearley/grammar.ne > src/compiler/nearley/grammar.ts 2> src/compiler/nearley/grammar.err",
-    "build:scadtest": "cd scad_tests;ts-node build.ts;cd ..",
+    "build:scadtest": "#cd scad_tests;ts-node build.ts;cd ..",
     "g": "npm run build:scadtest && npm run build:grammar && npm run testui",
     "t": "npm run build:scadtest && npm run build:grammar && npm run test"
   },
@@ -27,6 +27,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jasmine": "^2.5.53",
+    "@types/node": "^8.0.55",
     "@types/tempy": "^0.1.0",
     "@types/three": "^0.84.28",
     "awesome-typescript-loader": "^3.2.1",
@@ -41,7 +42,7 @@
     "http-server": "^0.10.0",
     "jasmine": "^2.6.0",
     "jasmine-core": "^2.6.4",
-    "karma": "^1.7.0",
+    "karma": "^1.7.1",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.1",

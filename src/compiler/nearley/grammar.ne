@@ -157,12 +157,35 @@ function comment(d:any[]) {
 	return d;
 }
 
+function ifstatement(d:any[]):any {
+	// "if" _ "(" _ expression _ ")" _  statement
+    //  0  1  2  3     4      5  6  7     8
+
+	// "if" _ "(" _ expression _ ")" _ statement _ "else" _ statement
+	//   0   1  2  3     4      5  6  7     8     9    10  11    12
+
+
+	//  const global: any = Function('return this')() || (42, eval)('this');
+	//  const code = global.HACK_CODE;
+	//  console.log("code = ", global.HACK_CODE);
+	//  console.log('length = ', d.length);
+
+
+	if (d.length === 9) {
+//		debugger;
+		return new TokenType.IfStatement(d[0], d[4], d[8], null);
+	} else {
+//		debugger;
+		return new TokenType.IfStatement(d[0], d[4], d[8], d[12]);
+	}
+}
+
  function debug(d:any[]):any {
 	//  const global: any = Function('return this')() || (42, eval)('this');
 	//  const code = global.HACK_CODE;
 	//  console.log("code = ", global.HACK_CODE);
 	//  console.log('length = ', d.length);
-	//  debugger;
+	 debugger;
  	return d;
  }
 void(debug);
@@ -180,7 +203,7 @@ statement
 #	| labeled_statement					{% id %}
 	| compound_statement				{% id %}
 #	| 
-#	| selection_statement				{% id %}
+	| selection_statement				{% id %}
 #	| iteration_statement				{% id %}
 #	| jump_statement					{% id %}
 
@@ -326,7 +349,7 @@ compound_statement
 	| "{" _ (statement_list) _ "}"		{% compoundStatement %}
 
 function_statement
-	->"function" __ %identifier _ "(" _ ")" _ "=" _ expression
+	-> "function" __ %identifier _ "(" _ ")" _ "=" _ expression
 	|	"function" __ %identifier _ "(" _ argument_expression_list _ ")" _ "=" _ (expression)
 
 statement_list
@@ -336,6 +359,22 @@ statement_list
 comments
 	-> %single_line_comment				{% comment %}
 	| %block_comment					{% comment %}
+
+
+selection_statement
+	-> elseIfStatement {% id %}
+
+elseIfStatement
+	-> "if" _ "(" _ expression _ ")" _ statement  (_ "else" _ statement):? {% ifstatement %}
+
+
+#zzzIfStatement
+#   -> "if" _ "(" _ expression _ ")" _ statement (
+#        _ "else" _ (
+#            statement {% id %}
+#        ) {% debug %}
+#	):?  {% debug %}
+	
 
 
 # Optional white space

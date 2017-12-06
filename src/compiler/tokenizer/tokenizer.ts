@@ -6,7 +6,8 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     identifier: {
         match: /[a-zA-Z_][0-9a-zA-Z_]*/, keywords: {
             constant_boolean: ['true', 'false'],
-            constant_undefined: ['undef']
+            constant_undefined: ['undef'],
+            ifKeyword: ['if', 'else']
         }
     },
     special_identifier: /[\$]{1}[_a-zA-Z][0-9a-zA-Z_]*/,
@@ -14,7 +15,7 @@ export const OPENSCAD_RULES /*:  moo.Rules */ = {
     lparen: '(',
     rparen: ')',
     eos: ';',
-    keyword: ['module', 'function', 'include', 'use', 'for', 'intersection_for', 'if', 'else', 'assign'],
+    keyword: ['module', 'function', 'include', 'use', 'for', 'intersection_for', 'assign'],
     lbrace: '{',
     rbrace: '}',
     lbracket: '[',
