@@ -241,28 +241,26 @@ describe('Tokenizer Tests', () => {
             // }
         }
 
-
         it('Ensuring module loaded', () => {
             expect(nearley).not.toBeNull();
             expect(grammar).not.toBeNull();
-
         });
 
         describe('parse simple assignments', () => {
-            it('parse simple assignments1', (done) => {
-                generateAst('line1=1;').then(() => done());
+            it('parse simple assignments1', () => {
+                return generateAst('line1=1;');
             });
-            it('parse simple assignments2', (done) => {
-                generateAst('line2=2-1 ; ').then(() => done());
+            it('parse simple assignments2', () => {
+                return generateAst('line2=2-1 ; ');
             });
-            it('parse simple assignments3', (done) => {
-                generateAst('line3=bbba + 3; ').then(() => done());
+            it('parse simple assignments3', () => {
+                return generateAst('line3=bbba + 3; ');
             });
-            it('parse simple assignments4', (done) => {
-                generateAst(`line4 = "Hellow' +'World"  ;`).then(() => done());
+            it('parse simple assignments4', () => {
+                return generateAst(`line4 = "Hellow' +'World"  ;`);
             });
-            it('parse simple assignments5', (done) => {
-                generateAst(`line5 = "9" + "a" ;`).then(() => done());
+            it('parse simple assignments5', () => {
+                return generateAst(`line5 = "9" + "a" ;`);
             });
         });
 
@@ -281,70 +279,70 @@ describe('Tokenizer Tests', () => {
         });
 
         describe(`parse complex assignments`, () => {
-            it('parse complex assignments1', (done) => {
-                generateAst('line1 = (1 * 2);').then(() => done());
+            it('parse complex assignments1', () => {
+                return generateAst('line1 = (1 * 2);');
             });
-            it('parse complex assignments2', (done) => {
-                generateAst('line1 = 1;').then(() => done());
+            it('parse complex assignments2', () => {
+                return generateAst('line1 = 1;');
             });
-            it('parse complex assignments3', (done) => {
-                generateAst('line1 = 1 + 2 * 3;').then(() => done());
+            it('parse complex assignments3', () => {
+                return generateAst('line1 = 1 + 2 * 3;');
             });
-            it('parse complex assignments4', (done) => {
-                generateAst('line2 = (1+3) * 4 * 5 / (2-1);').then(() => done());
+            it('parse complex assignments4', () => {
+                return generateAst('line2 = (1+3) * 4 * 5 / (2-1);');
             });
         });
 
         describe(`parse multiple statements`, () => {
-            it('parse multiple statements1', (done) => {
-                generateAst('line1=1;    ').then(() => done());
+            it('parse multiple statements1', () => {
+                return generateAst('line1=1;    ');
             });
-            it('parse multiple statements2', (done) => {
-                generateAst('    line1=1;    ').then(() => done());
+            it('parse multiple statements2', () => {
+                return generateAst('    line1=1;    ');
             });
-            it('parse multiple statements3', (done) => {
-                generateAst('line1=1;line2=2;line3=3;').then(() => done());
+            it('parse multiple statements3', () => {
+                return generateAst('line1=1;line2=2;line3=3;');
             });
-            it('parse multiple statements4', (done) => {
-                generateAst('line1 = 1;  line2 = 2;line3 =3;').then(() => done());
+            it('parse multiple statements4', () => {
+                return generateAst('line1 = 1;  line2 = 2;line3 =3;');
             });
-            it('parse multiple statements5', (done) => {
-                generateAst('  line1 = 1;  line2 = 2;line3 =3;').then(() => done());
+            it('parse multiple statements5', () => {
+                return generateAst('  line1 = 1;  line2 = 2;line3 =3;');
             });
-            it('parse multiple statements6', (done) => {
-                generateAst('  line1 = 1;  line2 = 2;line3 =3;   ').then(() => done());
+            it('parse multiple statements6', () => {
+                return generateAst('  line1 = 1;  line2 = 2;line3 =3;   ');
             });
         });
 
         describe(`it should parse unary operators`, () => {
-            it('should parse unary !', (done) => {
-                generateAst('line1=!1;    ').then(() => done());
+            it('should parse unary !', () => {
+                return generateAst('line1=!1;    ');
             });
 
-            it('should parse unary +', (done) => {
-                generateAst('line1=+1;    ').then(() => done());
+            it('should parse unary +', () => {
+                return generateAst('line1=+1;    ');
             });
 
-            it('should parse unary -', (done) => {
-                generateAst('line1=-1;    ').then(() => done());
+            it('should parse unary -', () => {
+                return generateAst('line1=-1;    ');
             });
         });
 
         describe(`should parse vectors`, () => {
-            it('should parse vectors', (done) => {
-                generateAst(`line1=[1, 2, true, "A"];`).then(() => done());
+            it('should parse vectors', () => {
+                return generateAst(`line1=[1, 2, true, "A"];`);
             });
-            it('should parse vectors', (done) => {
-                generateAst(`line1=[[1, 2], [true], "A"];`).then(() => done());
+            it('should parse vectors', () => {
+                return generateAst(`line1=[[1, 2], [true], "A"];`);
             });
         });
 
         describe(`should parse ranges`, () => {
-            it('should parse ranges', (done) => {
-                generateAst(`line1=[102:1002];`).then(() => done());
+            it('should parse ranges', () => {
+                return generateAst(`line1=[102:1002];`);
             });
-            it('should parse ranges', (done) => {
-                generateAst(`line1=[1003:30:1030];`).then(() => done());
+            it('should parse ranges', () => {
+                return generateAst(`line1=[1003:30:1030];`);
             });
         });
 
@@ -359,7 +357,7 @@ describe('Tokenizer Tests', () => {
         //     ];
 
         //     calls.forEach(cd => {
-        //         const ast = generateAst('' + cd[0]).then(() => done());
+        //         const ast = generateAst('' + cd[0]);
 
         //         const moduleCalls = ast[0].filter(n => n instanceof TokenType.ModuleCall);
         //         expect(moduleCalls.length).toBe(1);
@@ -372,121 +370,121 @@ describe('Tokenizer Tests', () => {
         // });
 
         describe(`should parse a compound statement`, () => {
-            it('should parse a compound statement', (done) => {
-                generateAst('{}').then(() => done());
+            it('should parse a compound statement', () => {
+                return generateAst('{}');
             });
-            it('should parse a compound statement', (done) => {
-                generateAst('{var1=1;}').then(() => done());
+            it('should parse a compound statement', () => {
+                return generateAst('{var1=1;}');
             });
-            it('should parse a compound statement', (done) => {
-                generateAst('{var2=2;var22=22;}').then(() => done());
+            it('should parse a compound statement', () => {
+                return generateAst('{var2=2;var22=22;}');
             });
         });
 
         describe(`should parse function declarations`, () => {
-            it('should parse function declarations', (done) => {
-                generateAst('function func0() = 5;').then(() => done());
+            it('should parse function declarations', () => {
+                return generateAst('function func0() = 5;');
             });
-            it('should parse function declarations', (done) => {
-                generateAst('function func1(x=3) = 2*x+1;').then(() => done());
+            it('should parse function declarations', () => {
+                return generateAst('function func1(x=3) = 2*x+1;');
             });
-            it('should parse function declarations', (done) => {
-                generateAst('function func2(x,y) = 2*x+y;').then(() => done());
+            it('should parse function declarations', () => {
+                return generateAst('function func2(x,y) = 2*x+y;');
             });
         });
 
         describe(`should parse vector comparisons`, () => {
-            it('should parse vector comparisons', (done) => {
-                generateAst('echo([1] == [1]);').then(() => done());
+            it('should parse vector comparisons', () => {
+                return generateAst('echo([1] == [1]);');
             });
         });
 
         describe(`should parse white space`, () => {
-            it('should parse white space', (done) => {
-                generateAst(' echo([1] == [1]);').then(() => done());
+            it('should parse white space', () => {
+                return generateAst(' echo([1] == [1]);');
             });
-            it('should parse white space', (done) => {
-                generateAst('\techo([1] == [1]);').then(() => done());
+            it('should parse white space', () => {
+                return generateAst('\techo([1] == [1]);');
             });
-            it('should parse white space', (done) => {
-                generateAst('\recho([1] == [1]);').then(() => done());
+            it('should parse white space', () => {
+                return generateAst('\recho([1] == [1]);');
             });
         });
 
         describe(`Comments`, () => {
-            it('should parse singe-line comments', (done) => {
-                generateAst('// this is a comment\nsingleLineComment1=1;').then(() => done());
+            it('should parse singe-line comments', () => {
+                return generateAst('// this is a comment\nsingleLineComment1=1;');
             });
-            it('should parse singe-line comments', (done) => {
-                generateAst('singleLineComment2;// this is a comment').then(() => done());
-            });
-
-            it('should parse empty comment block', (done) => {
-                generateAst('/**/emptyCommentBlock=true;').then(() => done());
+            it('should parse singe-line comments', () => {
+                return generateAst('singleLineComment2;// this is a comment');
             });
 
-            it('should parse multi-line comment on one line', (done) => {
-                generateAst('t1=100;/* A comment */').then(() => done());
+            it('should parse empty comment block', () => {
+                return generateAst('/**/emptyCommentBlock=true;');
             });
 
-            it('should parse multi-line comment on two lines', (done) => {
-                generateAst('/* A \ncomment */t1=200;').then(() => done());
+            it('should parse multi-line comment on one line', () => {
+                return generateAst('t1=100;/* A comment */');
             });
 
-            it('should parse multi-line comment with single-quote marks', (done) => {
-                generateAst(`/* a quote ' */t1=200;`).then(() => done());
+            it('should parse multi-line comment on two lines', () => {
+                return generateAst('/* A \ncomment */t1=200;');
             });
 
-            it('should parse multi-line comment with double-quote marks', (done) => {
-                generateAst(`/* a double-quote ' */t1=200;`).then(() => done());
+            it('should parse multi-line comment with single-quote marks', () => {
+                return generateAst(`/* a quote ' */t1=200;`);
             });
 
-            it('should parse nested multi-line comments', (done) => {
-                generateAst(`/* /* a nested comment */t1=200;`).then(() => done());
+            it('should parse multi-line comment with double-quote marks', () => {
+                return generateAst(`/* a double-quote ' */t1=200;`);
             });
 
-            it('should parse nested multi-line comments', (done) => {
-                generateAst(`/* /* /* a double-nested comment */t1=200;`).then(() => done());
+            it('should parse nested multi-line comments', () => {
+                return generateAst(`/* /* a nested comment */t1=200;`);
+            });
+
+            it('should parse nested multi-line comments', () => {
+                return generateAst(`/* /* /* a double-nested comment */t1=200;`);
             });
         });
 
         describe(`if statements`, () => {
-            it('should parse if statements1', (done) => {
-                generateAst(`if(true) t1=200;t2=500;`).then(() => done());
+            it('should parse if statements1', () => {
+                return generateAst(`if(true) t1=200;t2=500;`);
             });
-            it('should parse if statements2', (done) => {
-                generateAst(`if(true) t1=200;`).then(() => done());
+            it('should parse if statements2', () => {
+                return generateAst(`if(true) t1=200;`);
             });
-            it('should parse if statements3', (done) => {
-                generateAst(`if(true)t1=200;`).then(() => done());
+            it('should parse if statements3', () => {
+                return generateAst(`if(true)t1=200;`);
             });
-            it('should parse if statements4', (done) => {
-                generateAst(`if(true){t1=200;}`).then(() => done());
+            it('should parse if statements4', () => {
+                return generateAst(`if(true){t1=200;}`);
             });
-            it('should parse if statements5', (done) => {
-                generateAst(`if(true) if(false) {t1=200;}`).then(() => done());
+            it('should parse if statements5', () => {
+                return generateAst(`if(true) if(false) {t1=200;}`);
             });
         });
 
         describe(`Broken If/Else`, () => {
-            it('should parse if/else statements2', (done) => {
-                generateAst(`if(true) if(false) {echo("innerif");} else {echo("innerelse");}`).then(() => done());
+            it('should parse if/else statements2', () => {
+                return generateAst(`if(true) if(false) {echo("innerif");} else {echo("innerelse");}`);
             });
         });
 
         describe(`if/else statements`, () => {
 
-            it('should parse if/else statements1', (done) => {
-                generateAst(`if(true){t1=200;} else {t2=500;}`).then(() => done());
+            it('should parse if/else statements1', () => {
+                return generateAst(`if(true){t1=200;} else {t2=500;}`);
             });
-            it('should parse if/else statements3', (done) => {
-                generateAst(`if(true) t1=200; else t2=500;`).then(() => done());
+            it('should parse if/else statements3', () => {
+                return generateAst(`if(true) t1=200; else t2=500;`);
             });
-            it('should parse if/else statements4', (done) => {
-                generateAst(`if(true){t1=200;} else {t2=500;}`).then(() => done());
+            it('should parse if/else statements4', () => {
+                return generateAst(`if(true){t1=200;} else {t2=500;}`);
             });
-            it('should parse if/else statements5', (done) => {
-                generateAst(`if(true) {if(false) {t1=200;} else {echo("hi");}}`).then(() => done());
+            it('should parse if/else statements5', () => {
+                return generateAst(`if(true) {if(false) {t1=200;} else {echo("hi");}}`);
             });
         });
     });
