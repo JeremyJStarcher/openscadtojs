@@ -428,28 +428,25 @@ describe('Tokenizer Tests', () => {
             it('should parse if statements1', () => {
                 return generateAst(`if(true) t1=200;t2=500;`);
             });
+
             it('should parse if statements2', () => {
                 return generateAst(`if(true) t1=200;`);
             });
+
             it('should parse if statements3', () => {
                 return generateAst(`if(true)t1=200;`);
             });
+
             it('should parse if statements4', () => {
                 return generateAst(`if(true){t1=200;}`);
             });
+
             it('should parse if statements5', () => {
                 return generateAst(`if(true) if(false) {t1=200;}`);
             });
         });
 
-        describe(`Broken If/Else`, () => {
-            it('should parse if/else statements2', () => {
-                return generateAst(`if(true) if(false) {echo("innerif");} else {echo("innerelse");}`);
-            });
-        });
-
         describe(`if/else statements`, () => {
-
             it('should parse if/else statements1', () => {
                 return generateAst(`if(true){t1=200;} else {t2=500;}`);
             });
@@ -463,5 +460,17 @@ describe('Tokenizer Tests', () => {
                 return generateAst(`if(true) {if(false) {t1=200;} else {echo("hi");}}`);
             });
         });
+
+        describe(`nested if/else`, () => {
+            it('should parse nested if/else statements1', () => {
+                return generateAst(`if(true) if(false) {echo("innerif");} else {echo("innerelse");}`);
+            });
+
+            it('should parse nested if/else statements2', () => {
+                return generateAst(`if(true) if(false) echo("innerif"); else echo("innerelse"); else echo("outerelse");`);
+            });
+
+        });
+
     });
 });
