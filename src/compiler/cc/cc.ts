@@ -41,6 +41,13 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
 
         if (token instanceof TokenType.CompoundStatement) {
             yield* astRunner(runtime, token.statements);
+        } else if (token instanceof TokenType.IfStatement) {
+            const ifStatus = token.condition.valueOf(runtime).value;
+            const branch = ifStatus ? token.iftrue : token.iffalse;
+            if (branch) {
+                yield* astRunner(runtime, [branch]);
+            }
+
         } else if (Array.isArray(token)) {
             if (token.length === 0) {
                 continue;

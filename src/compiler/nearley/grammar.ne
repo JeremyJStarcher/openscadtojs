@@ -193,12 +193,12 @@ block ->
 	| block statement _
 
 statement
-	-> MatchedStatement
-	| OpenStatement
+	-> MatchedStatement  {% id %}
+	| OpenStatement      {% id %}
 
 MatchedStatement
 	-> "if" _ "(" _ expression _ ")" _ MatchedStatement _ "else" _ MatchedStatement {% ifstatement %}
-	| statementOther
+	| statementOther {% id %}
 
 OpenStatement
 	->	"if" _ "(" _ expression _ ")" _ statement  {% ifstatement %}
