@@ -228,16 +228,14 @@ describe('Tokenizer Tests', () => {
         }
 
         function catchAstError(source: string, loc: any) {
-            return;
-            // try {
-            //     generateAst(source);
-            //     fail(`[${source}] parsed correctly. It shouldn't have.`);
-            // } catch (err) {
-            //     const token: any = err.token;
-            //     if (token.line !== loc.line || token.col !== loc.col) {
-            //         fail(`[${source}] failed at ${token.line}, ${token.col}.  Expected failure at: ${loc.line}, ${loc.col}`);
-            //     }
-            // }
+            return generateAst(source).then(ast => {
+                fail(`[${source}] parsed correctly. It shouldn't have.`);
+            }).catch(err => {
+                const token: any = err.token;
+                if (token.line !== loc.line || token.col !== loc.col) {
+                    fail(`[${source}] failed at ${token.line}, ${token.col}.  Expected failure at: ${loc.line}, ${loc.col}`);
+                }
+            });
         }
 
         it('Ensuring module loaded', () => {
@@ -263,18 +261,18 @@ describe('Tokenizer Tests', () => {
             });
         });
 
-        describe(`should fail assigning to a numeric constant`, () => {
+        describe(`syntax error tests`, () => {
             it('should fail assigning to a numeric constant', () => {
-                catchAstError('1=1;', { line: 1, col: 2 });
+                return catchAstError('1=1;', { line: 1, col: 2 });
             });
-        });
 
-        it('should fail assigning to a string constant', () => {
-            catchAstError(`"a"="b";`, { line: 1, col: 4 });
-        });
+            it('should fail assigning to a string constant', () => {
+                return catchAstError(`"a"="b";`, { line: 1, col: 4 });
+            });
 
-        it('should fail assigning to a built-in constant', () => {
-            catchAstError(`undef=undef;`, { line: 1, col: 6 });
+            it('should fail assigning to a built-in constant', () => {
+                return catchAstError(`undef=undef;`, { line: 1, col: 6 });
+            });
         });
 
         describe(`parse complex assignments`, () => {
