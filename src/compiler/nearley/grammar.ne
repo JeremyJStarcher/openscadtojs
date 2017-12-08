@@ -357,7 +357,7 @@ function_statement
 
 statement_list
 	-> statement
-	| statement_list statement 			{% d => d[0].concat([d[1]]) %}
+	| statement_list _ statement 			{% d => d[0].concat([d[2]]) %}
 
 comments
 	-> %single_line_comment				{% comment %}

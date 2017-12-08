@@ -43,10 +43,16 @@ if (false)
         echo("FALSE");
 else
     echo("FALSE, I mean FALSE");
-
-    
-
-
-
-
-
+//%
+if (true) {
+    echo("TRUE1");
+    echo("TRUE2");
+} else {
+    echo("FALSE1");
+    echo("FALSE2");
+}
+//%
+if (true) {
+    b = 2;
+    a = 1;
+}
