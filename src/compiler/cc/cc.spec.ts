@@ -52,8 +52,8 @@ describe('Running compiler tests', () => {
 
         const content = getAllTokens(ast);
 
-        const statement0 = content[0]; // as ScadTokens.Operator;
-        const statement1 = content[1]; // as ScadTokens.Operator;
+        const statement0 = content[0];
+        const statement1 = content[1];
 
         expect(statement0).toEqual(jasmine.any(TokenType.Operator));
         expect(statement1).toEqual(jasmine.any(TokenType.Operator));
@@ -148,11 +148,6 @@ describe('Running compiler tests', () => {
 
             cc.compile(`${code}`).then(ast => {
                 const content = getAllTokens(ast);
-
-                // const k = code;
-                // void (k);
-                // debugger;
-
                 const res = Array.from(cc.astRunner(runtime, content));
                 return res;
             }).catch(err => {

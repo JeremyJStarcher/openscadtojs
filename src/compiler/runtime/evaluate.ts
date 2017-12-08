@@ -10,11 +10,6 @@ export function executeAssignment(
     const rhandToken = token.rhand.valueOf(runtime);
 
     if (operator === '=') {
-        // if (rhandToken.type instanceof TokenType.Identifier) {
-        //     rhandToken = runtime.getIdentifier(rhandToken.value);
-        // }
-        // debugger;
-
         runtime.setIdentifier(token.lhand.value, rhandToken as TokenType.Value2);
     } else {
         throw new Error(`executeAssignment called but the token was ${token}`);
@@ -27,7 +22,6 @@ export function executeUnaryOperator(
 ): TokenType.Value2 {
     const operator = token;
     const operand = token.operand;
-
 
     const operandToken = operand.valueOf(runtime);
     return runUnaryOp(runtime, operator.value, operandToken);
