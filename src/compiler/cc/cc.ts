@@ -45,7 +45,9 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
             const ifStatus = token.condition.valueOf(runtime).value;
             const branch = ifStatus ? token.iftrue : token.iffalse;
             if (branch) {
+                runtime.createNewContext(runtime.currentGetCurrentContext());
                 yield* astRunner(runtime, [branch]);
+                runtime.removeContext();
             }
 
         } else if (Array.isArray(token)) {

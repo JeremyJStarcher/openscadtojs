@@ -23,11 +23,10 @@ export class RunTime {
     constructor(code: string) {
         this.source = code;
         this.logger = new Logger();
-        const baseContext = this.createNewContext(null);
         this.contextStack = [];
         this.geometryList = [];
 
-        this.contextStack.push(baseContext);
+        const baseContext = this.createNewContext(null);
 
         baseContext.setModule('echo', ModuleEcho);
         baseContext.setModule('cube', ModuleCube);
@@ -40,7 +39,12 @@ export class RunTime {
     createNewContext(parent: Context | null) {
         const context = new Context(parent, this.logger);
         this.allContexts[context.getContextId()] = context;
+        this.contextStack.push(context);
         return context;
+    }
+
+    removeContext() {
+        this.contextStack.pop();
     }
 
     currentGetCurrentContext() {
