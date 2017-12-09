@@ -1,4 +1,4 @@
-import { runOp, runUnaryOp } from './operators';
+import { runOp, runUnaryOp, toBooleanPrimitive } from './operators';
 import * as TokenType from './token-type';
 import { RunTime } from '../cc/run-time';
 
@@ -37,4 +37,12 @@ export function executeBinaryOperator(
 
     const ret = runOp(runtime, operator, lhandToken, rhandToken);
     return ret;
+}
+
+export function getBooleanValue(
+    runtime: RunTime,
+    token: TokenType.Value2
+): boolean {
+    const valueToken = token.valueOf(runtime);
+    return toBooleanPrimitive(valueToken);
 }

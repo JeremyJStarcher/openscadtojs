@@ -280,7 +280,7 @@ function initFuncs() {
 }
 
 
-function toBooleanPrimitive(value: TokenType.Value2) {
+export function toBooleanPrimitive(value: TokenType.Value2) {
 
     let ret: boolean | null = null;
 
