@@ -56,3 +56,31 @@ if (true) {
     b = 2;
     a = 1;
 }
+//%
+var=1;
+if (var) {
+    echo("Checking a number");
+}
+//%
+var=0;
+if (var) {
+    echo("Checking a number");
+}
+//%
+var=[];
+if (var) {
+    echo("Checking a vector");
+}
+//%
+var=[1];
+if (var) {
+    echo("Checking a vector");
+}
+//%
+var=undef;
+if (var) {
+    echo("Checking a undefiend");
+} else {
+    echo("Was not defined");
+}
+

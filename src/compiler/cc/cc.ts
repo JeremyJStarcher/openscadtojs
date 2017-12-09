@@ -42,7 +42,9 @@ export function* astRunner(runtime: RunTime, ast: TokenType.Token[]): IterableIt
         if (token instanceof TokenType.CompoundStatement) {
             yield* astRunner(runtime, token.statements);
         } else if (token instanceof TokenType.IfStatement) {
-            const ifStatus = token.condition.valueOf(runtime).value;
+
+            const ifStatus = evaluate.getBooleanValue(runtime, token.condition);
+
             const branch = ifStatus ? token.iftrue : token.iffalse;
             if (branch) {
                 runtime.createNewContext(runtime.currentGetCurrentContext());
