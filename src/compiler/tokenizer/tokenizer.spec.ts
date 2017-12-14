@@ -469,7 +469,7 @@ describe('Tokenizer Tests', () => {
             });
         });
 
-        fdescribe(`module statements`, () => {
+        describe(`module statements`, () => {
             it('should parse module statement, no parameters, block statement', () => {
                 return generateAst(`module gizmo() {}`);
             });
@@ -477,7 +477,6 @@ describe('Tokenizer Tests', () => {
             it(`should parse module statement space between parens, block statement`, () => {
                 return generateAst(`module gizmo(  ) {}`);
             });
-
 
             it(`should parse module statement, simple expressions, blockstatement`, () => {
                 return generateAst(`module gizmo(1, 2*4, true, myVar) {}`);
@@ -490,9 +489,6 @@ describe('Tokenizer Tests', () => {
             it(`should parse module statement, assignment expression, single statement`, () => {
                 return generateAst(`module gizmo(1, 2*4, center=true, myVar) echo("Hi Hopes");`);
             });
-
-
         });
-
     });
 });

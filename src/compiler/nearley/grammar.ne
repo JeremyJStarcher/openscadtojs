@@ -177,6 +177,18 @@ function ifstatement(d:any[]):any {
 }
 
 function moduleStatement(d:any[]):any {
+	// "module" __ %identifier _ "(" _ ")" _ statement
+	//    0      1      2      3  4  5  6  7     8
+
+	// "module" __ %identifier _ "(" _ argument_expression_list _ ")" _ statement
+	//    0      1      2      3  4  5           6              7  8  9     10
+
+	if (d.length === 9) {
+		return new TokenType.ModuleDefinition(d[0], d[5], d[8]);
+	}
+	if (d.length === 11) {
+		return new TokenType.ModuleDefinition(d[0], d[6], d[10]);
+	}
 }
 
 function debug(d:any[]):any {

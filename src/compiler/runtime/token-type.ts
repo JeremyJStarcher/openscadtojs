@@ -279,9 +279,9 @@ export class FunctionDefinition extends Token {
     public arguments: Value2[];
     public returnValue: Value2;
 
-    constructor(value: moo.Token, args: Token[], returnValue: Value2) {
+    constructor(value: moo.Token, args: Value2[], returnValue: Value2) {
         super(value);
-        this.arguments = args as Value2[];
+        this.arguments = args;
         this.returnValue = returnValue;
     }
 }
@@ -299,5 +299,19 @@ export class IfStatement extends Token {
         this.iffalse = iff;
     }
 }
+
+
+export class ModuleDefinition extends Token {
+    public arguments: Value2[];
+    public code: Token;
+
+    constructor(value: moo.Token, args: Value2[], code: Token) {
+        super(value);
+        this.arguments = args;
+        this.code = code;
+    }
+}
+
+
 
 export const VALUE_UNDEFINED = new Undefined();
