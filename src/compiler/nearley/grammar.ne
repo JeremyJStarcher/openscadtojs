@@ -176,7 +176,10 @@ function ifstatement(d:any[]):any {
 	}
 }
 
- function debug(d:any[]):any {
+function moduleStatement(d:any[]):any {
+}
+
+function debug(d:any[]):any {
 	//  const global: any = Function('return this')() || (42, eval)('this');
 	//  const code = global.HACK_CODE;
 	//  console.log("code = ", global.HACK_CODE);
@@ -209,6 +212,7 @@ statementOther
 	| module_call _ %eos				{% id %}
 	| function_statement _ %eos			{% functionDefinition  %}
 	| compound_statement				{% id %}
+	| module_statement					{% id %}
 #	| jump_statement					{% id %}
 
 primary_expression
@@ -349,7 +353,12 @@ compound_statement
 
 function_statement
 	-> "function" __ %identifier _ "(" _ ")" _ "=" _ expression
-	|	"function" __ %identifier _ "(" _ argument_expression_list _ ")" _ "=" _ (expression)
+	| "function" __ %identifier _ "(" _ argument_expression_list _ ")" _ "=" _ (expression)
+
+module_statement
+	-> "module" __ %identifier _ "(" _ ")" _ statement 								{% moduleStatement %}
+	| "module" __ %identifier _ "(" _ argument_expression_list _ ")" _ statement	{% moduleStatement %}
+
 
 statement_list
 	-> statement
