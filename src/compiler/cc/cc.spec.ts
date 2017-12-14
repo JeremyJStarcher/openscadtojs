@@ -350,14 +350,19 @@ describe('Running compiler tests', () => {
         });
     });
 
-    xit(`should add 'echo' empty parens`, () => {
+    it(`should 'echo' empty parens`, () => {
         return new Promise((resolve, reject) => {
             const tests: [[string, any]] = [
                 [`echo();`, 3],
                 [`echo( );`, 3],
+                [`echo(\r );`, 3],
+                [`echo(\n );`, 3],
+                [`echo(    \r  \n     );`, 3],
             ];
 
             const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                const echoLog = runtime.logger.getLogs();
+                expect(echoLog[0]).toBe('ECHO: ');
             };
 
             const p1 = tests.map(test => {
@@ -371,7 +376,7 @@ describe('Running compiler tests', () => {
     });
 
 
-    it(`should add 'echo' string constants with spaces.`, () => {
+    it(`should 'echo' string constants with spaces.`, () => {
         return new Promise((resolve, reject) => {
             const tests: [[string, any]] = [
                 [`echo("Echo Moon");`, 3],

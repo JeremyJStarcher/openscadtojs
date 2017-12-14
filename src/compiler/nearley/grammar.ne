@@ -327,13 +327,9 @@ constant
 #	| %predefined_constant						{% builtInConstant %}
 
 
-module_call2
-	-> %identifier _ "(" __ ")"	{% moduleCall %}
-
-
 module_call
 	-> %identifier _ "(" _ module_arguments _ ")"	{% moduleCall %}
-    | %identifier _ "(" ")"	{% moduleCall %}
+    | %identifier _ "(" _ ")"						{% moduleCall %}
 
 
 argument_expression_list
