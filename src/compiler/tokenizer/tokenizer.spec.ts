@@ -217,7 +217,6 @@ describe('Tokenizer Tests', () => {
                 //   multiple ways.  Either condition is bad.
 
                 if (res.length !== 1) {
-                    debugger;
                     fail(`AST length (${res.length}) should === 1 for ${code}`);
                 }
 
@@ -263,15 +262,15 @@ describe('Tokenizer Tests', () => {
 
         describe(`syntax error tests`, () => {
             it('should fail assigning to a numeric constant', () => {
-                return catchAstError('1=1;', { line: 1, col: 2 });
+                return catchAstError('1=1;', { line: 1, col: 1 });
             });
 
             it('should fail assigning to a string constant', () => {
-                return catchAstError(`"a"="b";`, { line: 1, col: 4 });
+                return catchAstError(`"a"="b";`, { line: 1, col: 1 });
             });
 
             it('should fail assigning to a built-in constant', () => {
-                return catchAstError(`undef=undef;`, { line: 1, col: 6 });
+                return catchAstError(`undef=undef;`, { line: 1, col: 1 });
             });
         });
 
@@ -390,7 +389,7 @@ describe('Tokenizer Tests', () => {
                 return generateAst('// this is a comment\nsingleLineComment1=1;');
             });
             it('should parse singe-line comments', () => {
-                return generateAst('singleLineComment2;// this is a comment');
+                return generateAst('l1=1;// this is a comment');
             });
 
             it('should parse empty comment block', () => {

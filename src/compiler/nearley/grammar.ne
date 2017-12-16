@@ -318,17 +318,21 @@ conditional_expression
 	| logical_or_expression _ "?" _ expression _ ":" _ conditional_expression
 
 
+#assignment_expression
+#	-> conditional_expression									{% id %}
+#	| %identifier _ assignment_operator _ assignment_expression	{% operator %}
+
+
 assignment_expression
-	-> conditional_expression									{% id %}
-	| %identifier _ assignment_operator _ assignment_expression	{% operator %}
-	
+	-> %identifier _ assignment_operator _ conditional_expression	{% operator %}
+
 
 assignment_operator
 	-> "="	{% id %}
 
 expression
-	-> assignment_expression					{% id %}
-	| expression _ "," _ assignment_expression	{% id %}
+	-> conditional_expression					{% id %}
+	| expression _ "," _ conditional_expression	{% id %}
 	
 vector_expression
 	->	"[" _ argument_expression_list _ "]"					{% vector %}
@@ -351,12 +355,16 @@ module_call
 
 
 argument_expression_list
-	-> assignment_expression
-	| argument_expression_list _ "," _ assignment_expression {% argumentExpressionList %} 
+	-> argument_expression_bit	
+	| argument_expression_list _ "," _ argument_expression_bit {% argumentExpressionList %} 
+
+argument_expression_bit
+	-> assignment_expression	{% id %}
+	| conditional_expression	{% id %}
 
 range_expression_list
-	-> assignment_expression _ ":" _ assignment_expression _ ":" _ assignment_expression {% rangeExpressionList %} 
-	| assignment_expression _ ":" _ assignment_expression {% rangeExpressionList %} 
+	-> conditional_expression _ ":" _ conditional_expression _ ":" _ conditional_expression {% rangeExpressionList %} 
+	| conditional_expression _ ":" _ conditional_expression {% rangeExpressionList %} 
 
 module_arguments
 	-> argument_expression_list	{% id %}

@@ -27,7 +27,7 @@ describe('Running compiler tests', () => {
         cc.compile('1=2;').then(() => {
             expect(false).toBe(true, `There was no compile error`);
         }).catch(err => {
-            expect(err.message).toContain(`invalid syntax at line 1 col 2`);
+            expect(err.message).toContain(`invalid syntax at line 1 col 1`);
         }).then(() => {
             done();
         });
@@ -104,15 +104,15 @@ describe('Running compiler tests', () => {
                 getAllTokens(ast);
                 expect(false).toBe(true, `End of input error did not happen`);
             } catch (err) {
-                expect(err.token.value).toBe('=');
-                expect(err.token.col).toBe(2);
+                expect(err.token.value).toBe('1');
+                expect(err.token.col).toBe(1);
             }
 
             done();
         })();
     });
 
-    xit('should error on bad grammar (invalid expression)', (done) => {
+    it('should error on bad grammar (invalid expression)', (done) => {
         (async () => {
             try {
                 const ast = await cc.compile(`var2+'Hello';`);
