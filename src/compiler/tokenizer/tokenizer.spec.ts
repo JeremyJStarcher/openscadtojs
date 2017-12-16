@@ -469,6 +469,18 @@ describe('Tokenizer Tests', () => {
             });
         });
 
+        describe(`extra semis`, () => {
+            it('should handle stray semis1', () => {
+                return generateAst(`a=1;;`);
+            });
+            it('should handle stray semis2', () => {
+                return generateAst(`a=1; ;`);
+            });
+            it('should handle stray semis3', () => {
+                return generateAst(`;a=1; ;`);
+            });
+        });
+
         describe(`module statements`, () => {
             it('should parse module statement, no parameters, block statement', () => {
                 return generateAst(`module gizmo() {}`);

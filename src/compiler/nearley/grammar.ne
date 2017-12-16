@@ -224,8 +224,10 @@ statementOther
 	| module_call _ %eos				{% id %}
 	| function_statement _ %eos			{% functionDefinition  %}
 	| compound_statement				{% id %}
-	| module_statement	%eos:?			{% id %}
+	| module_statement					{% id %}
 #	| jump_statement					{% id %}
+	|  %eos								{% id %}
+
 
 primary_expression
 	-> %identifier						{% identifierF %}

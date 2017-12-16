@@ -487,6 +487,10 @@ describe('Running compiler tests', () => {
             return new Promise((resolve, reject) => {
                 const tests: [[string]] = [
                     ['module m1(false) {};module m1(true) {};'],
+                    ['module m1(false) {}module m1(true) {};'],
+                    ['module m1(false) {} module m1(true) {};'],
+                    ['module m1(false) {}\nmodule m1(true) {};'],
+                    ['module m1(false) {}\nmodule m1(true) {}'],
                 ];
 
                 const validate = (runtime: RunTime, expectedValue: any, code: string) => {
