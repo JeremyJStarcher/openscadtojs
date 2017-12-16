@@ -2,6 +2,7 @@ import { RunTime } from '../cc/run-time';
 import * as TokenType from '../runtime/token-type';
 import * as cc from './cc';
 import * as scadTests from '../../../scad_tests/output/scad';
+import { ModuleDefinition } from '../runtime/token-type';
 
 describe('Running compiler tests', () => {
     it('should have the test infrastructure in place', () => {
@@ -480,6 +481,35 @@ describe('Running compiler tests', () => {
             });
 
         });
+
+        it('should hoist module declarations, keeping only the latest', () => {
+
+            return new Promise((resolve, reject) => {
+                const tests: [[string]] = [
+                    ['module m1(false) {};module m1(true) {};'],
+                ];
+
+                const validate = (runtime: RunTime, expectedValue: any, code: string) => {
+                    const m1 = runtime.getModule('m1') as ModuleDefinition;
+
+                    expect(runtime.logger.getLogs().length).toBe(0);
+                    expect(m1.name).toEqual(`m1`, `Module name error`);
+                    expect(m1.arguments.length).toEqual(1, `Module arguments length error`);
+                    expect(m1.arguments[0]).toBeTruthy(`Found wrong module definition`);
+                    // expect(t2.value).toEqual(expectedValue[1], `${code} did not equal ${expectedValue[1]}`);
+                };
+
+                const p1 = tests.map(test => {
+                    return compileAndRun(test[0], test[1], validate);
+                });
+
+                Promise.all(p1).then(() => {
+                    resolve();
+                });
+            });
+
+        });
+
     });
 
     describe(`Running OpenSCAD code and results`, () => {

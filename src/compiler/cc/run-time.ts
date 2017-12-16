@@ -66,7 +66,7 @@ export class RunTime {
         return this.currentGetCurrentContext().getModule(identifier);
     }
 
-    setModule(identifier: string, value: TokenType.Value2 | Function) {
+    setModule(identifier: string, value: TokenType.ModuleDefinition | Function) {
         this.currentGetCurrentContext().setModule(identifier, value);
     }
 }

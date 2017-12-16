@@ -19,7 +19,7 @@ let contextId = 0;
 
 export class Context {
     private parent: Context | null;
-    private container: Map<string, TokenType.Value2 | Function>;
+    private container: Map<string, any>;
     private logger: Logger;
     private contextId: string;
 
@@ -38,28 +38,28 @@ export class Context {
         return this.contextId;
     }
 
-    setIdentifier(key: string, value: TokenType.Value2) {
+    setIdentifier(key: string, value: TokenType.Identifier) {
         const hash = this.getHash(key, NAME_SPACE.IDENTIFIER);
         this.set(hash, value);
     }
 
-    getIdentifier(key: string): TokenType.Value2 {
+    getIdentifier(key: string) {
         const hash = this.getHash(key, NAME_SPACE.IDENTIFIER);
         const token = this.get(hash, 'variable');
         if (token instanceof TokenType.Value2) {
-            return token;
+            return token as TokenType.Identifier;
         }
         throw new Error('Context.getIdentifier tried to rturn a bad token');
     }
 
-    setModule(key: string, value: TokenType.Value2 | Function) {
+    setModule(key: string, value: TokenType.ModuleDefinition | Function) {
         const hash = this.getHash(key, NAME_SPACE.MODULE);
         this.set(hash, value);
     }
 
-    getModule(key: string): TokenType.Value2 | Function {
+    getModule(key: string) {
         const hash = this.getHash(key, NAME_SPACE.MODULE);
-        return this.get(hash, 'module');
+        return this.get(hash, 'module') as TokenType.ModuleDefinition | Function;
     }
 
     private getHash(key: string, ns: NAME_SPACE) {
@@ -67,24 +67,13 @@ export class Context {
         return hash;
     }
 
-    private set(key: string, value: TokenType.Value2 | Function) {
-        // if (!(value instanceof TokenType.Value2)) {
-        //     const msg = `Context Set: Attempted to set non ScadToken value type`;
-        //     console.error(msg);
-        //     throw new Error(msg);
-        // }
-
-        // if (!typeof value.getType) {
-        //     const msg = `Context Set: attempted to set a value with no 'getType`;
-        //     console.error(msg);
-        //     throw new Error(msg);
-        // }
+    private set(key: string, value: any) {
         this.container.set(key, value);
     }
 
-    private get(key: string, type: string): TokenType.Value2 | Function {
+    private get(key: string, type: string): any {
         if (this.container.has(key)) {
-            const val = this.container.get(key) as TokenType.Value2;
+            const val = this.container.get(key);
             return val;
         }
         if (this.parent) {

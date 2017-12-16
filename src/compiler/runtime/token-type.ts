@@ -300,13 +300,14 @@ export class IfStatement extends Token {
     }
 }
 
-
 export class ModuleDefinition extends Token {
     public arguments: Value2[];
     public code: Token;
+    public name: string;
 
-    constructor(value: moo.Token, args: Value2[], code: Token) {
+    constructor(value: moo.Token, name: moo.Token, args: Value2[], code: Token) {
         super(value);
+        this.name = name.value;
         this.arguments = args;
         this.code = code;
     }

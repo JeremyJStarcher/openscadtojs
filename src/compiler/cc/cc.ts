@@ -70,6 +70,10 @@ function executeStatement(runtime: RunTime, token: TokenType.Token) {
         evaluate.executeAssignment(runtime, token);
     }
 
+    if (token instanceof TokenType.ModuleDefinition) {
+        runtime.setModule(token.name, token);
+    }
+
     if (token instanceof TokenType.ModuleCall) {
         const source = runtime.getModule(token.value);
 
@@ -88,16 +92,35 @@ function executeStatement(runtime: RunTime, token: TokenType.Token) {
 function hoist(block: TokenType.Token[]) {
     const varList: TokenType.Operator[] = [];
     const funcList: TokenType.Token[] = [];
+    const moduleList: TokenType.ModuleDefinition[] = [];
     const otherList: TokenType.Token[] = [];
 
     function inner(bl: TokenType.Token[]) {
         bl.forEach(token => {
 
             if (Array.isArray(token)) {
+                // This handles the case of our parser accidentally nesting things --
+                // It is a last-ditch de-nester.
                 return inner(token);
             }
 
-            if (token instanceof TokenType.Operator) {
+            if (token instanceof TokenType.ModuleDefinition) {
+                const idx = (() => {
+                    for (let i = 0; i < moduleList.length; i += 1) {
+                        if (moduleList[i].name === token.name) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                })();
+
+                if (idx === -1) {
+                    moduleList.push(token);
+                } else {
+                    moduleList[idx] = token;
+                }
+
+            } else if (token instanceof TokenType.Operator) {
                 const idx = (() => {
                     for (let i = 0; i < varList.length; i += 1) {
                         if (varList[i].lhand.value === token.lhand.value) {
@@ -122,7 +145,7 @@ function hoist(block: TokenType.Token[]) {
 
     inner(block);
 
-    const ast = [...funcList, ...varList, ...otherList];
+    const ast = [...funcList, ...moduleList, ...varList, ...otherList];
     return ast;
 }
 

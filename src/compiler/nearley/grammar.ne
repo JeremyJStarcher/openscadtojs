@@ -184,10 +184,10 @@ function moduleStatement(d:any[]):any {
 	//    0      1      2      3  4  5           6              7  8  9     10
 
 	if (d.length === 9) {
-		return new TokenType.ModuleDefinition(d[0], d[5], d[8]);
+		return new TokenType.ModuleDefinition(d[0], d[2], d[5], d[8]);
 	}
 	if (d.length === 11) {
-		return new TokenType.ModuleDefinition(d[0], d[6], d[10]);
+		return new TokenType.ModuleDefinition(d[0], d[2], d[6], d[10]);
 	}
 }
 
@@ -224,7 +224,7 @@ statementOther
 	| module_call _ %eos				{% id %}
 	| function_statement _ %eos			{% functionDefinition  %}
 	| compound_statement				{% id %}
-	| module_statement					{% id %}
+	| module_statement	%eos:?			{% id %}
 #	| jump_statement					{% id %}
 
 primary_expression
