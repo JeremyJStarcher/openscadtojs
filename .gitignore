@@ -13,6 +13,10 @@ src/compiler/nearley/grammar.js
 src/compiler/nearley/grammar.ts
 src/compiler/nearley/grammar.ts
 
+emcc/**/*.js
+emcc/**/*.html
+emcc/**/*.wasm
+
 
 # Others
 ~$*

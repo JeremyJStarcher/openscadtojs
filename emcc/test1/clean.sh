@@ -1,0 +1,1 @@
+rm hello_world.wasm
