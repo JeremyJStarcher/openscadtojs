@@ -33,7 +33,7 @@
     "awesome-typescript-loader": "^3.2.1",
     "copy-webpack-plugin": "^4.2.0",
     "cross-env": "^5.0.1",
-    "css-loader": "^0.28.4",
+    "css-loader": "^2.1.1",
     "ejs-loader": "^0.3.0",
     "eslint": "^4.2.0",
     "expose-loader": "^0.7.3",
@@ -42,7 +42,7 @@
     "http-server": "^0.10.0",
     "jasmine": "^2.6.0",
     "jasmine-core": "^2.6.4",
-    "karma": "^1.7.1",
+    "karma": "^4.0.1",
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.1",
@@ -65,8 +65,8 @@
     "tslint-loader": "^3.5.3",
     "typescript": "^2.4.1",
     "webpack": "^3.3.0",
-    "webpack-dashboard": "^0.4.0",
-    "webpack-dev-server": "2.5.1"
+    "webpack-dashboard": "^3.0.0",
+    "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
     "@types/moo": "^0.3.0",
