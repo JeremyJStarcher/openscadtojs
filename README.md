@@ -1,5 +1,16 @@
 # OpenSCAD to JS
 
+## To run (Under Linux)
+* Have `openscad` installed and in your path
+  * If installing the appimage, create a symbolic link called `openscad` somewhere in your path.
+* Clone the directory
+* Build the grammar files: `npm run build:grammar`
+* Build the OpenSCAD comparison tests: `npm run build:scadtest`
+* Run the tests themselves: `npm test`
+* OR -- Run the tests debuggable in the browser: `npm run testui`
+
+
+
 This project strarted off as an OpenSCAD to JavaScript translator, but quickly became an OpenSCAD runtime environment written completely in JavaScript.
 
 ## Differences between OpenSCAD and other languages.
