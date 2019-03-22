@@ -52,7 +52,7 @@ function runOpenScad(filename: string, displayName: string): Promise<ScadResult>
             result.source = source;
         }).then(() => {
 
-            exec(`openscad -o test.stl ${filename}`,
+            exec(`openscad -o ${__dirname}/${destDir}/test.stl ${filename}`,
                 function (error: Error, stdout: string, stderr: string) {
                     if (error) {
                         reject(error);
