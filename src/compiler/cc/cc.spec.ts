@@ -175,7 +175,7 @@ describe('Running compiler tests', () => {
     it('should evaluate a series of expressions', () => {
         return new Promise((resolve, reject) => {
             // Handle numbers as strings so we can do our own rounding and compare.
-            const tests: [[string, string]] = [
+            const tests: [string, string][] = [
                 ['var1=-1;', '-1'],
                 ['var1=1+2+3+4;', '10'],
                 ['var1=1*2*3*4;', '24'],
@@ -224,7 +224,7 @@ describe('Running compiler tests', () => {
 
     it('should evaluate built-in constants', () => {
         return new Promise((resolve, reject) => {
-            const tests: [[string, undefined | boolean]] = [
+            const tests: [string, undefined | boolean][] = [
                 ['var1=undef;', undefined],
                 ['var1=true;', true],
                 ['var1=false;', false]
@@ -247,7 +247,7 @@ describe('Running compiler tests', () => {
 
     it('should allow variable names that contain keywords, etc.', () => {
         return new Promise((resolve, reject) => {
-            const tests: [[string, undefined | boolean]] = [
+            const tests: [string, undefined | boolean][] = [
                 ['undef1=true;', undefined],
                 ['true1=true;', true],
                 ['false1=true;', false],
@@ -353,7 +353,7 @@ describe('Running compiler tests', () => {
 
     it(`should 'echo' empty parens`, () => {
         return new Promise((resolve, reject) => {
-            const tests: [[string, any]] = [
+            const tests: [string, any][] = [
                 [`echo();`, 3],
                 [`echo( );`, 3],
                 [`echo(\r );`, 3],
@@ -379,7 +379,7 @@ describe('Running compiler tests', () => {
 
     it(`should 'echo' string constants with spaces.`, () => {
         return new Promise((resolve, reject) => {
-            const tests: [[string, any]] = [
+            const tests: [string, any][] = [
                 [`echo("Echo Moon");`, 3],
                 [`a1=1;echo("Echo Moon");`, 3],
                 [`a1="Echo Moon";echo(a1);`, 3],
@@ -404,7 +404,7 @@ describe('Running compiler tests', () => {
         it('handle single-line comments', () => {
 
             return new Promise((resolve, reject) => {
-                const tests: [[string, number]] = [
+                const tests: [string, number][] = [
                     ['// This is a test\nt2=1;', 1],
                     ['v=1;//this is a test\nt2=100;', 100]
                 ];
@@ -428,7 +428,7 @@ describe('Running compiler tests', () => {
         it('handle block comments', () => {
 
             return new Promise((resolve, reject) => {
-                const tests: [[string, number]] = [
+                const tests: [string, number][] = [
                     ['/*two comments */ /* this is a test */\nt2=1;', 1],
                     ['/* this is a test */\nt2=1;', 1],
                     ['v=1;\n/* this\nis a  \n\r test */\nt2=100;', 100],
@@ -485,7 +485,7 @@ describe('Running compiler tests', () => {
         it('should hoist module declarations, keeping only the latest', () => {
 
             return new Promise((resolve, reject) => {
-                const tests: [[string]] = [
+                const tests: [string][] = [
                     ['module m1(false) {};module m1(true) {};'],
                     ['module m1(false) {}module m1(true) {};'],
                     ['module m1(false) {} module m1(true) {};'],
@@ -500,11 +500,11 @@ describe('Running compiler tests', () => {
                     expect(m1.name).toEqual(`m1`, `Module name error`);
                     expect(m1.arguments.length).toEqual(1, `Module arguments length error`);
                     expect(m1.arguments[0]).toBeTruthy(`Found wrong module definition`);
-                    // expect(t2.value).toEqual(expectedValue[1], `${code} did not equal ${expectedValue[1]}`);
                 };
 
                 const p1 = tests.map(test => {
-                    return compileAndRun(test[0], test[1], validate);
+                    const noResult = null;
+                    return compileAndRun(test[0], noResult, validate);
                 });
 
                 Promise.all(p1).then(() => {
