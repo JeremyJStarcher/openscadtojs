@@ -2,6 +2,7 @@ const Bluebird = require('bluebird');
 const fs = require('fs');
 const path = require('path');
 const exec = Bluebird.promisify(require('child_process').exec);
+const os = require('os');
 const readdir = Bluebird.promisify(require('fs').readdir);
 const readFile = Bluebird.promisify(require('fs').readFile);
 const writeFile = Bluebird.promisify(require('fs').writeFile);
@@ -13,6 +14,8 @@ const destDir = './output';
 const CHUNK_SEPARATER = '//%';
 
 const tempFileNames: string[] = [];
+
+const isWindows = os.platform() === "win32";
 
 interface ScadResult {
     warnings: string[];
@@ -62,6 +65,13 @@ function runOpenScad(filename: string, displayName: string): Promise<ScadResult>
                     result.fname = displayName;
                     result.logs = stdout.split(/\r\n|\r|\n/);
                     result.warnings = stderr.split(/\r\n|\r|\n/);
+
+                    // The windows version seems to mixup the output
+                    // so do special handling to split it.
+                    if (isWindows) {
+                        const slicePoint = 5;
+                        result.warnings = result.logs.splice(slicePoint, result.logs.length);
+                    }
                     resolve(result);
                 });
         });
